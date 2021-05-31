@@ -1,0 +1,11 @@
+addr = "127.0.0.1:6379"
+password = ""
+db = 0
+max_retries = 0
+pool_size = 32
+read_timeout = 3
+write_timeout = 3
+idle_timeout = 300
+idle_check_frequency = 60
+max_conn_age = 300
+pool_timeout = 8

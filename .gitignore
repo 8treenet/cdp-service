@@ -1,0 +1,9 @@
+.vscode
+.idea
+*.code-workspace
+
+debug
+.log
+.DS_Store
+go.sum
+/log
