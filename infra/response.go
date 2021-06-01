@@ -9,6 +9,11 @@ import (
 	"github.com/kataras/iris/v12/hero"
 )
 
+const (
+	ERROR   = 7
+	SUCCESS = 0
+)
+
 // JSONResponse .
 type JSONResponse struct {
 	Code             int
@@ -34,7 +39,7 @@ func (jrep JSONResponse) Dispatch(ctx freedom.Context) {
 		body.Error = jrep.Error.Error()
 	}
 	if jrep.Error != nil && body.Code == 0 {
-		body.Code = 400
+		body.Code = ERROR
 	}
 
 	if content, jrep.Error = json.Marshal(body); jrep.Error != nil {
