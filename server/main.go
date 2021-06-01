@@ -2,6 +2,8 @@
 package main
 
 import (
+	"time"
+
 	_ "github.com/8treenet/crm-service/adapter/controller" //Implicit initialization controller
 	_ "github.com/8treenet/crm-service/adapter/repository" //Implicit initialization repository
 	"github.com/8treenet/crm-service/server/conf"
@@ -11,7 +13,6 @@ import (
 	"github.com/go-redis/redis"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"time"
 )
 
 func main() {
@@ -29,7 +30,7 @@ func main() {
 	*/
 	installMiddleware(app)
 	runner := app.NewRunner(conf.Get().App.Other["listen_addr"].(string))
-	//app.InstallParty("/github.com/8treenet/crm-service")
+	app.InstallParty("/crm-service")
 	liveness(app)
 	app.Run(runner, *conf.Get().App)
 }
