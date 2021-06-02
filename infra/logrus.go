@@ -12,10 +12,6 @@ import (
 func NewLogrusMiddleware(logFolder string, console bool) func(value *freedom.LogRow) bool {
 	initLogger(logFolder)
 	return func(value *freedom.LogRow) bool {
-		fieldKeys := []string{}
-		for k := range value.Fields {
-			fieldKeys = append(fieldKeys, k)
-		}
 		level := toLogrusLevel(value.Level)
 		loggerEntity.WithFields(logrus.Fields(value.Fields)).Log(level, value.Message)
 		return !console // 返回true 停止中间件遍历，最底层默认console
