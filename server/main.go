@@ -6,6 +6,7 @@ import (
 
 	_ "github.com/8treenet/crm-service/adapter/controller" //Implicit initialization controller
 	_ "github.com/8treenet/crm-service/adapter/repository" //Implicit initialization repository
+	"github.com/8treenet/crm-service/infra"
 	"github.com/8treenet/crm-service/server/conf"
 	"github.com/8treenet/freedom"
 	"github.com/8treenet/freedom/infra/requests"
@@ -17,17 +18,6 @@ import (
 
 func main() {
 	app := freedom.NewApplication()
-	/*
-		installDatabase(app)
-		installRedis(app)
-
-		HTTP/2 h2c Runner
-		runner := app.NewH2CRunner(conf.Get().App.Other["listen_addr"].(string))
-		HTTP/2 AutoTLS Runner
-		runner := app.NewAutoTLSRunner(":443", "freedom.com www.freedom.com", "freedom@163.com")
-		HTTP/2 TLS Runner
-		runner := app.NewTLSRunner(":443", "certFile", "keyFile")
-	*/
 	installMiddleware(app)
 	runner := app.NewRunner(conf.Get().App.Other["listen_addr"].(string))
 	app.InstallParty("/crm-service")
@@ -41,7 +31,7 @@ func installMiddleware(app freedom.Application) {
 	//One Loger per request New.
 	app.InstallMiddleware(middleware.NewRequestLogger("x-request-id"))
 	//The middleware output of the log line.
-	app.Logger().Handle(middleware.DefaultLogRowHandle)
+	app.Logger().Handle(infra.NewLogrusMiddleware(conf.Get().App.Other["logger_path"].(string), conf.Get().App.Other["logger_console"].(bool)))
 
 	//Install the Prometheus middleware.
 	middle := middleware.NewClientPrometheus(conf.Get().App.Other["service_name"].(string), freedom.Prometheus())
