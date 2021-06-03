@@ -43,14 +43,14 @@ var loggerEntity *logrus.Logger
 func initLogger(logFolder string) {
 	loggerEntity = logrus.New()
 	loggerEntity.SetLevel(logrus.DebugLevel)
-	customFormatter := new(logrus.TextFormatter)
+	customFormatter := new(logrus.JSONFormatter)
 	customFormatter.TimestampFormat = "2006-01-02 15:04:05.000"
 	loggerEntity.SetFormatter(customFormatter)
 
 	// 设置 rotatelogs
 	logWriter, err := rotatelogs.New(
 		// 分割后的文件名称
-		logFolder+"/%Y%m%d.log",
+		logFolder+"/%Y_%m_%d.log",
 		// 设置最大保存时间(7天)
 		rotatelogs.WithMaxAge(7*24*time.Hour),
 		// 设置日志切割时间间隔(1天)
