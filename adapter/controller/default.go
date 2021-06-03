@@ -15,7 +15,7 @@ func init() {
 
 // Default .
 type Default struct {
-	Sev     *domain.Default
+	Sev     *domain.DefaultSvr
 	Worker  freedom.Worker
 	Request *infra.Request
 }
@@ -118,4 +118,10 @@ func (c *Default) GetAgeByUserBy(age int, user string) freedom.Result {
 	result.User = user
 
 	return &infra.JSONResponse{Object: result}
+}
+
+//PutHello handles the PUT: /hello route.
+func (c *Default) GetTestcommon() freedom.Result {
+	data := c.Sev.GetCommon()
+	return &infra.JSONResponse{Object: data}
 }

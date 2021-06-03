@@ -8,29 +8,35 @@ import (
 
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
-		initiator.BindService(func() *Default {
-			return &Default{}
+		initiator.BindService(func() *DefaultSvr {
+			return &DefaultSvr{}
 		})
-		initiator.InjectController(func(ctx freedom.Context) (service *Default) {
+		initiator.InjectController(func(ctx freedom.Context) (service *DefaultSvr) {
 			initiator.FetchService(ctx, &service)
 			return
 		})
 	})
 }
 
-// Default .
-type Default struct {
+// DefaultSvr .
+type DefaultSvr struct {
 	Worker  freedom.Worker
-	DefRepo *repository.Default
+	DefRepo *repository.DefaultRepo
 }
 
 // RemoteInfo .
-func (s *Default) RemoteInfo() (result struct {
+func (svr *DefaultSvr) RemoteInfo() (result struct {
 	Ip string
 	Ua string
 }) {
-	s.Worker.Logger().Info("I'm service")
-	result.Ip = s.DefRepo.GetIP()
-	result.Ua = s.DefRepo.GetUA()
+	svr.Worker.Logger().Info("I'm service")
+	result.Ip = svr.DefRepo.GetIP()
+	result.Ua = svr.DefRepo.GetUA()
 	return
+}
+
+// GetCommon .
+func (svr *DefaultSvr) GetCommon() string {
+	//service 调用repository
+	return svr.DefRepo.GetCommon()
 }

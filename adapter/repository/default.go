@@ -2,38 +2,48 @@
 package repository
 
 import (
+	"fmt"
+
+	"github.com/8treenet/crm-service/infra"
 	"github.com/8treenet/freedom"
 	"gorm.io/gorm"
 )
 
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
-		initiator.BindRepository(func() *Default {
-			return &Default{}
+		initiator.BindRepository(func() *DefaultRepo {
+			return &DefaultRepo{}
 		})
 	})
 }
 
-// Default .
-type Default struct {
+// DefaultRepo .
+type DefaultRepo struct {
 	freedom.Repository
+	Common *infra.CommonRequest //引用组件
 }
 
 // GetIP .
-func (repo *Default) GetIP() string {
-	//repo.db().Find()
+func (repo *DefaultRepo) GetIP() string {
 	repo.Worker().Logger().Info("I'm Repository GetIP")
 	return repo.Worker().IrisContext().RemoteAddr()
 }
 
 // GetUA - implment DefaultRepoInterface interface
-func (repo *Default) GetUA() string {
+func (repo *DefaultRepo) GetUA() string {
 	repo.Worker().Logger().Info("I'm Repository GetUA")
 	return repo.Worker().IrisContext().Request().UserAgent()
 }
 
+// GetCommon
+func (repo *DefaultRepo) GetCommon() string {
+	userId := repo.Common.GetUserId()
+	page, pageSize := repo.Common.GetPage()
+	return fmt.Sprintf("用户:%d 请求的分页:%d, %d", userId, page, pageSize)
+}
+
 // db .
-func (repo *Default) db() *gorm.DB {
+func (repo *DefaultRepo) db() *gorm.DB {
 	var db *gorm.DB
 	if err := repo.FetchDB(&db); err != nil {
 		panic(err)
