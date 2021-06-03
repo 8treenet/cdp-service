@@ -14,6 +14,7 @@ import (
 func NewLogrusMiddleware(logFolder string, console bool) func(value *freedom.LogRow) bool {
 	initLogger(logFolder)
 	return func(value *freedom.LogRow) bool {
+		//使用Logrus输出
 		level := toLogrusLevel(value.Level)
 		loggerEntity.WithFields(logrus.Fields(value.Fields)).Log(level, value.Message)
 		if !console {
