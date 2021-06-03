@@ -20,6 +20,7 @@ func NewLogrusMiddleware(logFolder string, console bool) func(value *freedom.Log
 			return true // 返回true 停止中间件遍历，最底层默认console
 		}
 
+		//组织console输出
 		fieldKeys := []string{}
 		for k := range value.Fields {
 			fieldKeys = append(fieldKeys, k)
@@ -30,7 +31,7 @@ func NewLogrusMiddleware(logFolder string, console bool) func(value *freedom.Log
 			if value.Message != "" {
 				value.Message += "  "
 			}
-			value.Message += fmt.Sprintf("%s:%v", fieldKeys[i], fieldMsg)
+			value.Message += fmt.Sprintf("%s=%v", fieldKeys[i], fieldMsg)
 		}
 		return false // 返回false 继续中间件遍历，最底层默认console
 	}
