@@ -38,7 +38,7 @@ func (mongo *Mongo) visitConfig() {
 		URI      string `toml:"uri"`
 	}
 	//default
-	mongoConf.Database = "freedom"
+	mongoConf.Database = "default"
 	mongoConf.URI = "mongodb://root:123123@localhost:27017"
 
 	freedom.Configure(&mongoConf, "mongo.toml")
