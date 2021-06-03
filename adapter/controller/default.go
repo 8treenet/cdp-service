@@ -28,7 +28,7 @@ func (c *Default) Get() freedom.Result {
 }
 
 //GetHello handles the GET: /hello route.
-func (c *Default) GetHello() string {
+func (c *Default) GetHello() freedom.Result {
 	field := freedom.LogFields{
 		"framework": "freedom",
 		"like":      "DDD",
@@ -43,7 +43,7 @@ func (c *Default) GetHello() string {
 	c.Worker.Logger().Warnf("hello %s", "format", field)
 	c.Worker.Logger().Print("hello")
 	c.Worker.Logger().Println("hello")
-	return "hello"
+	return &infra.JSONResponse{Object: "hello"}
 }
 
 //PutHello handles the PUT: /hello route.

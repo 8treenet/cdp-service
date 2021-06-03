@@ -19,7 +19,7 @@ import (
 func main() {
 	app := freedom.NewApplication()
 	installMiddleware(app)
-	runner := app.NewRunner(conf.Get().App.Other["listen_addr"].(string))
+	runner := app.NewH2CRunner(conf.Get().App.Other["listen_addr"].(string))
 	app.InstallParty("/crm-service")
 	liveness(app)
 	app.Run(runner, *conf.Get().App)

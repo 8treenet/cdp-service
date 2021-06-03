@@ -1,6 +1,8 @@
 package infra
 
 import (
+	"fmt"
+	"sort"
 	"time"
 
 	"github.com/8treenet/freedom"
@@ -14,7 +16,23 @@ func NewLogrusMiddleware(logFolder string, console bool) func(value *freedom.Log
 	return func(value *freedom.LogRow) bool {
 		level := toLogrusLevel(value.Level)
 		loggerEntity.WithFields(logrus.Fields(value.Fields)).Log(level, value.Message)
-		return !console // 返回true 停止中间件遍历，最底层默认console
+		if !console {
+			return true // 返回true 停止中间件遍历，最底层默认console
+		}
+
+		fieldKeys := []string{}
+		for k := range value.Fields {
+			fieldKeys = append(fieldKeys, k)
+		}
+		sort.Strings(fieldKeys)
+		for i := 0; i < len(fieldKeys); i++ {
+			fieldMsg := value.Fields[fieldKeys[i]]
+			if value.Message != "" {
+				value.Message += "  "
+			}
+			value.Message += fmt.Sprintf("%s:%v", fieldKeys[i], fieldMsg)
+		}
+		return false // 返回false 继续中间件遍历，最底层默认console
 	}
 }
 
