@@ -17,10 +17,6 @@ import (
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
 		initiator.BindInfra(true, &Mongo{})
-		initiator.InjectController(func(ctx freedom.Context) (com *Mongo) {
-			initiator.FetchInfra(ctx, &com)
-			return
-		})
 	})
 }
 
