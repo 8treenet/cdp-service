@@ -13,7 +13,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-// main _"github.com/8treenet/crm-service/infra"
+/*
+	需要在main中 隐式初始化组件
+  	import _"github.com/8treenet/crm-service/infra"
+*/
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
 		initiator.BindInfra(true, &Mongo{})
