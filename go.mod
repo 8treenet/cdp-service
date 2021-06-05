@@ -2,6 +2,8 @@ module github.com/8treenet/crm-service
 
 go 1.13
 
+replace github.com/8treenet/freedom => /Volumes/uhome/ysmac/go/src/github.com/8treenet/freedom
+
 require (
 	github.com/8treenet/freedom v1.8.10
 	github.com/go-redis/redis v6.15.9+incompatible

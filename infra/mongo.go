@@ -1,5 +1,10 @@
 package infra
 
+/*
+	需要在main中 隐式初始化组件
+  	import _"github.com/8treenet/crm-service/infra"
+*/
+
 import (
 	"context"
 	"fmt"
@@ -13,10 +18,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-/*
-	需要在main中 隐式初始化组件
-  	import _"github.com/8treenet/crm-service/infra"
-*/
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
 		initiator.BindInfra(true, &Mongo{})
@@ -31,7 +32,7 @@ type Mongo struct {
 	databaseName  string
 	database      *driver.Database
 	collectionMap map[string]*driver.Collection
-	mutex         *sync.Mutex
+	mutex         sync.Mutex
 }
 
 // Start .
@@ -70,6 +71,7 @@ func (mongo *Mongo) Booting(bootManager freedom.BootManager) {
 
 	mongo.db = client
 	mongo.database = mongo.db.Database(mongo.databaseName)
+	mongo.collectionMap = make(map[string]*driver.Collection)
 	freedom.Logger().Infof("Connect mongo success, database:%s.", mongo.databaseName)
 }
 

@@ -27,8 +27,8 @@ type CommonRequest struct {
 func (req *CommonRequest) BeginRequest(worker freedom.Worker) {
 	req.Infra.BeginRequest(worker)
 
-	page, _ := req.Worker().IrisContext().URLParamInt("page")
-	pageSize, _ := req.Worker().IrisContext().URLParamInt("pageSize")
+	page := req.Worker().IrisContext().URLParamIntDefault("page", 1)
+	pageSize := req.Worker().IrisContext().URLParamIntDefault("pageSize", 10)
 	userIdStr := req.Worker().IrisContext().GetHeader("x-user-id")
 	userId, _ := strconv.Atoi(userIdStr)
 
