@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/8treenet/crm-service/domain/po"
@@ -16,12 +17,12 @@ type Customer struct {
 	changes map[string]interface{}
 }
 
-func (customer *Customer) Identity() string {
-	if customer.Source == nil {
+func (entity *Customer) Identity() string {
+	if entity.Source == nil {
 		return ""
 	}
 
-	iid, ok := customer.Source["_id"]
+	iid, ok := entity.Source["_id"]
 	if !ok {
 		return ""
 	}
@@ -46,10 +47,29 @@ func (entity *Customer) GetChanges() map[string]interface{} {
 }
 
 // Update .
-func (obj *Customer) Update(name string, value interface{}) {
-	if obj.changes == nil {
-		obj.changes = make(map[string]interface{})
+func (entity *Customer) Update(name string, value interface{}) {
+	if entity.changes == nil {
+		entity.changes = make(map[string]interface{})
 	}
-	obj.changes[name] = value
-	obj.Source[name] = value
+	entity.changes[name] = value
+	entity.Source[name] = value
+}
+
+// MarshalJSON .
+func (entity *Customer) MarshalJSON() ([]byte, error) {
+	data := map[string]interface{}{"_id": entity.Identity()}
+
+	for _, po := range entity.Templetes {
+		value, ok := entity.Source[po.Name]
+		if !ok {
+			continue
+		}
+		data[po.Name] = value
+	}
+	return json.Marshal(data)
+}
+
+// Verify .
+func (entity *Customer) Verify() error {
+	return nil
 }

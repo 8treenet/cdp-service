@@ -53,6 +53,7 @@ func TestAddTempleteField(t *testing.T) {
 	repo.AddTempleteField("age", "Integer", "", 0)
 	repo.AddTempleteField("mobile", "String", "", 2)
 	repo.AddTempleteField("desc", "String", "", 3)
+	repo.AddTempleteField("iq", "Integer", "", 0)
 	//t.Log(err)
 }
 
@@ -98,6 +99,10 @@ func TestGetSave(t *testing.T) {
 		panic(err)
 	}
 
+	djson, _ := entity.MarshalJSON()
+	t.Log(entity.Templetes, string(djson))
+
 	entity.Update("age", 25)
+	entity.Update("iq", 250)
 	t.Log(repo.SaveCustomer(entity))
 }

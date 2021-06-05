@@ -94,9 +94,12 @@ func (repo *CustomerRepository) NewCustomer(source map[string]interface{}) (*ent
 	}
 
 	result.Templetes = templetes
-
 	result.Source["_id"] = primitive.NewObjectID().Hex()
 	result.Source["_created"] = time.Now()
+
+	if e := result.Verify(); e != nil {
+		return nil, e
+	}
 	collection := repo.Mongo.GetCollection(repo.customerCollection)
 	_, err = collection.InsertOne(context.TODO(), result.Source)
 	return result, err
@@ -115,10 +118,14 @@ func (repo *CustomerRepository) NewCustomers(sources []map[string]interface{}) (
 	for _, source := range sources {
 		source["_created"] = created
 		source["_id"] = primitive.NewObjectID().Hex()
-		result = append(result, &entity.Customer{
+		entity := &entity.Customer{
 			Source:    source,
 			Templetes: templetes,
-		})
+		}
+		if e := entity.Verify(); e != nil {
+			return nil, e
+		}
+		result = append(result, entity)
 	}
 	repo.InjectBaseEntitys(result)
 
@@ -131,6 +138,10 @@ func (repo *CustomerRepository) NewCustomers(sources []map[string]interface{}) (
 func (repo *CustomerRepository) SaveCustomer(customer *entity.Customer) error {
 	collection := repo.Mongo.GetCollection(repo.customerCollection)
 	updateOpt := options.Update().SetUpsert(true)
+	if e := customer.Verify(); e != nil {
+		return e
+	}
+
 	value := bson.M{
 		"$set": customer.GetChanges(),
 	}
@@ -165,12 +176,12 @@ func (repo *CustomerRepository) getTempletes() (result []*po.CustomerTemplate, e
 		return
 	}
 
-	list, err := findCustomerTemplateListByMap(repo, map[string]interface{}{})
+	list, err := findCustomerTemplateList(repo, po.CustomerTemplate{})
 	if err != nil {
 		return
 	}
-	for _, v := range list {
-		result = append(result, &v)
+	for i := 0; i < len(list); i++ {
+		result = append(result, &list[i])
 	}
 	err = redisJSONSet(repo.Redis(), repo.customerTemplateCacheKey, result)
 	return
