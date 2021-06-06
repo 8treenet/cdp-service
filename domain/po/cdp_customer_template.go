@@ -8,15 +8,16 @@ import (
 
 // CustomerTemplate .
 type CustomerTemplate struct {
-	changes map[string]interface{}
-	ID      int       `gorm:"primaryKey;column:id"`
-	Name    string    `gorm:"column:name"`  // key
-	Kind    string    `gorm:"column:kind"`  // 类型
-	Index   int       `gorm:"column:index"` // 索引0:无,1:btree,2:唯一
-	Dict    string    `gorm:"column:dict"`  // 关联字典的key
-	Reg     string    `gorm:"column:reg"`   // 正则
-	Created time.Time `gorm:"column:created"`
-	Updated time.Time `gorm:"column:updated"`
+	changes  map[string]interface{}
+	ID       int       `gorm:"primaryKey;column:id"`
+	Name     string    `gorm:"column:name"`     // key
+	Kind     string    `gorm:"column:kind"`     // 类型
+	Index    int       `gorm:"column:index"`    // 索引0:无,1:btree,2:唯一
+	Dict     string    `gorm:"column:dict"`     // 关联字典的key
+	Reg      string    `gorm:"column:reg"`      // 正则
+	Required int       `gorm:"column:required"` // 1 必填
+	Created  time.Time `gorm:"column:created"`
+	Updated  time.Time `gorm:"column:updated"`
 }
 
 // TableName .
@@ -80,6 +81,12 @@ func (obj *CustomerTemplate) SetReg(reg string) {
 	obj.Update("reg", reg)
 }
 
+// SetRequired .
+func (obj *CustomerTemplate) SetRequired(required int) {
+	obj.Required = required
+	obj.Update("required", required)
+}
+
 // SetCreated .
 func (obj *CustomerTemplate) SetCreated(created time.Time) {
 	obj.Created = created
@@ -96,4 +103,10 @@ func (obj *CustomerTemplate) SetUpdated(updated time.Time) {
 func (obj *CustomerTemplate) AddIndex(index int) {
 	obj.Index += index
 	obj.Update("index", gorm.Expr("index + ?", index))
+}
+
+// AddRequired .
+func (obj *CustomerTemplate) AddRequired(required int) {
+	obj.Required += required
+	obj.Update("required", gorm.Expr("required + ?", required))
 }

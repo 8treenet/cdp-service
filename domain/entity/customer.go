@@ -78,6 +78,9 @@ func (entity *Customer) MarshalJSON() ([]byte, error) {
 func (entity *Customer) Verify() error {
 	for _, po := range entity.Templetes {
 		value, ok := entity.Source[po.Name]
+		if !ok && po.Required == 1 && entity.changes == nil {
+			return fmt.Errorf("必填字段 %s", po.Name)
+		}
 		if !ok {
 			continue
 		}
