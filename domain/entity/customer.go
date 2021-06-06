@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -12,6 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// Customer 客户实体
 type Customer struct {
 	freedom.Entity
 	Source    map[string]interface{}
@@ -84,6 +86,13 @@ func (entity *Customer) Verify() error {
 		case "String":
 			if typ.Kind() != reflect.String {
 				return fmt.Errorf("错误类型 %v %s:%v", typ.Kind(), po.Name, value)
+			}
+			if po.Reg == "" {
+				break
+			}
+
+			if ok := regexp.MustCompile(po.Reg).MatchString(value.(string)); !ok {
+				return fmt.Errorf("正则匹配失败 %v %s:%v", po.Reg, po.Name, value)
 			}
 		case "Boolean":
 			if typ.Kind() != reflect.Bool {

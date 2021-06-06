@@ -2,9 +2,8 @@
 package po
 
 import (
-	"time"
-
 	"gorm.io/gorm"
+	"time"
 )
 
 // CustomerTemplate .
@@ -15,6 +14,7 @@ type CustomerTemplate struct {
 	Kind    string    `gorm:"column:kind"`  // 类型
 	Index   int       `gorm:"column:index"` // 索引0:无,1:btree,2:唯一
 	Dict    string    `gorm:"column:dict"`  // 关联字典的key
+	Reg     string    `gorm:"column:reg"`   // 正则
 	Created time.Time `gorm:"column:created"`
 	Updated time.Time `gorm:"column:updated"`
 }
@@ -72,6 +72,12 @@ func (obj *CustomerTemplate) SetIndex(index int) {
 func (obj *CustomerTemplate) SetDict(dict string) {
 	obj.Dict = dict
 	obj.Update("dict", dict)
+}
+
+// SetReg .
+func (obj *CustomerTemplate) SetReg(reg string) {
+	obj.Reg = reg
+	obj.Update("reg", reg)
 }
 
 // SetCreated .

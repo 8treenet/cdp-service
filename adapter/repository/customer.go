@@ -41,7 +41,7 @@ type CustomerRepository struct {
 }
 
 // AddTempleteField .
-func (repo *CustomerRepository) AddTempleteField(name, kind, dict string, index int) error {
+func (repo *CustomerRepository) AddTempleteField(name, kind, dict, reg string, index int) error {
 	defer func() {
 		if e := repo.Redis().Del(repo.customerTemplateCacheKey).Err(); e != nil {
 			repo.Worker().Logger().Error(e)
@@ -52,6 +52,7 @@ func (repo *CustomerRepository) AddTempleteField(name, kind, dict string, index 
 		Kind:    kind,
 		Index:   index,
 		Dict:    dict,
+		Reg:     reg,
 		Created: time.Now(),
 		Updated: time.Now(),
 	}

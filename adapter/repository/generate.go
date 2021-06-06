@@ -3,12 +3,11 @@ package repository
 import (
 	"errors"
 	"fmt"
-	"strings"
-	"time"
-
 	"github.com/8treenet/crm-service/domain/po"
 	"github.com/8treenet/freedom"
 	"gorm.io/gorm"
+	"strings"
+	"time"
 )
 
 // GORMRepository .
