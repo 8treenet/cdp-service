@@ -61,12 +61,12 @@ func (mongo *Mongo) Booting(bootManager freedom.BootManager) {
 		freedom.Logger().Fatal(err)
 	}
 
-	if err := client.Ping(context.TODO(), readpref.Primary()); err != nil {
+	if err := client.Ping(ctx, readpref.Primary()); err != nil {
 		freedom.Logger().Fatal(err)
 	}
 
 	bootManager.RegisterShutdown(func() {
-		client.Disconnect(context.TODO())
+		client.Disconnect(ctx)
 	})
 
 	mongo.db = client

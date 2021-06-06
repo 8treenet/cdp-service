@@ -2,6 +2,9 @@ package entity
 
 import (
 	"encoding/json"
+	"fmt"
+	"reflect"
+	"strconv"
 	"time"
 
 	"github.com/8treenet/crm-service/domain/po"
@@ -71,5 +74,32 @@ func (entity *Customer) MarshalJSON() ([]byte, error) {
 
 // Verify .
 func (entity *Customer) Verify() error {
+	for _, po := range entity.Templetes {
+		value, ok := entity.Source[po.Name]
+		if !ok {
+			continue
+		}
+		typ := reflect.TypeOf(value)
+		switch po.Kind {
+		case "String":
+			if typ.Kind() != reflect.String {
+				return fmt.Errorf("错误类型 %v %s:%v", typ.Kind(), po.Name, value)
+			}
+		case "Boolean":
+			if typ.Kind() != reflect.Bool {
+				return fmt.Errorf("错误类型 %v %s:%v", typ.Kind(), po.Name, value)
+			}
+		case "Double":
+			if typ.Kind() != reflect.Float32 && typ.Kind() != reflect.Float64 {
+				return fmt.Errorf("错误类型 %v %s:%v", typ.Kind(), po.Name, value)
+			}
+		default:
+			_, err := strconv.Atoi(fmt.Sprint(value))
+			if err != nil {
+				return fmt.Errorf("错误类型 %v %s:%v", typ.Kind(), po.Name, value)
+			}
+		}
+	}
+
 	return nil
 }

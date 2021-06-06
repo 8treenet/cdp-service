@@ -67,7 +67,7 @@ func TestCustomerAdd(t *testing.T) {
 	//获取资源库
 	unitTest.FetchRepository(&repo)
 	customer, err := repo.NewCustomer(map[string]interface{}{
-		"name":   "yangshu",
+		"name":   "yangshu123",
 		"sex":    1,
 		"age":    31,
 		"mobile": "13513517944",
@@ -75,7 +75,7 @@ func TestCustomerAdd(t *testing.T) {
 	})
 	t.Log(customer, err)
 	customer2, err2 := repo.NewCustomer(map[string]interface{}{
-		"name":   "qiaojiaojiao",
+		"name":   "qiaojiaojiao1",
 		"sex":    2,
 		"age":    35,
 		"mobile": "13513511111",
