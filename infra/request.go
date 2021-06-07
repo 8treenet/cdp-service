@@ -3,8 +3,10 @@ package infra
 
 import (
 	"io/ioutil"
+	"reflect"
 
 	"encoding/json"
+
 	"github.com/8treenet/freedom"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -35,16 +37,37 @@ func (req *Request) BeginRequest(worker freedom.Worker) {
 }
 
 // ReadJSON .
-func (req *Request) ReadJSON(obj interface{}) error {
+func (req *Request) ReadJSON(obj interface{}, validate ...bool) error {
 	rawData, err := ioutil.ReadAll(req.Worker().IrisContext().Request().Body)
 	if err != nil {
 		return err
 	}
-	err = json.Unmarshal(rawData, obj)
-	if err != nil {
+	if err = json.Unmarshal(rawData, obj); err != nil {
 		return err
 	}
+	if len(validate) == 0 || !validate[0] {
+		return nil
+	}
 
+	val := reflect.ValueOf(obj)
+	if val.Kind() == reflect.Ptr && !val.IsNil() {
+		val = val.Elem()
+	}
+
+	if val.Kind() == reflect.Slice || val.Kind() == reflect.Array {
+		for i := 0; i < val.Len(); i++ {
+			if err = req.Validate(val.Index(i).Interface()); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+
+	return req.Validate(obj)
+}
+
+// Validate .
+func (req *Request) Validate(obj interface{}) error {
 	return validate.Struct(obj)
 }
 

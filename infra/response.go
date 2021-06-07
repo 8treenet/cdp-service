@@ -28,15 +28,16 @@ func (jrep JSONResponse) Dispatch(ctx freedom.Context) {
 	var content []byte
 
 	var body struct {
-		Code  int         `json:"code"`
-		Error string      `json:"error"`
-		Data  interface{} `json:"data,omitempty"`
+		Code int         `json:"code"`
+		Msg  string      `json:"msg"`
+		Data interface{} `json:"data,omitempty"`
 	}
 	body.Data = jrep.Object
 	body.Code = jrep.Code
+	body.Msg = "成功"
 
 	if jrep.Error != nil {
-		body.Error = jrep.Error.Error()
+		body.Msg = jrep.Error.Error()
 	}
 	if jrep.Error != nil && body.Code == 0 {
 		body.Code = ERROR

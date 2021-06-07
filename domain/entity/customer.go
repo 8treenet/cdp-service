@@ -76,14 +76,21 @@ func (entity *Customer) MarshalJSON() ([]byte, error) {
 
 // Verify .
 func (entity *Customer) Verify() error {
+	mt := map[string]*po.CustomerTemplate{}
 	for _, po := range entity.Templetes {
-		value, ok := entity.Source[po.Name]
-		if !ok && po.Required == 1 && entity.changes == nil {
-			return fmt.Errorf("必填字段 %s", po.Name)
+		mt[po.Name] = po
+		_, ok := entity.Source[po.Name]
+		if !ok && po.Required == 1 {
+			return fmt.Errorf("缺少必填字段 %s", po.Name)
 		}
+	}
+
+	for key, value := range entity.Source {
+		po, ok := mt[key]
 		if !ok {
-			continue
+			return fmt.Errorf("该字段在模板中不存在 %s", key)
 		}
+
 		typ := reflect.TypeOf(value)
 		switch po.Kind {
 		case "String":
@@ -112,6 +119,5 @@ func (entity *Customer) Verify() error {
 			}
 		}
 	}
-
 	return nil
 }

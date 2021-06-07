@@ -47,13 +47,13 @@ func TestAddTempleteField(t *testing.T) {
 	unitTest.FetchRepository(&repo)
 	repo.db().Exec("DELETE FROM `cdp_customer_template` WHERE 1").Row()
 
-	e := repo.AddTempleteField("name", "String", "", "", 1, 0)
+	e := repo.AddTemplete("name", "String", "", "", 1, 0)
 	t.Log(e)
-	repo.AddTempleteField("sex", "Integer", "dsb", "", 0, 0)
-	repo.AddTempleteField("age", "Integer", "", "", 0, 0)
-	repo.AddTempleteField("mobile", "String", "", "", 2, 0)
-	repo.AddTempleteField("desc", "String", "", "", 3, 0)
-	repo.AddTempleteField("iq", "Integer", "", "", 0, 0)
+	repo.AddTemplete("sex", "Integer", "dsb", "", 0, 0)
+	repo.AddTemplete("age", "Integer", "", "", 0, 0)
+	repo.AddTemplete("mobile", "String", "", "", 2, 0)
+	repo.AddTemplete("desc", "String", "", "", 3, 0)
+	repo.AddTemplete("iq", "Integer", "", "", 0, 0)
 	//t.Log(err)
 }
 

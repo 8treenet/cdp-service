@@ -2,8 +2,9 @@
 package po
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // CustomerTemplate .

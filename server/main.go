@@ -24,6 +24,8 @@ func main() {
 	runner := app.NewH2CRunner(conf.Get().App.Other["listen_addr"].(string))
 	app.InstallParty("/crm-service")
 	liveness(app)
+	installDatabase(app)
+	installRedis(app)
 	app.Run(runner, *conf.Get().App)
 }
 

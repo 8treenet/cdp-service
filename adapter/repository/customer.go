@@ -40,8 +40,8 @@ type CustomerRepository struct {
 	customerTemplateCacheKey string
 }
 
-// AddTempleteField .
-func (repo *CustomerRepository) AddTempleteField(name, kind, dict, reg string, index, required int) error {
+// AddTemplete .
+func (repo *CustomerRepository) AddTemplete(name, kind, dict, reg string, index, required int) error {
 	defer func() {
 		if e := repo.Redis().Del(repo.customerTemplateCacheKey).Err(); e != nil {
 			repo.Worker().Logger().Error(e)
@@ -82,6 +82,15 @@ func (repo *CustomerRepository) AddTempleteField(name, kind, dict, reg string, i
 	collection := repo.Mongo.GetCollection(repo.customerCollection)
 	_, err = collection.Indexes().CreateOne(context.TODO(), indexModel)
 	return err
+}
+
+// GetTempletes .
+func (repo *CustomerRepository) GetTempletes() ([]*po.CustomerTemplate, error) {
+	templetes, err := repo.getTempletes()
+	if err != nil {
+		return nil, err
+	}
+	return templetes, nil
 }
 
 // NewCustomer .
@@ -169,6 +178,13 @@ func (repo *CustomerRepository) GetCustomer(id string) (result *entity.Customer,
 	result.Templetes = templetes
 	repo.InjectBaseEntity(result)
 	e = singleResult.Decode(&result.Source)
+	return
+}
+
+// DeleteCustomer .
+func (repo *CustomerRepository) DeleteCustomer(entity *entity.Customer) (e error) {
+	collection := repo.Mongo.GetCollection(repo.customerCollection)
+	_, e = collection.DeleteOne(context.TODO(), entity.Location())
 	return
 }
 
