@@ -107,8 +107,9 @@ func (repo *CustomerRepository) NewCustomer(source map[string]interface{}) (*ent
 	result.Templetes = templetes
 	result.Source["_id"] = primitive.NewObjectID().Hex()
 	result.Source["_created"] = time.Now()
+	result.Source["_updated"] = time.Now()
 
-	if e := result.Verify(); e != nil {
+	if e := result.Verify(true); e != nil {
 		return nil, e
 	}
 	collection := repo.Mongo.GetCollection(repo.customerCollection)
@@ -128,12 +129,13 @@ func (repo *CustomerRepository) NewCustomers(sources []map[string]interface{}) (
 	created := time.Now()
 	for _, source := range sources {
 		source["_created"] = created
+		source["_updated"] = created
 		source["_id"] = primitive.NewObjectID().Hex()
 		entity := &entity.Customer{
 			Source:    source,
 			Templetes: templetes,
 		}
-		if e := entity.Verify(); e != nil {
+		if e := entity.Verify(true); e != nil {
 			return nil, e
 		}
 		result = append(result, entity)

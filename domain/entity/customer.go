@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
-	"strconv"
 	"time"
 
 	"github.com/8treenet/crm-service/domain/po"
+	"github.com/8treenet/crm-service/utils"
 	"github.com/8treenet/freedom"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -75,27 +75,34 @@ func (entity *Customer) MarshalJSON() ([]byte, error) {
 }
 
 // Verify .
-func (entity *Customer) Verify() error {
+func (entity *Customer) Verify(isNew ...bool) error {
 	mt := map[string]*po.CustomerTemplate{}
 	for _, po := range entity.Templetes {
 		mt[po.Name] = po
 		_, ok := entity.Source[po.Name]
-		if !ok && po.Required == 1 {
+		if !ok && po.Required == 1 && len(isNew) > 0 {
 			return fmt.Errorf("缺少必填字段 %s", po.Name)
 		}
 	}
+	data := entity.Source
+	if len(isNew) == 0 {
+		data = entity.changes
+	}
 
-	for key, value := range entity.Source {
+	for key, value := range data {
 		po, ok := mt[key]
+		if utils.InSlice([]string{"_id", "_updated", "_created"}, key) {
+			continue
+		}
 		if !ok {
 			return fmt.Errorf("该字段在模板中不存在 %s", key)
 		}
 
-		typ := reflect.TypeOf(value)
+		val := reflect.ValueOf(value)
 		switch po.Kind {
 		case "String":
-			if typ.Kind() != reflect.String {
-				return fmt.Errorf("错误类型 %v %s:%v", typ.Kind(), po.Name, value)
+			if val.Kind() != reflect.String {
+				return fmt.Errorf("错误类型 %v %s:%v", "String", po.Name, value)
 			}
 			if po.Reg == "" {
 				break
@@ -105,17 +112,19 @@ func (entity *Customer) Verify() error {
 				return fmt.Errorf("正则匹配失败 %v %s:%v", po.Reg, po.Name, value)
 			}
 		case "Boolean":
-			if typ.Kind() != reflect.Bool {
-				return fmt.Errorf("错误类型 %v %s:%v", typ.Kind(), po.Name, value)
+			if val.Kind() != reflect.Bool {
+				return fmt.Errorf("错误类型 %v %s:%v", "Boolean", po.Name, value)
 			}
 		case "Double":
-			if typ.Kind() != reflect.Float32 && typ.Kind() != reflect.Float64 {
-				return fmt.Errorf("错误类型 %v %s:%v", typ.Kind(), po.Name, value)
+			if val.Kind() != reflect.Float32 && val.Kind() != reflect.Float64 {
+				return fmt.Errorf("错误类型 %v %s:%v", "Double", po.Name, value)
 			}
 		default:
-			_, err := strconv.Atoi(fmt.Sprint(value))
-			if err != nil {
-				return fmt.Errorf("错误类型 %v %s:%v", typ.Kind(), po.Name, value)
+			ok := utils.InSlice([]reflect.Kind{reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32,
+				reflect.Int64, reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32,
+				reflect.Uint64, reflect.Float32, reflect.Float64}, val.Kind())
+			if !ok {
+				return fmt.Errorf("错误类型 %v %s:%v", "Integer", po.Name, value)
 			}
 		}
 	}
