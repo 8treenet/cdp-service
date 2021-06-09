@@ -11,7 +11,7 @@ import (
 var domain = "http://127.0.0.1:8000/crm-service"
 
 func TestCustomerManagerController_PostList(t *testing.T) {
-	req := requests.NewHTTPRequest(domain + "/customer/manager/list").Post()
+	req := requests.NewHTTPRequest(domain + "/customer/tmplManager/list").Post()
 	var list []vo.CustomerTemplate
 	list = append(list, vo.CustomerTemplate{
 		Name:     "name",
@@ -44,7 +44,7 @@ func TestCustomerManagerController_PostList(t *testing.T) {
 }
 
 func TestCustomerManagerController_GetList(t *testing.T) {
-	req := requests.NewHTTPRequest(domain + "/customer/manager/list").Get()
+	req := requests.NewHTTPRequest(domain + "/customer/tmplManager/list").Get()
 	var body struct {
 		Code int                   `json:"code"`
 		Msg  string                `json:"msg"`
@@ -55,6 +55,12 @@ func TestCustomerManagerController_GetList(t *testing.T) {
 	t.Log(resp.Error, body.Code, body.Msg)
 
 	str, _ := json.MarshalIndent(body.Data, "   ", "   ")
+	t.Log(string(str))
+}
+
+func TestCustomerManagerController_PutSort(t *testing.T) {
+	req := requests.NewHTTPRequest(domain + "/customer/tmplManager/sort").Put()
+	str, _ := req.SetQueryParam("id", 30).SetQueryParam("sort", 1000).ToString()
 	t.Log(string(str))
 }
 

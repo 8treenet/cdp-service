@@ -17,6 +17,7 @@ func NewCustomerTemplateFromPO(po *po.CustomerTemplate) *CustomerTemplate {
 		Dict:     po.Dict,
 		Reg:      po.Reg,
 		Required: po.Required,
+		Sort:     po.Sort,
 		Created:  po.Created,
 		Updated:  po.Updated,
 	}
@@ -31,6 +32,7 @@ type CustomerTemplate struct {
 	Dict     string    `json:"dict"`
 	Reg      string    `json:"reg"`
 	Required int       `json:"required"`
+	Sort     int       `json:"sort"`
 	Created  time.Time `json:"created"`
 	Updated  time.Time `json:"updated"`
 }

@@ -10,7 +10,7 @@ import (
 
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
-		initiator.BindController("/customer/manager", &CustomerManagerController{})
+		initiator.BindController("/customer/tmplManager", &CustomerManagerController{})
 	})
 }
 
@@ -21,7 +21,7 @@ type CustomerManagerController struct {
 	Request                 *infra.Request
 }
 
-//Post handles the Post: /customer/manager/list route.
+//Post handles the Post: /customer/tmplManager/list route.
 func (c *CustomerManagerController) PostList() freedom.Result {
 	var list []vo.CustomerTemplate
 	if e := c.Request.ReadJSON(&list, true); e != nil {
@@ -34,11 +34,28 @@ func (c *CustomerManagerController) PostList() freedom.Result {
 	return &infra.JSONResponse{}
 }
 
-//Get handles the Get: /customer/manager/list route.
+//Get handles the Get: /customer/tmplManager/list route.
 func (c *CustomerManagerController) GetList() freedom.Result {
 	data, e := c.CustomerTempleteService.GetTempletes()
 	if e != nil {
 		return &infra.JSONResponse{Error: e}
 	}
 	return &infra.JSONResponse{Object: data}
+}
+
+//PutSort handles the put: /customer/tmplManager/sort route.
+func (c *CustomerManagerController) PutSort() freedom.Result {
+	var arg struct {
+		ID   int `url:"id" validate:"required"`
+		Sort int `url:"sort" validate:"required"`
+	}
+	err := c.Request.ReadQuery(&arg)
+	if err != nil {
+		return &infra.JSONResponse{Error: err}
+	}
+
+	if e := c.CustomerTempleteService.UpdateTempleteSort(arg.ID, arg.Sort); e != nil {
+		return &infra.JSONResponse{Error: e}
+	}
+	return &infra.JSONResponse{}
 }

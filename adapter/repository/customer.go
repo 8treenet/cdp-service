@@ -54,6 +54,7 @@ func (repo *CustomerRepository) AddTemplete(name, kind, dict, reg string, index,
 		Dict:     dict,
 		Reg:      reg,
 		Required: required,
+		Sort:     1000,
 		Created:  time.Now(),
 		Updated:  time.Now(),
 	}
@@ -91,6 +92,18 @@ func (repo *CustomerRepository) GetTempletes() ([]*po.CustomerTemplate, error) {
 		return nil, err
 	}
 	return templetes, nil
+}
+
+// UpdateTempleteSort .
+func (repo *CustomerRepository) UpdateTempleteSort(id, sort int) error {
+	defer func() {
+		if e := repo.Redis().Del(repo.customerTemplateCacheKey).Err(); e != nil {
+			repo.Worker().Logger().Error(e)
+		}
+	}()
+
+	tmpl := &po.CustomerTemplate{ID: id}
+	return repo.db().Model(tmpl).Where(tmpl).Update("sort", sort).Error
 }
 
 // NewCustomer .
@@ -196,7 +209,7 @@ func (repo *CustomerRepository) getTempletes() (result []*po.CustomerTemplate, e
 		return
 	}
 
-	list, err := findCustomerTemplateList(repo, po.CustomerTemplate{})
+	list, err := findCustomerTemplateList(repo, po.CustomerTemplate{}, NewDescPager("sort", "id"))
 	if err != nil {
 		return
 	}

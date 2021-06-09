@@ -2,9 +2,8 @@
 package po
 
 import (
-	"time"
-
 	"gorm.io/gorm"
+	"time"
 )
 
 // CustomerTemplate .
@@ -17,6 +16,7 @@ type CustomerTemplate struct {
 	Dict     string    `gorm:"column:dict"`     // 关联字典的key
 	Reg      string    `gorm:"column:reg"`      // 正则
 	Required int       `gorm:"column:required"` // 1 必填
+	Sort     int       `gorm:"column:sort"`     // 排序
 	Created  time.Time `gorm:"column:created"`
 	Updated  time.Time `gorm:"column:updated"`
 }
@@ -88,6 +88,12 @@ func (obj *CustomerTemplate) SetRequired(required int) {
 	obj.Update("required", required)
 }
 
+// SetSort .
+func (obj *CustomerTemplate) SetSort(sort int) {
+	obj.Sort = sort
+	obj.Update("sort", sort)
+}
+
 // SetCreated .
 func (obj *CustomerTemplate) SetCreated(created time.Time) {
 	obj.Created = created
@@ -110,4 +116,10 @@ func (obj *CustomerTemplate) AddIndex(index int) {
 func (obj *CustomerTemplate) AddRequired(required int) {
 	obj.Required += required
 	obj.Update("required", gorm.Expr("required + ?", required))
+}
+
+// AddSort .
+func (obj *CustomerTemplate) AddSort(sort int) {
+	obj.Sort += sort
+	obj.Update("sort", gorm.Expr("sort + ?", sort))
 }

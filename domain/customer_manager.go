@@ -49,3 +49,8 @@ func (service *CustomerManagerService) AddTempletes(templates []vo.CustomerTempl
 	}
 	return
 }
+
+// UpdateTempleteSort
+func (service *CustomerManagerService) UpdateTempleteSort(id int, sort int) (e error) {
+	return service.CustomerRepository.UpdateTempleteSort(id, sort)
+}
