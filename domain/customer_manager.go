@@ -1,8 +1,8 @@
 package domain
 
 import (
-	"github.com/8treenet/crm-service/adapter/repository"
-	"github.com/8treenet/crm-service/domain/vo"
+	"github.com/8treenet/cdp-service/adapter/repository"
+	"github.com/8treenet/cdp-service/domain/vo"
 	"github.com/8treenet/freedom"
 )
 

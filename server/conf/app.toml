@@ -1,6 +1,6 @@
 [other]
 listen_addr = ":8000"
-service_name = "crm-service"
+service_name = "cdp-service"
 repository_request_timeout = 10
 prometheus_listen_addr = ":9090"
 # "fatal" "error" "warn" "info"  "debug"

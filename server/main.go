@@ -4,12 +4,12 @@ package main
 import (
 	"time"
 
-	_ "github.com/8treenet/crm-service/adapter/controller" //Implicit initialization controller
-	_ "github.com/8treenet/crm-service/adapter/repository" //Implicit initialization repository
-	_ "github.com/8treenet/crm-service/infra"              //Implicit initialization infra
-	localMiddleware "github.com/8treenet/crm-service/middleware"
+	_ "github.com/8treenet/cdp-service/adapter/controller" //Implicit initialization controller
+	_ "github.com/8treenet/cdp-service/adapter/repository" //Implicit initialization repository
+	_ "github.com/8treenet/cdp-service/infra"              //Implicit initialization infra
+	localMiddleware "github.com/8treenet/cdp-service/middleware"
 
-	"github.com/8treenet/crm-service/server/conf"
+	"github.com/8treenet/cdp-service/server/conf"
 	"github.com/8treenet/freedom"
 	"github.com/8treenet/freedom/infra/requests"
 	"github.com/8treenet/freedom/middleware"

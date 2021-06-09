@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/8treenet/crm-service/domain/entity"
-	"github.com/8treenet/crm-service/domain/po"
-	"github.com/8treenet/crm-service/infra"
+	"github.com/8treenet/cdp-service/domain/entity"
+	"github.com/8treenet/cdp-service/domain/po"
+	"github.com/8treenet/cdp-service/infra"
 	"github.com/8treenet/freedom"
 	"github.com/go-redis/redis"
 	"go.mongodb.org/mongo-driver/bson"

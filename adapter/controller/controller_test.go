@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/8treenet/crm-service/domain/vo"
+	"github.com/8treenet/cdp-service/domain/vo"
 	"github.com/8treenet/freedom/infra/requests"
 )
 
-var domain = "http://127.0.0.1:8000/crm-service"
+var domain = "http://127.0.0.1:8000/cdp-service"
 
 func TestCustomerManagerController_PostList(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customer/tmplManager/list").Post()

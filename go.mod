@@ -1,4 +1,4 @@
-module github.com/8treenet/crm-service
+module github.com/8treenet/cdp-service
 
 go 1.13
 

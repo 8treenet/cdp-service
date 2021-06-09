@@ -7,7 +7,7 @@ import (
 	"github.com/go-redis/redis"
 	"gorm.io/driver/mysql"
 
-	_ "github.com/8treenet/crm-service/infra" //Implicit initialization infra
+	_ "github.com/8treenet/cdp-service/infra" //Implicit initialization infra
 	"gorm.io/gorm"
 )
 

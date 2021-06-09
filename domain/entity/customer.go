@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/8treenet/crm-service/domain/po"
-	"github.com/8treenet/crm-service/utils"
+	"github.com/8treenet/cdp-service/domain/po"
+	"github.com/8treenet/cdp-service/utils"
 	"github.com/8treenet/freedom"
 	"go.mongodb.org/mongo-driver/bson"
 )
