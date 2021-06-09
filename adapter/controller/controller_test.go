@@ -82,17 +82,17 @@ func TestCustomerController_PostList(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customers/list").Post()
 	var datas []map[string]interface{}
 	datas = append(datas, map[string]interface{}{
-		"name":   "yangshu123",
+		"name":   "angshu1234",
 		"age":    123,
 		"sex":    1,
-		"mobile": "23313517144",
+		"mobile": "12313517144",
 		"level":  2,
 	})
 	datas = append(datas, map[string]interface{}{
-		"name":   "qyangshu21",
+		"name":   "syangshu211s",
 		"age":    123,
 		"sex":    1,
-		"mobile": "43413517344",
+		"mobile": "99413517344",
 		"level":  3,
 	})
 

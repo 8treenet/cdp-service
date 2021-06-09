@@ -161,7 +161,8 @@ func (repo *CustomerRepository) NewCustomers(sources []map[string]interface{}) (
 	repo.InjectBaseEntitys(result)
 
 	collection := repo.Mongo.GetCollection(repo.customerCollection)
-	_, err = collection.InsertMany(context.TODO(), repo.Mongo.ToDocuments(sources))
+	ordered := false
+	_, err = collection.InsertMany(context.TODO(), repo.Mongo.ToDocuments(sources), &options.InsertManyOptions{Ordered: &ordered})
 	return result, err
 }
 
