@@ -95,15 +95,20 @@ func (repo *CustomerRepository) GetTempletes() ([]*po.CustomerTemplate, error) {
 }
 
 // UpdateTempleteSort .
-func (repo *CustomerRepository) UpdateTempleteSort(id, sort int) error {
+func (repo *CustomerRepository) GetTemplete(id int) (*po.CustomerTemplate, error) {
+	tmpl := &po.CustomerTemplate{ID: id}
+	return tmpl, findCustomerTemplate(repo, tmpl)
+}
+
+// SaveTemplete .
+func (repo *CustomerRepository) SaveTemplete(tmpl *po.CustomerTemplate) error {
 	defer func() {
 		if e := repo.Redis().Del(repo.customerTemplateCacheKey).Err(); e != nil {
 			repo.Worker().Logger().Error(e)
 		}
 	}()
-
-	tmpl := &po.CustomerTemplate{ID: id}
-	return repo.db().Model(tmpl).Where(tmpl).Update("sort", sort).Error
+	_, err := saveCustomerTemplate(repo, tmpl)
+	return err
 }
 
 // NewCustomer .

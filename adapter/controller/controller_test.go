@@ -60,7 +60,7 @@ func TestCustomerManagerController_GetList(t *testing.T) {
 
 func TestCustomerManagerController_PutSort(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customer/tmplManager/sort").Put()
-	str, _ := req.SetQueryParam("id", 30).SetQueryParam("sort", 1000).ToString()
+	str, _ := req.SetQueryParam("id", 35).SetQueryParam("sort", 1002).ToString()
 	t.Log(string(str))
 }
 

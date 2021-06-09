@@ -52,5 +52,12 @@ func (service *CustomerManagerService) AddTempletes(templates []vo.CustomerTempl
 
 // UpdateTempleteSort
 func (service *CustomerManagerService) UpdateTempleteSort(id int, sort int) (e error) {
-	return service.CustomerRepository.UpdateTempleteSort(id, sort)
+	//return service.CustomerRepository.UpdateTempleteSort(id, sort)
+	entity, err := service.CustomerRepository.GetTemplete(id)
+	if err != nil {
+		return err
+	}
+	entity.SetSort(sort)
+
+	return service.CustomerRepository.SaveTemplete(entity)
 }
