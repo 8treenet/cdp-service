@@ -67,10 +67,10 @@ func TestCustomerManagerController_PutSort(t *testing.T) {
 func TestCustomerController_Post(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customers").Post()
 	data := map[string]interface{}{
-		"name":   "yangshu112",
+		"name":   "yangshu1112",
 		"age":    1231,
 		"sex":    10,
-		"mobile": "13513517844",
+		"mobile": "13513517544",
 		"level":  10,
 	}
 
@@ -82,17 +82,17 @@ func TestCustomerController_PostList(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customers/list").Post()
 	var datas []map[string]interface{}
 	datas = append(datas, map[string]interface{}{
-		"name":   "yangshu12",
+		"name":   "yangshu123",
 		"age":    123,
 		"sex":    1,
-		"mobile": "13313517144",
+		"mobile": "23313517144",
 		"level":  2,
 	})
 	datas = append(datas, map[string]interface{}{
-		"name":   "qyangshu2",
+		"name":   "qyangshu21",
 		"age":    123,
 		"sex":    1,
-		"mobile": "13413517344",
+		"mobile": "43413517344",
 		"level":  3,
 	})
 
