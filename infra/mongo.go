@@ -3,7 +3,7 @@ package infra
 /*
 	需要在main中 隐式初始化组件
   	import _"github.com/8treenet/cdp-service/infra"
-*/
+
 
 import (
 	"context"
@@ -110,3 +110,6 @@ func (mongo *Mongo) ToDocuments(data interface{}) (documents []interface{}) {
 	}
 	return
 }
+
+
+*/
