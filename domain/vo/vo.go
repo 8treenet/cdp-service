@@ -8,12 +8,11 @@ import (
 	"github.com/8treenet/cdp-service/domain/po"
 )
 
-func NewCustomerTemplateFromPO(po *po.CustomerTemplate) *CustomerTemplate {
-	return &CustomerTemplate{
+func NewCustomerTemplateFromPO(po *po.CustomerExtendTemplate) *CustomerExtendTemplate {
+	return &CustomerExtendTemplate{
 		ID:       po.ID,
 		Name:     po.Name,
 		Kind:     po.Kind,
-		Index:    po.Index,
 		Dict:     po.Dict,
 		Reg:      po.Reg,
 		Required: po.Required,
@@ -23,16 +22,20 @@ func NewCustomerTemplateFromPO(po *po.CustomerTemplate) *CustomerTemplate {
 	}
 }
 
-// CustomerTemplate .
-type CustomerTemplate struct {
+// CustomerExtendTemplate .
+type CustomerExtendTemplate struct {
 	ID       int       `json:"id"`
 	Name     string    `json:"name" validate:"required"`
 	Kind     string    `json:"kind" validate:"required"`
-	Index    int       `json:"index"`
 	Dict     string    `json:"dict"`
 	Reg      string    `json:"reg"`
 	Required int       `json:"required"`
 	Sort     int       `json:"sort"`
 	Created  time.Time `json:"created"`
 	Updated  time.Time `json:"updated"`
+}
+
+type CustomerDTO struct {
+	po.Customer
+	Extend map[string]interface{} `json:"extend"`
 }

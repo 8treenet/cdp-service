@@ -23,7 +23,7 @@ type CustomerManagerController struct {
 
 //Post handles the Post: /customer/tmplManager/list route.
 func (c *CustomerManagerController) PostList() freedom.Result {
-	var list []vo.CustomerTemplate
+	var list []vo.CustomerExtendTemplate
 	if e := c.Request.ReadJSON(&list, true); e != nil {
 		return &infra.JSONResponse{Error: e}
 	}

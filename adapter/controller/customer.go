@@ -33,7 +33,7 @@ func (c *CustomerController) PutBy(id string) freedom.Result {
 }
 
 //GetBy handles the Get: /customers/id:string route.
-func (c *CustomerController) GetBy(id string) freedom.Result {
+func (c *CustomerController) GetBy(id int) freedom.Result {
 	data, e := c.CustomerService.GetCustomer(id)
 	if e != nil {
 		return &infra.JSONResponse{Error: e}
@@ -53,9 +53,9 @@ func (c *CustomerController) Post() freedom.Result {
 		return &infra.JSONResponse{Error: e}
 	}
 
-	if e := c.CustomerService.CreateCustomer(postData); e != nil {
-		return &infra.JSONResponse{Error: e}
-	}
+	// if e := c.CustomerService.NewCustomer(postData); e != nil {
+	// 	return &infra.JSONResponse{Error: e}
+	// }
 	return &infra.JSONResponse{}
 }
 
@@ -66,14 +66,14 @@ func (c *CustomerController) PostList() freedom.Result {
 		return &infra.JSONResponse{Error: e}
 	}
 
-	if e := c.CustomerService.CreateCustomers(postData); e != nil {
-		return &infra.JSONResponse{Error: e}
-	}
+	// if e := c.CustomerService.CreateCustomers(postData); e != nil {
+	// 	return &infra.JSONResponse{Error: e}
+	// }
 	return &infra.JSONResponse{}
 }
 
 //DeleteBy handles the delete: /customers/ route.
-func (c *CustomerController) DeleteBy(id string) freedom.Result {
+func (c *CustomerController) DeleteBy(id int) freedom.Result {
 	if e := c.CustomerService.DeleteCustomer(id); e != nil {
 		return &infra.JSONResponse{Error: e}
 	}

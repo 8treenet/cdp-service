@@ -42,67 +42,17 @@ func TestAddTempleteField(t *testing.T) {
 	unitTest := getUnitTest()
 	unitTest.Run()
 
-	var repo *CustomerRepository
+	var repo *IntermediaryRepository
 	//获取资源库
 	unitTest.FetchRepository(&repo)
 	repo.db().Exec("DELETE FROM `cdp_customer_template` WHERE 1").Row()
 
-	e := repo.AddTemplete("name", "String", "", "", 1, 0)
+	e := repo.AddTemplete("name", "String", "", "", 0)
 	t.Log(e)
-	repo.AddTemplete("sex", "Integer", "dsb", "", 0, 0)
-	repo.AddTemplete("age", "Integer", "", "", 0, 0)
-	repo.AddTemplete("mobile", "String", "", "", 2, 0)
-	repo.AddTemplete("desc", "String", "", "", 3, 0)
-	repo.AddTemplete("iq", "Integer", "", "", 0, 0)
+	repo.AddTemplete("sex", "Integer", "dsb", "", 0)
+	repo.AddTemplete("age", "Integer", "", "", 0)
+	repo.AddTemplete("mobile", "String", "", "", 0)
+	repo.AddTemplete("desc", "String", "", "", 0)
+	repo.AddTemplete("iq", "Integer", "", "", 0)
 	//t.Log(err)
-}
-
-// CustomerRepository
-func TestCustomerAdd(t *testing.T) {
-	//获取单测工具
-	unitTest := getUnitTest()
-	unitTest.Run()
-
-	var repo *CustomerRepository
-	//获取资源库
-	unitTest.FetchRepository(&repo)
-	customer, err := repo.NewCustomer(map[string]interface{}{
-		"name":   "yangshu123",
-		"sex":    1,
-		"age":    31,
-		"mobile": "13513517944",
-		"desc":   "fuck123123113",
-	})
-	t.Log(customer, err)
-	customer2, err2 := repo.NewCustomer(map[string]interface{}{
-		"name":   "qiaojiaojiao1",
-		"sex":    2,
-		"age":    35,
-		"mobile": "13513511111",
-		"desc":   "fuck123123113",
-	})
-
-	t.Log(customer2, err2)
-}
-
-func TestGetSave(t *testing.T) {
-	//获取单测工具
-	unitTest := getUnitTest()
-	unitTest.Run()
-
-	var repo *CustomerRepository
-	//获取资源库
-	unitTest.FetchRepository(&repo)
-
-	entity, err := repo.GetCustomer("60bb4e4bcd757c893171bb01")
-	if err != nil {
-		panic(err)
-	}
-
-	djson, _ := entity.MarshalJSON()
-	t.Log(entity.Templetes, string(djson))
-
-	entity.Update("age", 25)
-	entity.Update("iq", 250)
-	t.Log(repo.SaveCustomer(entity))
 }

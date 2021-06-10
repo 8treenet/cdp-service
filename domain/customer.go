@@ -3,6 +3,7 @@ package domain
 import (
 	"github.com/8treenet/cdp-service/adapter/repository"
 	"github.com/8treenet/cdp-service/domain/entity"
+	"github.com/8treenet/cdp-service/domain/vo"
 	"github.com/8treenet/freedom"
 )
 
@@ -25,12 +26,12 @@ type CustomerService struct {
 }
 
 // GetCustomer 获取客户信息.
-func (service *CustomerService) GetCustomer(id string) (*entity.Customer, error) {
+func (service *CustomerService) GetCustomer(id int) (*entity.Customer, error) {
 	return service.CustomerRepository.GetCustomer(id)
 }
 
 // DeleteCustomer 删除客户.
-func (service *CustomerService) DeleteCustomer(id string) error {
+func (service *CustomerService) DeleteCustomer(id int) error {
 	customer, err := service.GetCustomer(id)
 	if err != nil {
 		return err
@@ -40,25 +41,20 @@ func (service *CustomerService) DeleteCustomer(id string) error {
 
 // UpdateCustomer 修改客户.
 func (service *CustomerService) UpdateCustomer(id string, updateOpt map[string]interface{}) error {
-	customer, err := service.GetCustomer(id)
-	if err != nil {
-		return err
-	}
+	// customer, err := service.GetCustomer(id)
+	// if err != nil {
+	// 	return err
+	// }
 
-	for name, v := range updateOpt {
-		customer.Update(name, v)
-	}
-	return service.CustomerRepository.SaveCustomer(customer)
+	// for name, v := range updateOpt {
+	// 	customer.Update(name, v)
+	// }
+	//return service.CustomerRepository.SaveCustomer(customer)
+	return nil
 }
 
 // CreateCustomer 新增客户.
-func (service *CustomerService) CreateCustomer(source map[string]interface{}) error {
-	_, err := service.CustomerRepository.NewCustomer(source)
-	return err
-}
+func (service *CustomerService) NewCustomer(source vo.CustomerDTO) error {
 
-// CreateCustomers 新增客户.
-func (service *CustomerService) CreateCustomers(sources []map[string]interface{}) error {
-	_, err := service.CustomerRepository.NewCustomers(sources)
-	return err
+	return nil
 }

@@ -21,11 +21,11 @@ func init() {
 // CustomerManagerService .
 type CustomerManagerService struct {
 	Worker             freedom.Worker
-	CustomerRepository *repository.CustomerRepository
+	CustomerRepository *repository.IntermediaryRepository
 }
 
 // GetTempletes 获取客户模板列表.
-func (service *CustomerManagerService) GetTempletes() (result []*vo.CustomerTemplate, e error) {
+func (service *CustomerManagerService) GetTempletes() (result []*vo.CustomerExtendTemplate, e error) {
 	list, err := service.CustomerRepository.GetTempletes()
 	if err != nil {
 		return nil, err
@@ -37,12 +37,12 @@ func (service *CustomerManagerService) GetTempletes() (result []*vo.CustomerTemp
 }
 
 // AddTempletes 添加客户模板列表.
-func (service *CustomerManagerService) AddTempletes(templates []vo.CustomerTemplate) (e error) {
+func (service *CustomerManagerService) AddTempletes(templates []vo.CustomerExtendTemplate) (e error) {
 	for _, v := range templates {
 		if v.ID != 0 {
 			continue
 		}
-		e = service.CustomerRepository.AddTemplete(v.Name, v.Kind, v.Dict, v.Reg, v.Index, v.Required)
+		e = service.CustomerRepository.AddTemplete(v.Name, v.Kind, v.Dict, v.Reg, v.Required)
 		if e != nil {
 			return
 		}

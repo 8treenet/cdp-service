@@ -1,32 +1,20 @@
 package repository
 
 import (
-	"context"
-	"time"
+	"encoding/json"
 
 	"github.com/8treenet/cdp-service/domain/entity"
 	"github.com/8treenet/cdp-service/domain/po"
 	"github.com/8treenet/cdp-service/infra"
 	"github.com/8treenet/freedom"
-	"github.com/go-redis/redis"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
-)
-
-const (
-	noneIndex   = 0
-	btreeIndex  = 1
-	uniqueIndex = 2
-	textIndex   = 3
 )
 
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
 		initiator.BindRepository(func() *CustomerRepository {
-			return &CustomerRepository{customerCollection: "cdp_customer", customerTemplateCacheKey: "cdp_customer_template"}
+			return &CustomerRepository{}
 		})
 	})
 }
@@ -34,196 +22,85 @@ func init() {
 // CustomerRepository .
 type CustomerRepository struct {
 	freedom.Repository
-	Common                   *infra.CommonRequest
-	Mongo                    *infra.Mongo
-	customerCollection       string
-	customerTemplateCacheKey string
-}
-
-// AddTemplete .
-func (repo *CustomerRepository) AddTemplete(name, kind, dict, reg string, index, required int) error {
-	defer func() {
-		if e := repo.Redis().Del(repo.customerTemplateCacheKey).Err(); e != nil {
-			repo.Worker().Logger().Error(e)
-		}
-	}()
-	pobject := &po.CustomerTemplate{
-		Name:     name,
-		Kind:     kind,
-		Index:    index,
-		Dict:     dict,
-		Reg:      reg,
-		Required: required,
-		Sort:     1000,
-		Created:  time.Now(),
-		Updated:  time.Now(),
-	}
-	_, err := createCustomerTemplate(repo, pobject)
-	if err != nil {
-		return err
-	}
-
-	opt := options.Index().SetBackground(true).SetName(name)
-	var sort interface{} = -1
-	switch index {
-	case noneIndex:
-		return nil
-	case uniqueIndex:
-		opt.SetUnique(true)
-	case textIndex:
-		sort = "text"
-	}
-	indexModel := mongo.IndexModel{
-		Keys: bson.D{
-			{name, sort},
-		},
-		Options: opt,
-	}
-
-	collection := repo.Mongo.GetCollection(repo.customerCollection)
-	_, err = collection.Indexes().CreateOne(context.TODO(), indexModel)
-	return err
-}
-
-// GetTempletes .
-func (repo *CustomerRepository) GetTempletes() ([]*po.CustomerTemplate, error) {
-	templetes, err := repo.getTempletes()
-	if err != nil {
-		return nil, err
-	}
-	return templetes, nil
-}
-
-// UpdateTempleteSort .
-func (repo *CustomerRepository) GetTemplete(id int) (*po.CustomerTemplate, error) {
-	tmpl := &po.CustomerTemplate{ID: id}
-	return tmpl, findCustomerTemplate(repo, tmpl)
-}
-
-// SaveTemplete .
-func (repo *CustomerRepository) SaveTemplete(tmpl *po.CustomerTemplate) error {
-	defer func() {
-		if e := repo.Redis().Del(repo.customerTemplateCacheKey).Err(); e != nil {
-			repo.Worker().Logger().Error(e)
-		}
-	}()
-	_, err := saveCustomerTemplate(repo, tmpl)
-	return err
+	Common *infra.CommonRequest
+	//Mongo                    *infra.Mongo
 }
 
 // NewCustomer .
-func (repo *CustomerRepository) NewCustomer(source map[string]interface{}) (*entity.Customer, error) {
+func (repo *CustomerRepository) NewCustomer() *entity.Customer {
 	result := &entity.Customer{}
-	result.Source = source
 	repo.InjectBaseEntity(result)
-
-	templetes, err := repo.getTempletes()
-	if err != nil {
-		return nil, err
-	}
-
-	result.Templetes = templetes
-	result.Source["_id"] = primitive.NewObjectID().Hex()
-	result.Source["_created"] = time.Now()
-	result.Source["_updated"] = time.Now()
-
-	if e := result.Verify(true); e != nil {
-		return nil, e
-	}
-	collection := repo.Mongo.GetCollection(repo.customerCollection)
-	_, err = collection.InsertOne(context.TODO(), result.Source)
-	return result, err
-}
-
-// NewCustomers .
-func (repo *CustomerRepository) NewCustomers(sources []map[string]interface{}) ([]*entity.Customer, error) {
-	result := []*entity.Customer{}
-
-	templetes, err := repo.getTempletes()
-	if err != nil {
-		return nil, err
-	}
-
-	created := time.Now()
-	for _, source := range sources {
-		source["_created"] = created
-		source["_updated"] = created
-		source["_id"] = primitive.NewObjectID().Hex()
-		entity := &entity.Customer{
-			Source:    source,
-			Templetes: templetes,
-		}
-		if e := entity.Verify(true); e != nil {
-			return nil, e
-		}
-		result = append(result, entity)
-	}
-	repo.InjectBaseEntitys(result)
-
-	collection := repo.Mongo.GetCollection(repo.customerCollection)
-	ordered := false
-	_, err = collection.InsertMany(context.TODO(), repo.Mongo.ToDocuments(sources), &options.InsertManyOptions{Ordered: &ordered})
-	return result, err
+	return result
 }
 
 // SaveCustomer .
 func (repo *CustomerRepository) SaveCustomer(customer *entity.Customer) error {
-	collection := repo.Mongo.GetCollection(repo.customerCollection)
-	updateOpt := options.Update().SetUpsert(true)
-	if e := customer.Verify(); e != nil {
+	if customer.UserID == 0 {
+		if _, err := createCustomer(repo, &customer.Customer); err != nil {
+			return err
+		}
+
+		expo := &po.CustomerExtend{UserID: customer.Customer.UserID}
+		exBytes, err := json.Marshal(customer.GetExtend())
+		if err != nil {
+			return err
+		}
+		expo.Data = datatypes.JSON(exBytes)
+		if _, err := createCustomerExtend(repo, expo); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	if _, e := saveCustomer(repo, customer); e != nil {
 		return e
 	}
 
-	value := bson.M{
-		"$set": customer.GetChanges(),
+	extMap := customer.GetExtendChanges()
+	if extMap == nil {
+		return nil
 	}
-	_, err := collection.UpdateOne(context.TODO(), customer.Location(), value, updateOpt)
-	return err
+	exBytes, err := json.Marshal(extMap)
+	if err != nil {
+		return err
+	}
+	jsonMap := map[string]interface{}{"data": datatypes.JSON(exBytes)}
+	repo.db().Model(&po.CustomerExtend{}).Where("userId = ?", customer.UserID).Updates(jsonMap)
+	if _, e := saveCustomerExtend(repo, &customer.Customer); e != nil {
+		return e
+	}
+	return nil
 }
 
 // GetCustomer .
-func (repo *CustomerRepository) GetCustomer(id string) (result *entity.Customer, e error) {
-	templetes, err := repo.getTempletes()
-	if err != nil {
-		return nil, err
-	}
-
-	collection := repo.Mongo.GetCollection(repo.customerCollection)
-	singleResult := collection.FindOne(context.TODO(), map[string]interface{}{"_id": id})
-	if e = singleResult.Err(); e != nil {
-		return nil, e
-	}
-
+func (repo *CustomerRepository) GetCustomer(id int) (result *entity.Customer, e error) {
 	result = &entity.Customer{}
-	result.Source = map[string]interface{}{}
-	result.Templetes = templetes
 	repo.InjectBaseEntity(result)
-	e = singleResult.Decode(&result.Source)
+
+	pobj := &po.Customer{UserID: id}
+	if e = findCustomer(repo, pobj); e != nil {
+		return
+	}
+	peobj := &po.CustomerExtend{UserID: id}
+	if e = findCustomerExtend(repo, peobj); e != nil {
+		return
+	}
+
+	result.Customer = *pobj
+	m := map[string]interface{}{}
+	if e = json.Unmarshal(peobj.Data, &m); e != nil {
+		return
+	}
+	result.Extend = m
 	return
 }
 
 // DeleteCustomer .
 func (repo *CustomerRepository) DeleteCustomer(entity *entity.Customer) (e error) {
-	collection := repo.Mongo.GetCollection(repo.customerCollection)
-	_, e = collection.DeleteOne(context.TODO(), entity.Location())
-	return
-}
-
-func (repo *CustomerRepository) getTempletes() (result []*po.CustomerTemplate, err error) {
-	err = redisJSONGet(repo.Redis(), repo.customerTemplateCacheKey, &result)
-	if err == nil || err != redis.Nil {
+	if e = repo.db().Where(entity.Location()).Delete(&po.Customer{}).Error; e != nil {
 		return
 	}
-
-	list, err := findCustomerTemplateList(repo, po.CustomerTemplate{}, NewDescPager("sort", "id"))
-	if err != nil {
-		return
-	}
-	for i := 0; i < len(list); i++ {
-		result = append(result, &list[i])
-	}
-	err = redisJSONSet(repo.Redis(), repo.customerTemplateCacheKey, result)
-	return
+	return repo.db().Where("userId = ?", entity.UserID).Delete(&po.CustomerExtend{}).Error
 }
 
 // db .

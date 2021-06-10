@@ -12,31 +12,28 @@ var domain = "http://127.0.0.1:8000/cdp-service"
 
 func TestCustomerManagerController_PostList(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customer/tmplManager/list").Post()
-	var list []vo.CustomerTemplate
-	list = append(list, vo.CustomerTemplate{
+	var list []vo.CustomerExtendTemplate
+	list = append(list, vo.CustomerExtendTemplate{
 		Name:     "name",
 		Kind:     "String",
 		Required: 1,
-		Index:    1,
 	})
-	list = append(list, vo.CustomerTemplate{
+	list = append(list, vo.CustomerExtendTemplate{
 		Name: "age",
 		Kind: "Integer",
 	})
-	list = append(list, vo.CustomerTemplate{
+	list = append(list, vo.CustomerExtendTemplate{
 		Name: "sex",
 		Kind: "Integer",
 	})
-	list = append(list, vo.CustomerTemplate{
-		Name:  "mobile",
-		Kind:  "String",
-		Index: 2,
+	list = append(list, vo.CustomerExtendTemplate{
+		Name: "mobile",
+		Kind: "String",
 	})
-	list = append(list, vo.CustomerTemplate{
+	list = append(list, vo.CustomerExtendTemplate{
 		Name:     "level",
 		Kind:     "Integer",
 		Required: 1,
-		Index:    1,
 	})
 
 	data, resp := req.SetJSONBody(list).ToString()
@@ -46,9 +43,9 @@ func TestCustomerManagerController_PostList(t *testing.T) {
 func TestCustomerManagerController_GetList(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customer/tmplManager/list").Get()
 	var body struct {
-		Code int                   `json:"code"`
-		Msg  string                `json:"msg"`
-		Data []vo.CustomerTemplate `json:"data,omitempty"`
+		Code int                         `json:"code"`
+		Msg  string                      `json:"msg"`
+		Data []vo.CustomerExtendTemplate `json:"data,omitempty"`
 	}
 	resp := req.ToJSON(&body)
 
