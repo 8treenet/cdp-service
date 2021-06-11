@@ -3,6 +3,7 @@ package controller
 
 import (
 	"github.com/8treenet/cdp-service/domain"
+	"github.com/8treenet/cdp-service/domain/vo"
 	"github.com/8treenet/cdp-service/infra"
 	"github.com/8treenet/freedom"
 )
@@ -20,8 +21,8 @@ type CustomerController struct {
 	Request         *infra.Request
 }
 
-//PutBy handles the PUT: /customers/id:string route.
-func (c *CustomerController) PutBy(id string) freedom.Result {
+//PutBy handles the PUT: /customers/id:int route.
+func (c *CustomerController) PutBy(id int) freedom.Result {
 	putData := map[string]interface{}{}
 	if e := c.Request.ReadJSON(&putData); e != nil {
 		return &infra.JSONResponse{Error: e}
@@ -48,27 +49,27 @@ func (c *CustomerController) GetList() freedom.Result {
 
 //Post handles the Get: /customers route.
 func (c *CustomerController) Post() freedom.Result {
-	postData := map[string]interface{}{}
+	var postData vo.CustomerDTO
 	if e := c.Request.ReadJSON(&postData); e != nil {
 		return &infra.JSONResponse{Error: e}
 	}
 
-	// if e := c.CustomerService.NewCustomer(postData); e != nil {
-	// 	return &infra.JSONResponse{Error: e}
-	// }
+	if e := c.CustomerService.CreateCustomer(postData); e != nil {
+		return &infra.JSONResponse{Error: e}
+	}
 	return &infra.JSONResponse{}
 }
 
 //PostList handles the Get: /customers/list route.
 func (c *CustomerController) PostList() freedom.Result {
-	postData := []map[string]interface{}{}
+	var postData []vo.CustomerDTO
 	if e := c.Request.ReadJSON(&postData); e != nil {
 		return &infra.JSONResponse{Error: e}
 	}
 
-	// if e := c.CustomerService.CreateCustomers(postData); e != nil {
-	// 	return &infra.JSONResponse{Error: e}
-	// }
+	if e := c.CustomerService.CreateCustomers(postData); e != nil {
+		return &infra.JSONResponse{Error: e}
+	}
 	return &infra.JSONResponse{}
 }
 

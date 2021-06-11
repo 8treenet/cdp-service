@@ -3,7 +3,7 @@ package controller
 
 import (
 	"github.com/8treenet/cdp-service/domain"
-	"github.com/8treenet/cdp-service/domain/vo"
+	"github.com/8treenet/cdp-service/domain/po"
 	"github.com/8treenet/cdp-service/infra"
 	"github.com/8treenet/freedom"
 )
@@ -23,7 +23,7 @@ type CustomerManagerController struct {
 
 //Post handles the Post: /customer/tmplManager/list route.
 func (c *CustomerManagerController) PostList() freedom.Result {
-	var list []vo.CustomerExtendTemplate
+	var list []po.CustomerExtensionTemplate
 	if e := c.Request.ReadJSON(&list, true); e != nil {
 		return &infra.JSONResponse{Error: e}
 	}

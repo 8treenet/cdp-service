@@ -23,13 +23,27 @@ type IntermediaryFactory struct {
 }
 
 // CreateCustomerNewCmd 返回添加客户命令
-func (factory *IntermediaryFactory) CreateCustomerNewCmd() (cmd *CustomerNewCmd, e error) {
+func (factory *IntermediaryFactory) CreateCustomerNewCmd() (cmd *CustomerCreateCmd, e error) {
 	ientity, err := factory.Intermediary.GetEntity()
 	if err != nil {
 		return nil, err
 	}
 
-	return &CustomerNewCmd{
+	return &CustomerCreateCmd{
+		Intermediary: *ientity,
+		CustomerRepo: factory.CustomerRepo,
+		TX:           factory.TX,
+	}, nil
+}
+
+// CreateCustomerNewCmd 返回添加客户命令
+func (factory *IntermediaryFactory) UpdateCustomerNewCmd() (cmd *CustomerUpdateCmd, e error) {
+	ientity, err := factory.Intermediary.GetEntity()
+	if err != nil {
+		return nil, err
+	}
+
+	return &CustomerUpdateCmd{
 		Intermediary: *ientity,
 		CustomerRepo: factory.CustomerRepo,
 		TX:           factory.TX,

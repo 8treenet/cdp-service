@@ -43,7 +43,7 @@ func (repo *IntermediaryRepository) AddTemplete(name, kind, dict, reg string, re
 			repo.Worker().Logger().Error(e)
 		}
 	}()
-	pobject := &po.CustomerExtendTemplate{
+	pobject := &po.CustomerExtensionTemplate{
 		Name:     name,
 		Kind:     kind,
 		Dict:     dict,
@@ -53,12 +53,12 @@ func (repo *IntermediaryRepository) AddTemplete(name, kind, dict, reg string, re
 		Created:  time.Now(),
 		Updated:  time.Now(),
 	}
-	_, err := createCustomerExtendTemplate(repo, pobject)
+	_, err := createCustomerExtensionTemplate(repo, pobject)
 	return err
 }
 
 // GetTempletes .
-func (repo *IntermediaryRepository) GetTempletes() ([]*po.CustomerExtendTemplate, error) {
+func (repo *IntermediaryRepository) GetTempletes() ([]*po.CustomerExtensionTemplate, error) {
 	templetes, err := repo.getTempletes()
 	if err != nil {
 		return nil, err
@@ -67,30 +67,30 @@ func (repo *IntermediaryRepository) GetTempletes() ([]*po.CustomerExtendTemplate
 }
 
 // GetTemplete .
-func (repo *IntermediaryRepository) GetTemplete(id int) (*po.CustomerExtendTemplate, error) {
-	tmpl := &po.CustomerExtendTemplate{ID: id}
-	return tmpl, findCustomerExtendTemplate(repo, tmpl)
+func (repo *IntermediaryRepository) GetTemplete(id int) (*po.CustomerExtensionTemplate, error) {
+	tmpl := &po.CustomerExtensionTemplate{ID: id}
+	return tmpl, findCustomerExtensionTemplate(repo, tmpl)
 }
 
 // SaveTemplete .
-func (repo *IntermediaryRepository) SaveTemplete(tmpl *po.CustomerExtendTemplate) error {
+func (repo *IntermediaryRepository) SaveTemplete(tmpl *po.CustomerExtensionTemplate) error {
 	defer func() {
 		if e := repo.Redis().Del(repo.customerTemplateCacheKey).Err(); e != nil {
 			repo.Worker().Logger().Error(e)
 		}
 	}()
 
-	_, err := saveCustomerExtendTemplate(repo, tmpl)
+	_, err := saveCustomerExtensionTemplate(repo, tmpl)
 	return err
 }
 
-func (repo *IntermediaryRepository) getTempletes() (result []*po.CustomerExtendTemplate, err error) {
+func (repo *IntermediaryRepository) getTempletes() (result []*po.CustomerExtensionTemplate, err error) {
 	err = redisJSONGet(repo.Redis(), repo.customerTemplateCacheKey, &result)
 	if err == nil || err != redis.Nil {
 		return
 	}
 
-	list, err := findCustomerExtendTemplateList(repo, po.CustomerExtendTemplate{}, NewDescPager("sort", "id"))
+	list, err := findCustomerExtensionTemplateList(repo, po.CustomerExtensionTemplate{}, NewDescPager("sort", "id"))
 	if err != nil {
 		return
 	}

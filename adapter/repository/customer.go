@@ -26,8 +26,8 @@ type CustomerRepository struct {
 	//Mongo                    *infra.Mongo
 }
 
-// NewCustomer .
-func (repo *CustomerRepository) NewCustomer() *entity.Customer {
+// CreateCustomer .
+func (repo *CustomerRepository) CreateCustomer() *entity.Customer {
 	result := &entity.Customer{}
 	repo.InjectBaseEntity(result)
 	return result
@@ -40,13 +40,13 @@ func (repo *CustomerRepository) SaveCustomer(customer *entity.Customer) error {
 			return err
 		}
 
-		expo := &po.CustomerExtend{UserID: customer.Customer.UserID}
-		exBytes, err := json.Marshal(customer.GetExtend())
+		expo := &po.CustomerExtension{UserID: customer.Customer.UserID}
+		exBytes, err := json.Marshal(customer.GetExtension())
 		if err != nil {
 			return err
 		}
 		expo.Data = datatypes.JSON(exBytes)
-		if _, err := createCustomerExtend(repo, expo); err != nil {
+		if _, err := createCustomerExtension(repo, expo); err != nil {
 			return err
 		}
 		return nil
@@ -56,7 +56,7 @@ func (repo *CustomerRepository) SaveCustomer(customer *entity.Customer) error {
 		return e
 	}
 
-	extMap := customer.GetExtendChanges()
+	extMap := customer.GetExtensionChanges()
 	if extMap == nil {
 		return nil
 	}
@@ -65,8 +65,8 @@ func (repo *CustomerRepository) SaveCustomer(customer *entity.Customer) error {
 		return err
 	}
 	jsonMap := map[string]interface{}{"data": datatypes.JSON(exBytes)}
-	repo.db().Model(&po.CustomerExtend{}).Where("userId = ?", customer.UserID).Updates(jsonMap)
-	if _, e := saveCustomerExtend(repo, &customer.Customer); e != nil {
+	repo.db().Model(&po.CustomerExtension{}).Where("userId = ?", customer.UserID).Updates(jsonMap)
+	if _, e := saveCustomerExtension(repo, &customer.Customer); e != nil {
 		return e
 	}
 	return nil
@@ -81,8 +81,8 @@ func (repo *CustomerRepository) GetCustomer(id int) (result *entity.Customer, e 
 	if e = findCustomer(repo, pobj); e != nil {
 		return
 	}
-	peobj := &po.CustomerExtend{UserID: id}
-	if e = findCustomerExtend(repo, peobj); e != nil {
+	peobj := &po.CustomerExtension{UserID: id}
+	if e = findCustomerExtension(repo, peobj); e != nil {
 		return
 	}
 
@@ -91,7 +91,7 @@ func (repo *CustomerRepository) GetCustomer(id int) (result *entity.Customer, e 
 	if e = json.Unmarshal(peobj.Data, &m); e != nil {
 		return
 	}
-	result.Extend = m
+	result.Extension = m
 	return
 }
 
@@ -100,7 +100,7 @@ func (repo *CustomerRepository) DeleteCustomer(entity *entity.Customer) (e error
 	if e = repo.db().Where(entity.Location()).Delete(&po.Customer{}).Error; e != nil {
 		return
 	}
-	return repo.db().Where("userId = ?", entity.UserID).Delete(&po.CustomerExtend{}).Error
+	return repo.db().Where("userId = ?", entity.UserID).Delete(&po.CustomerExtension{}).Error
 }
 
 // db .

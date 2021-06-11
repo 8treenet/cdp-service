@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/8treenet/cdp-service/domain/vo"
+	"github.com/8treenet/cdp-service/domain/po"
 	"github.com/8treenet/freedom/infra/requests"
 )
 
@@ -12,25 +12,25 @@ var domain = "http://127.0.0.1:8000/cdp-service"
 
 func TestCustomerManagerController_PostList(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customer/tmplManager/list").Post()
-	var list []vo.CustomerExtendTemplate
-	list = append(list, vo.CustomerExtendTemplate{
+	var list []po.CustomerExtensionTemplate
+	list = append(list, po.CustomerExtensionTemplate{
 		Name:     "name",
 		Kind:     "String",
 		Required: 1,
 	})
-	list = append(list, vo.CustomerExtendTemplate{
+	list = append(list, po.CustomerExtensionTemplate{
 		Name: "age",
 		Kind: "Integer",
 	})
-	list = append(list, vo.CustomerExtendTemplate{
+	list = append(list, po.CustomerExtensionTemplate{
 		Name: "sex",
 		Kind: "Integer",
 	})
-	list = append(list, vo.CustomerExtendTemplate{
+	list = append(list, po.CustomerExtensionTemplate{
 		Name: "mobile",
 		Kind: "String",
 	})
-	list = append(list, vo.CustomerExtendTemplate{
+	list = append(list, po.CustomerExtensionTemplate{
 		Name:     "level",
 		Kind:     "Integer",
 		Required: 1,
@@ -43,9 +43,9 @@ func TestCustomerManagerController_PostList(t *testing.T) {
 func TestCustomerManagerController_GetList(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customer/tmplManager/list").Get()
 	var body struct {
-		Code int                         `json:"code"`
-		Msg  string                      `json:"msg"`
-		Data []vo.CustomerExtendTemplate `json:"data,omitempty"`
+		Code int                            `json:"code"`
+		Msg  string                         `json:"msg"`
+		Data []po.CustomerExtensionTemplate `json:"data,omitempty"`
 	}
 	resp := req.ToJSON(&body)
 

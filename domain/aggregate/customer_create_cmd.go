@@ -9,22 +9,22 @@ import (
 	"github.com/8treenet/freedom/infra/transaction"
 )
 
-// CustomerNewCmd
-type CustomerNewCmd struct {
+// CustomerCreateCmd
+type CustomerCreateCmd struct {
 	entity.Intermediary
 	CustomerRepo *repository.CustomerRepository
 	TX           transaction.Transaction //依赖倒置事务组件
 }
 
 // Do .
-func (cmd *CustomerNewCmd) Do(customerDto vo.CustomerDTO) (e error) {
+func (cmd *CustomerCreateCmd) Do(customerDto vo.CustomerDTO) (e error) {
 	customer := cmd.CustomerRepo.NewCustomer()
 	customer.Customer = customerDto.Customer
 	customer.Customer.UserID = 0
 	customer.Customer.Created = time.Now()
 	customer.Customer.Updated = time.Now()
 
-	customer.SetExtend(customerDto.Extend)
+	customer.SetExtension(customerDto.Extension)
 	if e = cmd.VerifyCustomer(customer, true); e != nil {
 		return
 	}
@@ -35,7 +35,7 @@ func (cmd *CustomerNewCmd) Do(customerDto vo.CustomerDTO) (e error) {
 }
 
 // BatcheDo .
-func (cmd *CustomerNewCmd) BatcheDo(customerDtos []vo.CustomerDTO) (e error) {
+func (cmd *CustomerCreateCmd) BatcheDo(customerDtos []vo.CustomerDTO) (e error) {
 	for _, v := range customerDtos {
 		if e = cmd.Do(v); e != nil {
 			return

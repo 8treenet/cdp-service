@@ -2,6 +2,7 @@ package domain
 
 import (
 	"github.com/8treenet/cdp-service/adapter/repository"
+	"github.com/8treenet/cdp-service/domain/aggregate"
 	"github.com/8treenet/cdp-service/domain/entity"
 	"github.com/8treenet/cdp-service/domain/vo"
 	"github.com/8treenet/freedom"
@@ -23,6 +24,7 @@ func init() {
 type CustomerService struct {
 	Worker             freedom.Worker
 	CustomerRepository *repository.CustomerRepository
+	Factory            *aggregate.IntermediaryFactory
 }
 
 // GetCustomer 获取客户信息.
@@ -40,21 +42,28 @@ func (service *CustomerService) DeleteCustomer(id int) error {
 }
 
 // UpdateCustomer 修改客户.
-func (service *CustomerService) UpdateCustomer(id string, updateOpt map[string]interface{}) error {
-	// customer, err := service.GetCustomer(id)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// for name, v := range updateOpt {
-	// 	customer.Update(name, v)
-	// }
-	//return service.CustomerRepository.SaveCustomer(customer)
-	return nil
+func (service *CustomerService) UpdateCustomer(id int, updateOpt map[string]interface{}) error {
+	cmd, err := service.Factory.UpdateCustomerNewCmd()
+	if err != nil {
+		return nil
+	}
+	return cmd.Do(id, updateOpt)
 }
 
 // CreateCustomer 新增客户.
-func (service *CustomerService) NewCustomer(source vo.CustomerDTO) error {
+func (service *CustomerService) CreateCustomer(source vo.CustomerDTO) error {
+	cmd, err := service.Factory.CreateCustomerNewCmd()
+	if err != nil {
+		return nil
+	}
+	return cmd.Do(source)
+}
 
-	return nil
+// CreateCustomer 新增客户.
+func (service *CustomerService) CreateCustomers(source []vo.CustomerDTO) error {
+	cmd, err := service.Factory.CreateCustomerNewCmd()
+	if err != nil {
+		return nil
+	}
+	return cmd.BatcheDo(source)
 }

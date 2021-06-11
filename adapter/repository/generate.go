@@ -127,12 +127,12 @@ func ormErrorLog(repo GORMRepository, model, method string, e error, expression 
 	repo.Worker().Logger().Errorf("error: %v, model: %s, method: %s", e, model, method)
 }
 
-// findCustomerExtendTemplate .
-func findCustomerExtendTemplate(repo GORMRepository, result *po.CustomerExtendTemplate, builders ...Builder) (e error) {
+// findCustomerExtensionTemplate .
+func findCustomerExtensionTemplate(repo GORMRepository, result *po.CustomerExtensionTemplate, builders ...Builder) (e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtendTemplate", "findCustomerExtendTemplate", e, now)
-		ormErrorLog(repo, "CustomerExtendTemplate", "findCustomerExtendTemplate", e, result)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "findCustomerExtensionTemplate", e, now)
+		ormErrorLog(repo, "CustomerExtensionTemplate", "findCustomerExtensionTemplate", e, result)
 	}()
 	db := repo.db()
 	if len(builders) == 0 {
@@ -143,24 +143,24 @@ func findCustomerExtendTemplate(repo GORMRepository, result *po.CustomerExtendTe
 	return
 }
 
-// findCustomerExtendTemplateListByPrimarys .
-func findCustomerExtendTemplateListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.CustomerExtendTemplate, e error) {
+// findCustomerExtensionTemplateListByPrimarys .
+func findCustomerExtensionTemplateListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.CustomerExtensionTemplate, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtendTemplate", "findCustomerExtendTemplateListByPrimarys", e, now)
-		ormErrorLog(repo, "CustomerExtendTemplate", "findCustomerExtendTemplatesByPrimarys", e, primarys)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "findCustomerExtensionTemplateListByPrimarys", e, now)
+		ormErrorLog(repo, "CustomerExtensionTemplate", "findCustomerExtensionTemplatesByPrimarys", e, primarys)
 	}()
 
 	e = repo.db().Find(&results, primarys).Error
 	return
 }
 
-// findCustomerExtendTemplateByWhere .
-func findCustomerExtendTemplateByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.CustomerExtendTemplate, e error) {
+// findCustomerExtensionTemplateByWhere .
+func findCustomerExtensionTemplateByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.CustomerExtensionTemplate, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtendTemplate", "findCustomerExtendTemplateByWhere", e, now)
-		ormErrorLog(repo, "CustomerExtendTemplate", "findCustomerExtendTemplateByWhere", e, query, args)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "findCustomerExtensionTemplateByWhere", e, now)
+		ormErrorLog(repo, "CustomerExtensionTemplate", "findCustomerExtensionTemplateByWhere", e, query, args)
 	}()
 	db := repo.db()
 	if query != "" {
@@ -175,12 +175,12 @@ func findCustomerExtendTemplateByWhere(repo GORMRepository, query string, args [
 	return
 }
 
-// findCustomerExtendTemplateByMap .
-func findCustomerExtendTemplateByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.CustomerExtendTemplate, e error) {
+// findCustomerExtensionTemplateByMap .
+func findCustomerExtensionTemplateByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.CustomerExtensionTemplate, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtendTemplate", "findCustomerExtendTemplateByMap", e, now)
-		ormErrorLog(repo, "CustomerExtendTemplate", "findCustomerExtendTemplateByMap", e, query)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "findCustomerExtensionTemplateByMap", e, now)
+		ormErrorLog(repo, "CustomerExtensionTemplate", "findCustomerExtensionTemplateByMap", e, query)
 	}()
 
 	db := repo.db().Where(query)
@@ -193,12 +193,12 @@ func findCustomerExtendTemplateByMap(repo GORMRepository, query map[string]inter
 	return
 }
 
-// findCustomerExtendTemplateList .
-func findCustomerExtendTemplateList(repo GORMRepository, query po.CustomerExtendTemplate, builders ...Builder) (results []po.CustomerExtendTemplate, e error) {
+// findCustomerExtensionTemplateList .
+func findCustomerExtensionTemplateList(repo GORMRepository, query po.CustomerExtensionTemplate, builders ...Builder) (results []po.CustomerExtensionTemplate, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtendTemplate", "findCustomerExtendTemplateList", e, now)
-		ormErrorLog(repo, "CustomerExtendTemplate", "findCustomerExtendTemplates", e, query)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "findCustomerExtensionTemplateList", e, now)
+		ormErrorLog(repo, "CustomerExtensionTemplate", "findCustomerExtensionTemplates", e, query)
 	}()
 	db := repo.db().Where(query)
 
@@ -210,12 +210,12 @@ func findCustomerExtendTemplateList(repo GORMRepository, query po.CustomerExtend
 	return
 }
 
-// findCustomerExtendTemplateListByWhere .
-func findCustomerExtendTemplateListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.CustomerExtendTemplate, e error) {
+// findCustomerExtensionTemplateListByWhere .
+func findCustomerExtensionTemplateListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.CustomerExtensionTemplate, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtendTemplate", "findCustomerExtendTemplateListByWhere", e, now)
-		ormErrorLog(repo, "CustomerExtendTemplate", "findCustomerExtendTemplatesByWhere", e, query, args)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "findCustomerExtensionTemplateListByWhere", e, now)
+		ormErrorLog(repo, "CustomerExtensionTemplate", "findCustomerExtensionTemplatesByWhere", e, query, args)
 	}()
 	db := repo.db()
 	if query != "" {
@@ -230,12 +230,12 @@ func findCustomerExtendTemplateListByWhere(repo GORMRepository, query string, ar
 	return
 }
 
-// findCustomerExtendTemplateListByMap .
-func findCustomerExtendTemplateListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.CustomerExtendTemplate, e error) {
+// findCustomerExtensionTemplateListByMap .
+func findCustomerExtensionTemplateListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.CustomerExtensionTemplate, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtendTemplate", "findCustomerExtendTemplateListByMap", e, now)
-		ormErrorLog(repo, "CustomerExtendTemplate", "findCustomerExtendTemplatesByMap", e, query)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "findCustomerExtensionTemplateListByMap", e, now)
+		ormErrorLog(repo, "CustomerExtensionTemplate", "findCustomerExtensionTemplatesByMap", e, query)
 	}()
 
 	db := repo.db().Where(query)
@@ -248,12 +248,12 @@ func findCustomerExtendTemplateListByMap(repo GORMRepository, query map[string]i
 	return
 }
 
-// createCustomerExtendTemplate .
-func createCustomerExtendTemplate(repo GORMRepository, object *po.CustomerExtendTemplate) (rowsAffected int64, e error) {
+// createCustomerExtensionTemplate .
+func createCustomerExtensionTemplate(repo GORMRepository, object *po.CustomerExtensionTemplate) (rowsAffected int64, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtendTemplate", "createCustomerExtendTemplate", e, now)
-		ormErrorLog(repo, "CustomerExtendTemplate", "createCustomerExtendTemplate", e, *object)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "createCustomerExtensionTemplate", e, now)
+		ormErrorLog(repo, "CustomerExtensionTemplate", "createCustomerExtensionTemplate", e, *object)
 	}()
 
 	db := repo.db().Create(object)
@@ -262,16 +262,16 @@ func createCustomerExtendTemplate(repo GORMRepository, object *po.CustomerExtend
 	return
 }
 
-// saveCustomerExtendTemplate .
-func saveCustomerExtendTemplate(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+// saveCustomerExtensionTemplate .
+func saveCustomerExtensionTemplate(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
 	if len(object.Location()) == 0 {
 		return 0, errors.New("location cannot be empty")
 	}
 
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtendTemplate", "saveCustomerExtendTemplate", e, now)
-		ormErrorLog(repo, "CustomerExtendTemplate", "saveCustomerExtendTemplate", e, object)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "saveCustomerExtensionTemplate", e, now)
+		ormErrorLog(repo, "CustomerExtensionTemplate", "saveCustomerExtensionTemplate", e, object)
 	}()
 
 	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())
@@ -280,12 +280,12 @@ func saveCustomerExtendTemplate(repo GORMRepository, object saveObject) (rowsAff
 	return
 }
 
-// findCustomerExtend .
-func findCustomerExtend(repo GORMRepository, result *po.CustomerExtend, builders ...Builder) (e error) {
+// findCustomerExtension .
+func findCustomerExtension(repo GORMRepository, result *po.CustomerExtension, builders ...Builder) (e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtend", "findCustomerExtend", e, now)
-		ormErrorLog(repo, "CustomerExtend", "findCustomerExtend", e, result)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtension", "findCustomerExtension", e, now)
+		ormErrorLog(repo, "CustomerExtension", "findCustomerExtension", e, result)
 	}()
 	db := repo.db()
 	if len(builders) == 0 {
@@ -296,24 +296,24 @@ func findCustomerExtend(repo GORMRepository, result *po.CustomerExtend, builders
 	return
 }
 
-// findCustomerExtendListByPrimarys .
-func findCustomerExtendListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.CustomerExtend, e error) {
+// findCustomerExtensionListByPrimarys .
+func findCustomerExtensionListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.CustomerExtension, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtend", "findCustomerExtendListByPrimarys", e, now)
-		ormErrorLog(repo, "CustomerExtend", "findCustomerExtendsByPrimarys", e, primarys)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtension", "findCustomerExtensionListByPrimarys", e, now)
+		ormErrorLog(repo, "CustomerExtension", "findCustomerExtensionsByPrimarys", e, primarys)
 	}()
 
 	e = repo.db().Find(&results, primarys).Error
 	return
 }
 
-// findCustomerExtendByWhere .
-func findCustomerExtendByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.CustomerExtend, e error) {
+// findCustomerExtensionByWhere .
+func findCustomerExtensionByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.CustomerExtension, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtend", "findCustomerExtendByWhere", e, now)
-		ormErrorLog(repo, "CustomerExtend", "findCustomerExtendByWhere", e, query, args)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtension", "findCustomerExtensionByWhere", e, now)
+		ormErrorLog(repo, "CustomerExtension", "findCustomerExtensionByWhere", e, query, args)
 	}()
 	db := repo.db()
 	if query != "" {
@@ -328,12 +328,12 @@ func findCustomerExtendByWhere(repo GORMRepository, query string, args []interfa
 	return
 }
 
-// findCustomerExtendByMap .
-func findCustomerExtendByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.CustomerExtend, e error) {
+// findCustomerExtensionByMap .
+func findCustomerExtensionByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.CustomerExtension, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtend", "findCustomerExtendByMap", e, now)
-		ormErrorLog(repo, "CustomerExtend", "findCustomerExtendByMap", e, query)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtension", "findCustomerExtensionByMap", e, now)
+		ormErrorLog(repo, "CustomerExtension", "findCustomerExtensionByMap", e, query)
 	}()
 
 	db := repo.db().Where(query)
@@ -346,12 +346,12 @@ func findCustomerExtendByMap(repo GORMRepository, query map[string]interface{}, 
 	return
 }
 
-// findCustomerExtendList .
-func findCustomerExtendList(repo GORMRepository, query po.CustomerExtend, builders ...Builder) (results []po.CustomerExtend, e error) {
+// findCustomerExtensionList .
+func findCustomerExtensionList(repo GORMRepository, query po.CustomerExtension, builders ...Builder) (results []po.CustomerExtension, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtend", "findCustomerExtendList", e, now)
-		ormErrorLog(repo, "CustomerExtend", "findCustomerExtends", e, query)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtension", "findCustomerExtensionList", e, now)
+		ormErrorLog(repo, "CustomerExtension", "findCustomerExtensions", e, query)
 	}()
 	db := repo.db().Where(query)
 
@@ -363,12 +363,12 @@ func findCustomerExtendList(repo GORMRepository, query po.CustomerExtend, builde
 	return
 }
 
-// findCustomerExtendListByWhere .
-func findCustomerExtendListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.CustomerExtend, e error) {
+// findCustomerExtensionListByWhere .
+func findCustomerExtensionListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.CustomerExtension, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtend", "findCustomerExtendListByWhere", e, now)
-		ormErrorLog(repo, "CustomerExtend", "findCustomerExtendsByWhere", e, query, args)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtension", "findCustomerExtensionListByWhere", e, now)
+		ormErrorLog(repo, "CustomerExtension", "findCustomerExtensionsByWhere", e, query, args)
 	}()
 	db := repo.db()
 	if query != "" {
@@ -383,12 +383,12 @@ func findCustomerExtendListByWhere(repo GORMRepository, query string, args []int
 	return
 }
 
-// findCustomerExtendListByMap .
-func findCustomerExtendListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.CustomerExtend, e error) {
+// findCustomerExtensionListByMap .
+func findCustomerExtensionListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.CustomerExtension, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtend", "findCustomerExtendListByMap", e, now)
-		ormErrorLog(repo, "CustomerExtend", "findCustomerExtendsByMap", e, query)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtension", "findCustomerExtensionListByMap", e, now)
+		ormErrorLog(repo, "CustomerExtension", "findCustomerExtensionsByMap", e, query)
 	}()
 
 	db := repo.db().Where(query)
@@ -401,12 +401,12 @@ func findCustomerExtendListByMap(repo GORMRepository, query map[string]interface
 	return
 }
 
-// createCustomerExtend .
-func createCustomerExtend(repo GORMRepository, object *po.CustomerExtend) (rowsAffected int64, e error) {
+// createCustomerExtension .
+func createCustomerExtension(repo GORMRepository, object *po.CustomerExtension) (rowsAffected int64, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtend", "createCustomerExtend", e, now)
-		ormErrorLog(repo, "CustomerExtend", "createCustomerExtend", e, *object)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtension", "createCustomerExtension", e, now)
+		ormErrorLog(repo, "CustomerExtension", "createCustomerExtension", e, *object)
 	}()
 
 	db := repo.db().Create(object)
@@ -415,16 +415,16 @@ func createCustomerExtend(repo GORMRepository, object *po.CustomerExtend) (rowsA
 	return
 }
 
-// saveCustomerExtend .
-func saveCustomerExtend(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+// saveCustomerExtension .
+func saveCustomerExtension(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
 	if len(object.Location()) == 0 {
 		return 0, errors.New("location cannot be empty")
 	}
 
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtend", "saveCustomerExtend", e, now)
-		ormErrorLog(repo, "CustomerExtend", "saveCustomerExtend", e, object)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtension", "saveCustomerExtension", e, now)
+		ormErrorLog(repo, "CustomerExtension", "saveCustomerExtension", e, object)
 	}()
 
 	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())

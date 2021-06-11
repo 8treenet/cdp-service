@@ -2,7 +2,7 @@ package domain
 
 import (
 	"github.com/8treenet/cdp-service/adapter/repository"
-	"github.com/8treenet/cdp-service/domain/vo"
+	"github.com/8treenet/cdp-service/domain/po"
 	"github.com/8treenet/freedom"
 )
 
@@ -25,19 +25,13 @@ type CustomerManagerService struct {
 }
 
 // GetTempletes 获取客户模板列表.
-func (service *CustomerManagerService) GetTempletes() (result []*vo.CustomerExtendTemplate, e error) {
-	list, err := service.CustomerRepository.GetTempletes()
-	if err != nil {
-		return nil, err
-	}
-	for i := 0; i < len(list); i++ {
-		result = append(result, vo.NewCustomerTemplateFromPO(list[i]))
-	}
+func (service *CustomerManagerService) GetTempletes() (result []*po.CustomerExtensionTemplate, e error) {
+	result, e = service.CustomerRepository.GetTempletes()
 	return
 }
 
 // AddTempletes 添加客户模板列表.
-func (service *CustomerManagerService) AddTempletes(templates []vo.CustomerExtendTemplate) (e error) {
+func (service *CustomerManagerService) AddTempletes(templates []po.CustomerExtensionTemplate) (e error) {
 	for _, v := range templates {
 		if v.ID != 0 {
 			continue

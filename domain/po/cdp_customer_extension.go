@@ -2,14 +2,13 @@
 package po
 
 import (
-	"time"
-
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
+	"time"
 )
 
-// CustomerExtend .
-type CustomerExtend struct {
+// CustomerExtension .
+type CustomerExtension struct {
 	changes map[string]interface{}
 	ID      int            `gorm:"primaryKey;column:id"`
 	UserID  int            `gorm:"column:userId"`
@@ -19,17 +18,17 @@ type CustomerExtend struct {
 }
 
 // TableName .
-func (obj *CustomerExtend) TableName() string {
-	return "cdp_customer_extend"
+func (obj *CustomerExtension) TableName() string {
+	return "cdp_customer_extension"
 }
 
 // Location .
-func (obj *CustomerExtend) Location() map[string]interface{} {
+func (obj *CustomerExtension) Location() map[string]interface{} {
 	return map[string]interface{}{"id": obj.ID}
 }
 
 // GetChanges .
-func (obj *CustomerExtend) GetChanges() map[string]interface{} {
+func (obj *CustomerExtension) GetChanges() map[string]interface{} {
 	if obj.changes == nil {
 		return nil
 	}
@@ -42,7 +41,7 @@ func (obj *CustomerExtend) GetChanges() map[string]interface{} {
 }
 
 // Update .
-func (obj *CustomerExtend) Update(name string, value interface{}) {
+func (obj *CustomerExtension) Update(name string, value interface{}) {
 	if obj.changes == nil {
 		obj.changes = make(map[string]interface{})
 	}
@@ -50,31 +49,31 @@ func (obj *CustomerExtend) Update(name string, value interface{}) {
 }
 
 // SetUserID .
-func (obj *CustomerExtend) SetUserID(userID int) {
+func (obj *CustomerExtension) SetUserID(userID int) {
 	obj.UserID = userID
 	obj.Update("userId", userID)
 }
 
 // SetData .
-func (obj *CustomerExtend) SetData(data datatypes.JSON) {
+func (obj *CustomerExtension) SetData(data datatypes.JSON) {
 	obj.Data = data
 	obj.Update("data", data)
 }
 
 // SetCreated .
-func (obj *CustomerExtend) SetCreated(created time.Time) {
+func (obj *CustomerExtension) SetCreated(created time.Time) {
 	obj.Created = created
 	obj.Update("created", created)
 }
 
 // SetUpdated .
-func (obj *CustomerExtend) SetUpdated(updated time.Time) {
+func (obj *CustomerExtension) SetUpdated(updated time.Time) {
 	obj.Updated = updated
 	obj.Update("updated", updated)
 }
 
 // AddUserID .
-func (obj *CustomerExtend) AddUserID(userID int) {
+func (obj *CustomerExtension) AddUserID(userID int) {
 	obj.UserID += userID
 	obj.Update("userId", gorm.Expr("userId + ?", userID))
 }
