@@ -32,10 +32,6 @@ func (entity *Intermediary) VerifyCustomer(customer *Customer, isNew bool) error
 	}
 
 	data := customer.Extension
-	if !isNew {
-		data = customer.extensionChanges
-	}
-
 	for key, value := range data {
 		po, ok := mt[key]
 		if !ok {

@@ -23,7 +23,6 @@ func (cmd *CustomerUpdateCmd) Do(id int, m map[string]interface{}) (e error) {
 	if e = entity.UpdateByMap(m); e != nil {
 		return
 	}
-
 	if e = cmd.VerifyCustomer(entity, false); e != nil {
 		return
 	}

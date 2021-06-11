@@ -73,9 +73,16 @@ func (c *CustomerController) PostList() freedom.Result {
 	return &infra.JSONResponse{}
 }
 
-//DeleteBy handles the delete: /customers/ route.
-func (c *CustomerController) DeleteBy(id int) freedom.Result {
-	if e := c.CustomerService.DeleteCustomer(id); e != nil {
+//DeleteBy handles the delete: /customers route.
+func (c *CustomerController) Delete() freedom.Result {
+	var query struct {
+		ID []int `url:"id" validate:"required"` //Support array parameters
+	}
+	if err := c.Request.ReadQuery(&query, true); err != nil {
+		return &infra.JSONResponse{Error: err}
+	}
+
+	if e := c.CustomerService.DeleteCustomer(query.ID); e != nil {
 		return &infra.JSONResponse{Error: e}
 	}
 	return &infra.JSONResponse{}

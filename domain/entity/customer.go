@@ -13,8 +13,7 @@ import (
 type Customer struct {
 	freedom.Entity
 	po.Customer
-	Extension        map[string]interface{}
-	extensionChanges map[string]interface{}
+	Extension map[string]interface{}
 }
 
 func (entity *Customer) Identity() string {
@@ -34,28 +33,6 @@ func (entity *Customer) GetExtension() map[string]interface{} {
 	return make(map[string]interface{})
 }
 
-// GetExtensionChanges .
-func (entity *Customer) GetExtensionChanges() map[string]interface{} {
-	if entity.extensionChanges == nil {
-		return nil
-	}
-
-	result := make(map[string]interface{})
-	for k, v := range entity.extensionChanges {
-		result[k] = v
-	}
-	entity.extensionChanges = nil
-	return result
-}
-
-func (entity *Customer) UpdateExtensionChanges(putData map[string]interface{}) {
-	entity.extensionChanges = map[string]interface{}{}
-	for key, v := range putData {
-		entity.extensionChanges[key] = v
-		entity.Extension[key] = v
-	}
-}
-
 // MarshalJSON .
 func (entity *Customer) MarshalJSON() ([]byte, error) {
 	var jsonData struct {
@@ -68,7 +45,19 @@ func (entity *Customer) MarshalJSON() ([]byte, error) {
 	return json.Marshal(jsonData)
 }
 
+func (entity *Customer) updateExtension(putData map[string]interface{}) {
+	for key, v := range putData {
+		entity.Extension[key] = v
+	}
+}
+
 func (entity *Customer) UpdateByMap(putData map[string]interface{}) error {
+
+	i, ok := putData["extension"]
+	if ok {
+		extensionMap, _ := i.(map[string]interface{})
+		entity.updateExtension(extensionMap)
+	}
 	for key, item := range putData {
 		i, iErr := utils.ToInt(item)
 		switch key {

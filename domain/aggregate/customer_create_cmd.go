@@ -18,7 +18,7 @@ type CustomerCreateCmd struct {
 
 // Do .
 func (cmd *CustomerCreateCmd) Do(customerDto vo.CustomerDTO) (e error) {
-	customer := cmd.CustomerRepo.NewCustomer()
+	customer := cmd.CustomerRepo.CreateCustomer()
 	customer.Customer = customerDto.Customer
 	customer.Customer.UserID = 0
 	customer.Customer.Created = time.Now()

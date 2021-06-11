@@ -2,6 +2,7 @@ package repository
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/8treenet/cdp-service/domain/entity"
 	"github.com/8treenet/cdp-service/domain/po"
@@ -40,7 +41,7 @@ func (repo *CustomerRepository) SaveCustomer(customer *entity.Customer) error {
 			return err
 		}
 
-		expo := &po.CustomerExtension{UserID: customer.Customer.UserID}
+		expo := &po.CustomerExtension{UserID: customer.Customer.UserID, Created: time.Now(), Updated: time.Now()}
 		exBytes, err := json.Marshal(customer.GetExtension())
 		if err != nil {
 			return err
@@ -56,7 +57,7 @@ func (repo *CustomerRepository) SaveCustomer(customer *entity.Customer) error {
 		return e
 	}
 
-	extMap := customer.GetExtensionChanges()
+	extMap := customer.GetExtension()
 	if extMap == nil {
 		return nil
 	}

@@ -10,7 +10,7 @@ import (
 // Customer .
 type Customer struct {
 	changes map[string]interface{}
-	UserID  int       `gorm:"primaryKey;column:userId" json:"userID"`
+	UserID  int       `gorm:"primaryKey;column:userId" json:"userId"`
 	Name    string    `gorm:"column:name" json:"name"`
 	Gender  int       `gorm:"column:gender" json:"gender"` // 0未知 1男 2女
 	Age     int       `gorm:"column:age" json:"age"`       // 年龄

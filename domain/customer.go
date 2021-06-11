@@ -33,12 +33,17 @@ func (service *CustomerService) GetCustomer(id int) (*entity.Customer, error) {
 }
 
 // DeleteCustomer 删除客户.
-func (service *CustomerService) DeleteCustomer(id int) error {
-	customer, err := service.GetCustomer(id)
-	if err != nil {
-		return err
+func (service *CustomerService) DeleteCustomer(id []int) error {
+	for i := 0; i < len(id); i++ {
+		customer, err := service.GetCustomer(id[i])
+		if err != nil {
+			return err
+		}
+		if err = service.CustomerRepository.DeleteCustomer(customer); err != nil {
+			return err
+		}
 	}
-	return service.CustomerRepository.DeleteCustomer(customer)
+	return nil
 }
 
 // UpdateCustomer 修改客户.

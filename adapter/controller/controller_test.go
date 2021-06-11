@@ -2,6 +2,7 @@ package controller_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 
 	"github.com/8treenet/cdp-service/domain/po"
@@ -14,20 +15,15 @@ func TestCustomerManagerController_PostList(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customer/tmplManager/list").Post()
 	var list []po.CustomerExtensionTemplate
 	list = append(list, po.CustomerExtensionTemplate{
-		Name:     "name",
-		Kind:     "String",
-		Required: 1,
-	})
-	list = append(list, po.CustomerExtensionTemplate{
-		Name: "age",
+		Name: "score",
 		Kind: "Integer",
 	})
 	list = append(list, po.CustomerExtensionTemplate{
-		Name: "sex",
+		Name: "star",
 		Kind: "Integer",
 	})
 	list = append(list, po.CustomerExtensionTemplate{
-		Name: "mobile",
+		Name: "addr",
 		Kind: "String",
 	})
 	list = append(list, po.CustomerExtensionTemplate{
@@ -57,18 +53,43 @@ func TestCustomerManagerController_GetList(t *testing.T) {
 
 func TestCustomerManagerController_PutSort(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customer/tmplManager/sort").Put()
-	str, _ := req.SetQueryParam("id", 35).SetQueryParam("sort", 1002).ToString()
+	str, _ := req.SetQueryParam("id", 47).SetQueryParam("sort", 1002).ToString()
 	t.Log(string(str))
 }
 
 func TestCustomerController_Post(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customers").Post()
+	var data struct {
+		po.Customer
+		Extension map[string]interface{} `json:"extension"`
+	}
+	data.Name = "yangshu6111"
+	data.Age = 32
+	data.Gender = 1
+	data.Extension = make(map[string]interface{})
+	data.Extension["score"] = 100
+	data.Extension["star"] = 50
+	data.Extension["level"] = 20
+	data.Extension["addr"] = "11111"
+
+	str, resp := req.SetJSONBody(data).ToString()
+	t.Log(str, resp)
+}
+
+func TestCustomerController_GetBy(t *testing.T) {
+	req := requests.NewHTTPRequest(domain + "/customers/2").Get()
+	str, resp := req.ToString()
+	t.Log(str, resp)
+}
+
+func TestCustomerController_PutBy(t *testing.T) {
+	req := requests.NewHTTPRequest(domain + "/customers/4").Put()
 	data := map[string]interface{}{
-		"name":   "yangshu1112",
-		"age":    1231,
-		"sex":    10,
-		"mobile": "13513517544",
-		"level":  10,
+		"age":    11,
+		"gender": 1,
+		"extension": map[string]interface{}{
+			"star": 1158,
+		},
 	}
 
 	str, resp := req.SetJSONBody(data).ToString()
@@ -77,51 +98,32 @@ func TestCustomerController_Post(t *testing.T) {
 
 func TestCustomerController_PostList(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customers/list").Post()
-	var datas []map[string]interface{}
-	datas = append(datas, map[string]interface{}{
-		"name":   "angshu1234",
-		"age":    123,
-		"sex":    1,
-		"mobile": "12313517144",
-		"level":  2,
-	})
-	datas = append(datas, map[string]interface{}{
-		"name":   "syangshu211s",
-		"age":    123,
-		"sex":    1,
-		"mobile": "99413517344",
-		"level":  3,
-	})
+	datas := make([]struct {
+		po.Customer
+		Extension map[string]interface{} `json:"extension"`
+	}, 3)
+	for i := 0; i < 3; i++ {
+		datas[i].Name = "yangshuList-" + fmt.Sprint(i)
+		datas[i].Age = 32 + i
+		datas[i].Gender = 1
+		datas[i].Extension = make(map[string]interface{})
+		datas[i].Extension["score"] = 100 + i
+		datas[i].Extension["star"] = 50 + i
+		datas[i].Extension["level"] = 20 + i
+		datas[i].Extension["addr"] = "11111-" + fmt.Sprint(i)
+	}
 
 	str, resp := req.SetJSONBody(datas).ToString()
 	t.Log(str, resp)
 }
 
-func TestCustomerController_PutBy(t *testing.T) {
-	req := requests.NewHTTPRequest(domain + "/customers/60bf4c213ac27730dead6e6a").Put()
-	data := map[string]interface{}{
-		"name":   "yangshu123",
-		"age":    31,
-		"level":  10,
-		"mobile": "13513517944",
-	}
-
-	str, resp := req.SetJSONBody(data).ToString()
-	t.Log(str, resp)
-}
-
-func TestCustomerController_GetBy(t *testing.T) {
-	req := requests.NewHTTPRequest(domain + "/customers/60bf4c213ac27730dead6e6a").Get()
+func TestCustomerController_DeleteBy(t *testing.T) {
+	req := requests.NewHTTPRequest(domain + "/customers").Delete()
+	req = req.SetQueryParam("id", []int{12, 11, 10, 9})
 	str, resp := req.ToString()
 	t.Log(str, resp)
 }
 
 func TestCustomerController_GetList(t *testing.T) {
 
-}
-
-func TestCustomerController_DeleteBy(t *testing.T) {
-	req := requests.NewHTTPRequest(domain + "/customers/60bf506f9fddb4dd6fcdd806").Delete()
-	str, resp := req.ToString()
-	t.Log(str, resp)
 }
