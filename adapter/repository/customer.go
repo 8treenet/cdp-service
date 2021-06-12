@@ -23,12 +23,37 @@ func init() {
 // CustomerRepository .
 type CustomerRepository struct {
 	freedom.Repository
-	Common *infra.CommonRequest
+	Common      *infra.CommonRequest
+	Termination *infra.Termination
 	//Mongo                    *infra.Mongo
+}
+
+// GetCustomer .
+func (repo *CustomerRepository) GetCustomer(id int) (result *entity.Customer, e error) {
+	result = &entity.Customer{}
+	repo.InjectBaseEntity(result)
+
+	pobj := &po.Customer{UserID: id}
+	if e = findCustomer(repo, pobj); e != nil {
+		return
+	}
+	peobj := &po.CustomerExtension{UserID: id}
+	if e = findCustomerExtension(repo, peobj); e != nil {
+		return
+	}
+
+	result.Customer = *pobj
+	m := map[string]interface{}{}
+	if e = json.Unmarshal(peobj.Data, &m); e != nil {
+		return
+	}
+	result.Extension = m
+	return
 }
 
 // CreateCustomer .
 func (repo *CustomerRepository) CreateCustomer() *entity.Customer {
+
 	result := &entity.Customer{}
 	repo.InjectBaseEntity(result)
 	return result
@@ -71,29 +96,6 @@ func (repo *CustomerRepository) SaveCustomer(customer *entity.Customer) error {
 		return e
 	}
 	return nil
-}
-
-// GetCustomer .
-func (repo *CustomerRepository) GetCustomer(id int) (result *entity.Customer, e error) {
-	result = &entity.Customer{}
-	repo.InjectBaseEntity(result)
-
-	pobj := &po.Customer{UserID: id}
-	if e = findCustomer(repo, pobj); e != nil {
-		return
-	}
-	peobj := &po.CustomerExtension{UserID: id}
-	if e = findCustomerExtension(repo, peobj); e != nil {
-		return
-	}
-
-	result.Customer = *pobj
-	m := map[string]interface{}{}
-	if e = json.Unmarshal(peobj.Data, &m); e != nil {
-		return
-	}
-	result.Extension = m
-	return
 }
 
 // DeleteCustomer .

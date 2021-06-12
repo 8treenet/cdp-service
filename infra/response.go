@@ -40,7 +40,7 @@ func (jrep JSONResponse) Dispatch(ctx freedom.Context) {
 		body.Msg = jrep.Error.Error()
 	}
 	if jrep.Error != nil && body.Code == 0 {
-		body.Code = getCode(freedom.ToWorker(ctx))
+		body.Code = getErrorCode(freedom.ToWorker(ctx))
 	}
 
 	if jrep.Error != nil && body.Code == 0 {
@@ -63,7 +63,7 @@ func setErrorCode(work freedom.Worker, code int) {
 	work.Store().Set("response::code", code)
 }
 
-func getCode(work freedom.Worker) int {
+func getErrorCode(work freedom.Worker) int {
 	return work.Store().GetIntDefault("response::code", 0)
 }
 
