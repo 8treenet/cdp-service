@@ -119,6 +119,7 @@ func TestCustomerController_PostList(t *testing.T) {
 
 func TestCustomerController_DeleteBy(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customers").Delete()
+
 	req = req.SetQueryParam("id", []int{12, 11, 10, 9})
 	str, resp := req.ToString()
 	t.Log(str, resp)

@@ -40,6 +40,10 @@ func (jrep JSONResponse) Dispatch(ctx freedom.Context) {
 		body.Msg = jrep.Error.Error()
 	}
 	if jrep.Error != nil && body.Code == 0 {
+		body.Code = getCode(freedom.ToWorker(ctx))
+	}
+
+	if jrep.Error != nil && body.Code == 0 {
 		body.Code = ERROR
 	}
 
@@ -53,4 +57,19 @@ func (jrep JSONResponse) Dispatch(ctx freedom.Context) {
 	}
 
 	hero.DispatchCommon(ctx, 200, contentType, content, nil, nil, true)
+}
+
+func setErrorCode(work freedom.Worker, code int) {
+	work.Store().Set("response::code", code)
+}
+
+func getCode(work freedom.Worker) int {
+	return work.Store().GetIntDefault("response::code", 0)
+}
+
+type PageResponse struct {
+	List     interface{} `json:"list"`
+	Total    int64       `json:"total"`
+	Page     int         `json:"page"`
+	PageSize int         `json:"pageSize"`
 }
