@@ -18,7 +18,7 @@ func init() {
 	})
 }
 
-// Termination .
+// Termination 全局错误和code处理.
 type Termination struct {
 	freedom.Infra
 }
@@ -29,7 +29,7 @@ func (response *Termination) Fuck() error {
 	return errors.New("fuck")
 }
 
-// Custom  透传上游
+// Custom
 func (response *Termination) Custom(code int, msg string) error {
 	setErrorCode(response.Worker(), code)
 	return errors.New(msg)
