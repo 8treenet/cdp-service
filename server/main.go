@@ -47,8 +47,8 @@ func installMiddleware(app freedom.Application) {
 
 func installDatabase(app freedom.Application) {
 	app.InstallDB(func() interface{} {
-		conf := conf.Get().DB
-		db, e := gorm.Open(mysql.Open(conf.Addr), &gorm.Config{})
+		dbConf := conf.Get().DB
+		db, e := gorm.Open(mysql.Open(dbConf.Addr), &gorm.Config{})
 		if e != nil {
 			freedom.Logger().Fatal(e.Error())
 		}
@@ -57,9 +57,14 @@ func installDatabase(app freedom.Application) {
 		if err != nil {
 			freedom.Logger().Fatal(e.Error())
 		}
-		sqlDB.SetMaxIdleConns(conf.MaxIdleConns)
-		sqlDB.SetMaxOpenConns(conf.MaxOpenConns)
-		sqlDB.SetConnMaxLifetime(time.Duration(conf.ConnMaxLifeTime) * time.Second)
+		sqlDB.SetMaxIdleConns(dbConf.MaxIdleConns)
+		sqlDB.SetMaxOpenConns(dbConf.MaxOpenConns)
+		sqlDB.SetConnMaxLifetime(time.Duration(dbConf.ConnMaxLifeTime) * time.Second)
+
+		level, _ := conf.Get().App.Other["logger_level"].(string)
+		if level == "debug" {
+			db = db.Debug()
+		}
 		return db
 	})
 }

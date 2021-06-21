@@ -1,6 +1,7 @@
 package aggregate
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/8treenet/cdp-service/adapter/repository"
@@ -110,6 +111,7 @@ func (cmd *CustomerCreateCmd) sign(customerDto vo.CustomerDTO) (*entity.Customer
 
 	if customerDto.Key != "" && key != nil {
 		key.SetUserID(userId)
+		fmt.Println("fuck")
 		cmd.SignRepo.SaveKey(key)
 	}
 	if customerDto.Key != "" && key == nil {

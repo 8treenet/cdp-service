@@ -23,9 +23,8 @@ func init() {
 
 // CustomerRepository .
 type CustomerRepository struct {
-	freedom.Repository
-	Common      *infra.CommonRequest
-	Termination *infra.Termination
+	SignRepository
+	Common *infra.CommonRequest
 	//Mongo                    *infra.Mongo
 }
 
@@ -59,28 +58,50 @@ func (repo *CustomerRepository) CreateCustomer() *entity.Customer {
 	return result
 }
 
+func (repo *CustomerRepository) insertCustomer(customer *entity.Customer) error {
+	uuid, err := utils.GenerateUUID()
+	if err != nil {
+		return err
+	}
+	customer.UserID = uuid
+	if _, err := createCustomer(repo, &customer.Customer); err != nil {
+		return err
+	}
+
+	expo := &po.CustomerExtension{UserID: customer.Customer.UserID, Created: time.Now(), Updated: time.Now()}
+	exBytes, err := json.Marshal(customer.GetExtension())
+	if err != nil {
+		return err
+	}
+	expo.Data = datatypes.JSON(exBytes)
+	if _, err := createCustomerExtension(repo, expo); err != nil {
+		return err
+	}
+
+	if customer.Key != "" {
+		if err := repo.SaveKey(&po.CustomerKey{Key: customer.Key, UserID: uuid}); err != nil {
+			return err
+		}
+	}
+
+	if customer.Phone != "" {
+		if err := repo.SavePhone(&po.CustomerPhone{Phone: customer.Phone, UserID: uuid}); err != nil {
+			return err
+		}
+	}
+
+	if customer.WechatUnionID != "" {
+		if err := repo.SaveWechat(&po.CustomerWechat{UnionID: customer.WechatUnionID, UserID: uuid}); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // SaveCustomer .
 func (repo *CustomerRepository) SaveCustomer(customer *entity.Customer) error {
 	if customer.UserID == "" {
-		uuid, err := utils.GenerateUUID()
-		if err != nil {
-			return err
-		}
-		customer.UserID = uuid
-		if _, err := createCustomer(repo, &customer.Customer); err != nil {
-			return err
-		}
-
-		expo := &po.CustomerExtension{UserID: customer.Customer.UserID, Created: time.Now(), Updated: time.Now()}
-		exBytes, err := json.Marshal(customer.GetExtension())
-		if err != nil {
-			return err
-		}
-		expo.Data = datatypes.JSON(exBytes)
-		if _, err := createCustomerExtension(repo, expo); err != nil {
-			return err
-		}
-		return nil
+		return repo.insertCustomer(customer)
 	}
 
 	if _, e := saveCustomer(repo, customer); e != nil {

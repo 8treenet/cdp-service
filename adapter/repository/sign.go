@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/8treenet/cdp-service/domain/po"
 	"github.com/8treenet/cdp-service/infra"
 	"github.com/8treenet/freedom"
@@ -54,6 +56,9 @@ func (repo *SignRepository) SaveWechat(obj *po.CustomerWechat) error {
 		_, err := saveCustomerWechat(repo, obj)
 		return err
 	}
+
+	obj.Created = time.Now()
+	obj.Updated = time.Now()
 	_, e := createCustomerWechat(repo, obj)
 	return e
 }
@@ -64,6 +69,9 @@ func (repo *SignRepository) SavePhone(obj *po.CustomerPhone) error {
 		_, err := saveCustomerPhone(repo, obj)
 		return err
 	}
+
+	obj.Created = time.Now()
+	obj.Updated = time.Now()
 	_, e := createCustomerPhone(repo, obj)
 	return e
 }
@@ -74,6 +82,9 @@ func (repo *SignRepository) SaveKey(obj *po.CustomerKey) error {
 		_, err := saveCustomerKey(repo, obj)
 		return err
 	}
+
+	obj.Created = time.Now()
+	obj.Updated = time.Now()
 	_, e := createCustomerKey(repo, obj)
 	return e
 }

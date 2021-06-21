@@ -2,6 +2,8 @@
 package controller
 
 import (
+	"errors"
+
 	"github.com/8treenet/cdp-service/domain"
 	"github.com/8treenet/cdp-service/domain/vo"
 	"github.com/8treenet/cdp-service/infra"
@@ -53,8 +55,9 @@ func (c *CustomerController) Post() freedom.Result {
 	if e := c.Request.ReadJSON(&postData); e != nil {
 		return &infra.JSONResponse{Error: e}
 	}
-
-	//if postData.Key == "" &&
+	if postData.Key == "" && postData.Phone == "" && postData.WechatUnionID == "" {
+		return &infra.JSONResponse{Error: errors.New("未填写客户识别参数")}
+	}
 
 	if e := c.CustomerService.CreateCustomer(postData); e != nil {
 		return &infra.JSONResponse{Error: e}

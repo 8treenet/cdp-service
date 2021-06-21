@@ -33,6 +33,7 @@ func (factory *IntermediaryFactory) CreateCustomerNewCmd() (cmd *CustomerCreateC
 	return &CustomerCreateCmd{
 		Intermediary: *ientity,
 		CustomerRepo: factory.CustomerRepo,
+		SignRepo:     factory.SignRepo,
 		TX:           factory.TX,
 	}, nil
 }

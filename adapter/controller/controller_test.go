@@ -16,11 +16,11 @@ func TestCustomerManagerController_PostList(t *testing.T) {
 	var list []po.CustomerExtensionTemplate
 	list = append(list, po.CustomerExtensionTemplate{
 		Name: "score",
-		Kind: "Integer",
+		Kind: "Int32",
 	})
 	list = append(list, po.CustomerExtensionTemplate{
 		Name: "star",
-		Kind: "Integer",
+		Kind: "UInt32",
 	})
 	list = append(list, po.CustomerExtensionTemplate{
 		Name: "addr",
@@ -28,7 +28,7 @@ func TestCustomerManagerController_PostList(t *testing.T) {
 	})
 	list = append(list, po.CustomerExtensionTemplate{
 		Name:     "level",
-		Kind:     "Integer",
+		Kind:     "UInt16",
 		Required: 1,
 	})
 
@@ -53,7 +53,7 @@ func TestCustomerManagerController_GetList(t *testing.T) {
 
 func TestCustomerManagerController_PutSort(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customer/tmplManager/sort").Put()
-	str, _ := req.SetQueryParam("id", 47).SetQueryParam("sort", 1002).ToString()
+	str, _ := req.SetQueryParam("id", 53).SetQueryParam("sort", 1002).ToString()
 	t.Log(string(str))
 }
 
@@ -65,6 +65,15 @@ func TestCustomerController_Post(t *testing.T) {
 	}
 	data.Name = "yangshu6111"
 	data.Gender = "男"
+	data.Birthday = "1989-05-11"
+	data.Email = "4932004@qq.com"
+	data.Phone = "13513517944"
+	data.Key = "yangshu611113513517944"
+	data.WechatUnionID = "1001212"
+	data.Province = "山西"
+	data.City = "太原"
+	data.Region = "迎泽区"
+
 	data.Extension = make(map[string]interface{})
 	data.Extension["score"] = 100
 	data.Extension["star"] = 50
