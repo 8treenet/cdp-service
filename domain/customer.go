@@ -28,12 +28,12 @@ type CustomerService struct {
 }
 
 // GetCustomer 获取客户信息.
-func (service *CustomerService) GetCustomer(id int) (*entity.Customer, error) {
+func (service *CustomerService) GetCustomer(id string) (*entity.Customer, error) {
 	return service.CustomerRepository.GetCustomer(id)
 }
 
 // DeleteCustomer 删除客户.
-func (service *CustomerService) DeleteCustomer(id []int) error {
+func (service *CustomerService) DeleteCustomer(id []string) error {
 	for i := 0; i < len(id); i++ {
 		customer, err := service.GetCustomer(id[i])
 		if err != nil {
@@ -47,7 +47,7 @@ func (service *CustomerService) DeleteCustomer(id []int) error {
 }
 
 // UpdateCustomer 修改客户.
-func (service *CustomerService) UpdateCustomer(id int, updateOpt map[string]interface{}) error {
+func (service *CustomerService) UpdateCustomer(id string, updateOpt map[string]interface{}) error {
 	cmd, err := service.Factory.UpdateCustomerNewCmd()
 	if err != nil {
 		return nil

@@ -1,6 +1,5 @@
 package controller_test
 
-/*
 import (
 	"encoding/json"
 	"fmt"
@@ -65,8 +64,7 @@ func TestCustomerController_Post(t *testing.T) {
 		Extension map[string]interface{} `json:"extension"`
 	}
 	data.Name = "yangshu6111"
-	data.Age = 32
-	data.Gender = 1
+	data.Gender = "男"
 	data.Extension = make(map[string]interface{})
 	data.Extension["score"] = 100
 	data.Extension["star"] = 50
@@ -105,8 +103,7 @@ func TestCustomerController_PostList(t *testing.T) {
 	}, 3)
 	for i := 0; i < 3; i++ {
 		datas[i].Name = "yangshuList-" + fmt.Sprint(i)
-		datas[i].Age = 32 + i
-		datas[i].Gender = 1
+		datas[i].Gender = "女"
 		datas[i].Extension = make(map[string]interface{})
 		datas[i].Extension["score"] = 100 + i
 		datas[i].Extension["star"] = 50 + i
@@ -129,6 +126,3 @@ func TestCustomerController_DeleteBy(t *testing.T) {
 func TestCustomerController_GetList(t *testing.T) {
 
 }
-
-
-*/

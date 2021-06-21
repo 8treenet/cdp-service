@@ -17,7 +17,7 @@ type Customer struct {
 }
 
 func (entity *Customer) Identity() string {
-	return fmt.Sprint(entity.UserID)
+	return entity.UserID
 }
 
 // SetExtension .

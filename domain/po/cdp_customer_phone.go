@@ -2,7 +2,6 @@
 package po
 
 import (
-	"gorm.io/gorm"
 	"time"
 )
 
@@ -10,7 +9,7 @@ import (
 type CustomerPhone struct {
 	changes map[string]interface{}
 	ID      int       `gorm:"primaryKey;column:id"`
-	UserID  int       `gorm:"column:userId"` // 用户userid
+	UserID  string    `gorm:"column:userId"` // 用户userid
 	Phone   string    `gorm:"column:phone"`  // 手机号
 	Created time.Time `gorm:"column:created"`
 	Updated time.Time `gorm:"column:updated"`
@@ -48,7 +47,7 @@ func (obj *CustomerPhone) Update(name string, value interface{}) {
 }
 
 // SetUserID .
-func (obj *CustomerPhone) SetUserID(userID int) {
+func (obj *CustomerPhone) SetUserID(userID string) {
 	obj.UserID = userID
 	obj.Update("userId", userID)
 }
@@ -69,10 +68,4 @@ func (obj *CustomerPhone) SetCreated(created time.Time) {
 func (obj *CustomerPhone) SetUpdated(updated time.Time) {
 	obj.Updated = updated
 	obj.Update("updated", updated)
-}
-
-// AddUserID .
-func (obj *CustomerPhone) AddUserID(userID int) {
-	obj.UserID += userID
-	obj.Update("userId", gorm.Expr("userId + ?", userID))
 }

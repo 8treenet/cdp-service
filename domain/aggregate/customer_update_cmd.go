@@ -14,7 +14,7 @@ type CustomerUpdateCmd struct {
 }
 
 // Do .
-func (cmd *CustomerUpdateCmd) Do(id int, m map[string]interface{}) (e error) {
+func (cmd *CustomerUpdateCmd) Do(id string, m map[string]interface{}) (e error) {
 	entity, e := cmd.CustomerRepo.GetCustomer(id)
 	if e != nil {
 		return e

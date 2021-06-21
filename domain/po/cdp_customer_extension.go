@@ -3,7 +3,6 @@ package po
 
 import (
 	"gorm.io/datatypes"
-	"gorm.io/gorm"
 	"time"
 )
 
@@ -11,7 +10,7 @@ import (
 type CustomerExtension struct {
 	changes map[string]interface{}
 	ID      int            `gorm:"primaryKey;column:id"`
-	UserID  int            `gorm:"column:userId"`
+	UserID  string         `gorm:"column:userId"`
 	Data    datatypes.JSON `gorm:"column:data"` // 扩展数据
 	Created time.Time      `gorm:"column:created"`
 	Updated time.Time      `gorm:"column:updated"`
@@ -49,7 +48,7 @@ func (obj *CustomerExtension) Update(name string, value interface{}) {
 }
 
 // SetUserID .
-func (obj *CustomerExtension) SetUserID(userID int) {
+func (obj *CustomerExtension) SetUserID(userID string) {
 	obj.UserID = userID
 	obj.Update("userId", userID)
 }
@@ -70,10 +69,4 @@ func (obj *CustomerExtension) SetCreated(created time.Time) {
 func (obj *CustomerExtension) SetUpdated(updated time.Time) {
 	obj.Updated = updated
 	obj.Update("updated", updated)
-}
-
-// AddUserID .
-func (obj *CustomerExtension) AddUserID(userID int) {
-	obj.UserID += userID
-	obj.Update("userId", gorm.Expr("userId + ?", userID))
 }

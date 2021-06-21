@@ -3,28 +3,24 @@ package po
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 // Customer .
 type Customer struct {
-	changes        map[string]interface{}
-	UserID         int       `gorm:"primaryKey;column:userId" json:"userId"`
-	Casual         int       `gorm:"column:casual" json:"casual"`                 // 1临时用户
-	Name           string    `gorm:"column:name" json:"name"`                     // 名称
-	Email          string    `gorm:"column:email" json:"email"`                   // 邮箱
-	Phone          string    `gorm:"column:phone" json:"phone"`                   // 电话
-	Gender         string    `gorm:"column:gender" json:"gender"`                 // 性别
-	Birthday       string    `gorm:"column:birthday" json:"birthday"`             // 生日
-	Province       string    `gorm:"column:province" json:"province"`             // 省
-	City           string    `gorm:"column:city" json:"city"`                     // 市
-	Region         string    `gorm:"column:region" json:"region"`                 // 区
-	WechatUnionID  string    `gorm:"column:wechatUnionId" json:"wechatUnionID"`   // 微信唯一id
-	CookieIdentify string    `gorm:"column:cookieIdentify" json:"cookieIdentify"` // cookie识别
-	Key            string    `gorm:"column:key" json:"key"`                       // 自定义识别key
-	Created        time.Time `gorm:"column:created" json:"created"`
-	Updated        time.Time `gorm:"column:updated" json:"updated"`
+	changes       map[string]interface{}
+	UserID        string    `gorm:"primaryKey;column:userId" json:"userID"`
+	Name          string    `gorm:"column:name" json:"name"`                   // 名称
+	Email         string    `gorm:"column:email" json:"email"`                 // 邮箱
+	Phone         string    `gorm:"column:phone" json:"phone"`                 // 电话
+	Gender        string    `gorm:"column:gender" json:"gender"`               // 性别
+	Birthday      string    `gorm:"column:birthday" json:"birthday"`           // 生日
+	Province      string    `gorm:"column:province" json:"province"`           // 省
+	City          string    `gorm:"column:city" json:"city"`                   // 市
+	Region        string    `gorm:"column:region" json:"region"`               // 区
+	WechatUnionID string    `gorm:"column:wechatUnionId" json:"wechatUnionID"` // 微信唯一id
+	Key           string    `gorm:"column:key" json:"key"`                     // 自定义识别key
+	Created       time.Time `gorm:"column:created" json:"created"`
+	Updated       time.Time `gorm:"column:updated" json:"updated"`
 }
 
 // TableName .
@@ -56,12 +52,6 @@ func (obj *Customer) Update(name string, value interface{}) {
 		obj.changes = make(map[string]interface{})
 	}
 	obj.changes[name] = value
-}
-
-// SetCasual .
-func (obj *Customer) SetCasual(casual int) {
-	obj.Casual = casual
-	obj.Update("casual", casual)
 }
 
 // SetName .
@@ -118,12 +108,6 @@ func (obj *Customer) SetWechatUnionID(wechatUnionID string) {
 	obj.Update("wechatUnionId", wechatUnionID)
 }
 
-// SetCookieIdentify .
-func (obj *Customer) SetCookieIdentify(cookieIdentify string) {
-	obj.CookieIdentify = cookieIdentify
-	obj.Update("cookieIdentify", cookieIdentify)
-}
-
 // SetKey .
 func (obj *Customer) SetKey(key string) {
 	obj.Key = key
@@ -140,10 +124,4 @@ func (obj *Customer) SetCreated(created time.Time) {
 func (obj *Customer) SetUpdated(updated time.Time) {
 	obj.Updated = updated
 	obj.Update("updated", updated)
-}
-
-// AddCasual .
-func (obj *Customer) AddCasual(casual int) {
-	obj.Casual += casual
-	obj.Update("casual", gorm.Expr("casual + ?", casual))
 }

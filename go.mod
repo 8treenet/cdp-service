@@ -7,6 +7,7 @@ replace github.com/8treenet/freedom => /Volumes/uhome/ysmac/go/src/github.com/8t
 require (
 	github.com/8treenet/freedom v1.8.10
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/iris-contrib/go.uuid v2.0.0+incompatible
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/kataras/golog v0.1.2
 	github.com/kataras/iris/v12 v12.1.8

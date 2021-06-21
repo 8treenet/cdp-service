@@ -7,6 +7,7 @@ import (
 	"github.com/8treenet/cdp-service/domain/entity"
 	"github.com/8treenet/cdp-service/domain/po"
 	"github.com/8treenet/cdp-service/infra"
+	"github.com/8treenet/cdp-service/utils"
 	"github.com/8treenet/freedom"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
@@ -29,7 +30,7 @@ type CustomerRepository struct {
 }
 
 // GetCustomer .
-func (repo *CustomerRepository) GetCustomer(id int) (result *entity.Customer, e error) {
+func (repo *CustomerRepository) GetCustomer(id string) (result *entity.Customer, e error) {
 	result = &entity.Customer{}
 	repo.InjectBaseEntity(result)
 
@@ -60,7 +61,12 @@ func (repo *CustomerRepository) CreateCustomer() *entity.Customer {
 
 // SaveCustomer .
 func (repo *CustomerRepository) SaveCustomer(customer *entity.Customer) error {
-	if customer.UserID == 0 {
+	if customer.UserID == "" {
+		uuid, err := utils.GenerateUUID()
+		if err != nil {
+			return err
+		}
+		customer.UserID = uuid
 		if _, err := createCustomer(repo, &customer.Customer); err != nil {
 			return err
 		}
@@ -126,7 +132,7 @@ func (repo *CustomerRepository) GetCustomersByKeys(keys []string) (result []*ent
 		return
 	}
 
-	var userIdList []int
+	var userIdList []string
 	for _, v := range objs {
 		userIdList = append(userIdList, v.UserID)
 	}
@@ -154,7 +160,7 @@ func (repo *CustomerRepository) GetCustomersByPhones(phones []string) (result []
 		return
 	}
 
-	var userIdList []int
+	var userIdList []string
 	for _, v := range objs {
 		userIdList = append(userIdList, v.UserID)
 	}
@@ -182,7 +188,7 @@ func (repo *CustomerRepository) GetCustomersByWechats(unionIds []string) (result
 		return
 	}
 
-	var userIdList []int
+	var userIdList []string
 	for _, v := range objs {
 		userIdList = append(userIdList, v.UserID)
 	}
@@ -190,7 +196,7 @@ func (repo *CustomerRepository) GetCustomersByWechats(unionIds []string) (result
 }
 
 // GetCustomer .
-func (repo *CustomerRepository) GetCustomers(userIdList []int) (result []*entity.Customer, e error) {
+func (repo *CustomerRepository) GetCustomers(userIdList []string) (result []*entity.Customer, e error) {
 	result = make([]*entity.Customer, 0)
 	var primarys []interface{}
 	for _, primary := range result {

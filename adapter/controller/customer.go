@@ -21,8 +21,8 @@ type CustomerController struct {
 	Request         *infra.Request
 }
 
-//PutBy handles the PUT: /customers/id:int route.
-func (c *CustomerController) PutBy(id int) freedom.Result {
+//PutBy handles the PUT: /customers/id:string route.
+func (c *CustomerController) PutBy(id string) freedom.Result {
 	putData := map[string]interface{}{}
 	if e := c.Request.ReadJSON(&putData); e != nil {
 		return &infra.JSONResponse{Error: e}
@@ -34,7 +34,7 @@ func (c *CustomerController) PutBy(id int) freedom.Result {
 }
 
 //GetBy handles the Get: /customers/id:string route.
-func (c *CustomerController) GetBy(id int) freedom.Result {
+func (c *CustomerController) GetBy(id string) freedom.Result {
 	data, e := c.CustomerService.GetCustomer(id)
 	if e != nil {
 		return &infra.JSONResponse{Error: e}
@@ -53,6 +53,8 @@ func (c *CustomerController) Post() freedom.Result {
 	if e := c.Request.ReadJSON(&postData); e != nil {
 		return &infra.JSONResponse{Error: e}
 	}
+
+	//if postData.Key == "" &&
 
 	if e := c.CustomerService.CreateCustomer(postData); e != nil {
 		return &infra.JSONResponse{Error: e}
@@ -76,7 +78,7 @@ func (c *CustomerController) PostList() freedom.Result {
 //DeleteBy handles the delete: /customers route.
 func (c *CustomerController) Delete() freedom.Result {
 	var query struct {
-		ID []int `url:"id" validate:"required"` //Support array parameters
+		ID []string `url:"id" validate:"required"` //Support array parameters
 	}
 	if err := c.Request.ReadQuery(&query, true); err != nil {
 		return &infra.JSONResponse{Error: err}
