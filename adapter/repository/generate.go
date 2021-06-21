@@ -127,6 +127,618 @@ func ormErrorLog(repo GORMRepository, model, method string, e error, expression 
 	repo.Worker().Logger().Errorf("error: %v, model: %s, method: %s", e, model, method)
 }
 
+// findSystemConfig .
+func findSystemConfig(repo GORMRepository, result *po.SystemConfig, builders ...Builder) (e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("SystemConfig", "findSystemConfig", e, now)
+		ormErrorLog(repo, "SystemConfig", "findSystemConfig", e, result)
+	}()
+	db := repo.db()
+	if len(builders) == 0 {
+		e = db.Where(result).Last(result).Error
+		return
+	}
+	e = builders[0].Execute(db.Limit(1), result)
+	return
+}
+
+// findSystemConfigListByPrimarys .
+func findSystemConfigListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.SystemConfig, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("SystemConfig", "findSystemConfigListByPrimarys", e, now)
+		ormErrorLog(repo, "SystemConfig", "findSystemConfigsByPrimarys", e, primarys)
+	}()
+
+	e = repo.db().Find(&results, primarys).Error
+	return
+}
+
+// findSystemConfigByWhere .
+func findSystemConfigByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.SystemConfig, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("SystemConfig", "findSystemConfigByWhere", e, now)
+		ormErrorLog(repo, "SystemConfig", "findSystemConfigByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findSystemConfigByMap .
+func findSystemConfigByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.SystemConfig, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("SystemConfig", "findSystemConfigByMap", e, now)
+		ormErrorLog(repo, "SystemConfig", "findSystemConfigByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findSystemConfigList .
+func findSystemConfigList(repo GORMRepository, query po.SystemConfig, builders ...Builder) (results []po.SystemConfig, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("SystemConfig", "findSystemConfigList", e, now)
+		ormErrorLog(repo, "SystemConfig", "findSystemConfigs", e, query)
+	}()
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findSystemConfigListByWhere .
+func findSystemConfigListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.SystemConfig, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("SystemConfig", "findSystemConfigListByWhere", e, now)
+		ormErrorLog(repo, "SystemConfig", "findSystemConfigsByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findSystemConfigListByMap .
+func findSystemConfigListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.SystemConfig, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("SystemConfig", "findSystemConfigListByMap", e, now)
+		ormErrorLog(repo, "SystemConfig", "findSystemConfigsByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// createSystemConfig .
+func createSystemConfig(repo GORMRepository, object *po.SystemConfig) (rowsAffected int64, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("SystemConfig", "createSystemConfig", e, now)
+		ormErrorLog(repo, "SystemConfig", "createSystemConfig", e, *object)
+	}()
+
+	db := repo.db().Create(object)
+	rowsAffected = db.RowsAffected
+	e = db.Error
+	return
+}
+
+// saveSystemConfig .
+func saveSystemConfig(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+	if len(object.Location()) == 0 {
+		return 0, errors.New("location cannot be empty")
+	}
+
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("SystemConfig", "saveSystemConfig", e, now)
+		ormErrorLog(repo, "SystemConfig", "saveSystemConfig", e, object)
+	}()
+
+	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())
+	e = db.Error
+	rowsAffected = db.RowsAffected
+	return
+}
+
+// findCustomerWechat .
+func findCustomerWechat(repo GORMRepository, result *po.CustomerWechat, builders ...Builder) (e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerWechat", "findCustomerWechat", e, now)
+		ormErrorLog(repo, "CustomerWechat", "findCustomerWechat", e, result)
+	}()
+	db := repo.db()
+	if len(builders) == 0 {
+		e = db.Where(result).Last(result).Error
+		return
+	}
+	e = builders[0].Execute(db.Limit(1), result)
+	return
+}
+
+// findCustomerWechatListByPrimarys .
+func findCustomerWechatListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.CustomerWechat, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerWechat", "findCustomerWechatListByPrimarys", e, now)
+		ormErrorLog(repo, "CustomerWechat", "findCustomerWechatsByPrimarys", e, primarys)
+	}()
+
+	e = repo.db().Find(&results, primarys).Error
+	return
+}
+
+// findCustomerWechatByWhere .
+func findCustomerWechatByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.CustomerWechat, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerWechat", "findCustomerWechatByWhere", e, now)
+		ormErrorLog(repo, "CustomerWechat", "findCustomerWechatByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findCustomerWechatByMap .
+func findCustomerWechatByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.CustomerWechat, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerWechat", "findCustomerWechatByMap", e, now)
+		ormErrorLog(repo, "CustomerWechat", "findCustomerWechatByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findCustomerWechatList .
+func findCustomerWechatList(repo GORMRepository, query po.CustomerWechat, builders ...Builder) (results []po.CustomerWechat, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerWechat", "findCustomerWechatList", e, now)
+		ormErrorLog(repo, "CustomerWechat", "findCustomerWechats", e, query)
+	}()
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findCustomerWechatListByWhere .
+func findCustomerWechatListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.CustomerWechat, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerWechat", "findCustomerWechatListByWhere", e, now)
+		ormErrorLog(repo, "CustomerWechat", "findCustomerWechatsByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findCustomerWechatListByMap .
+func findCustomerWechatListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.CustomerWechat, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerWechat", "findCustomerWechatListByMap", e, now)
+		ormErrorLog(repo, "CustomerWechat", "findCustomerWechatsByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// createCustomerWechat .
+func createCustomerWechat(repo GORMRepository, object *po.CustomerWechat) (rowsAffected int64, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerWechat", "createCustomerWechat", e, now)
+		ormErrorLog(repo, "CustomerWechat", "createCustomerWechat", e, *object)
+	}()
+
+	db := repo.db().Create(object)
+	rowsAffected = db.RowsAffected
+	e = db.Error
+	return
+}
+
+// saveCustomerWechat .
+func saveCustomerWechat(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+	if len(object.Location()) == 0 {
+		return 0, errors.New("location cannot be empty")
+	}
+
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerWechat", "saveCustomerWechat", e, now)
+		ormErrorLog(repo, "CustomerWechat", "saveCustomerWechat", e, object)
+	}()
+
+	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())
+	e = db.Error
+	rowsAffected = db.RowsAffected
+	return
+}
+
+// findCustomerPhone .
+func findCustomerPhone(repo GORMRepository, result *po.CustomerPhone, builders ...Builder) (e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerPhone", "findCustomerPhone", e, now)
+		ormErrorLog(repo, "CustomerPhone", "findCustomerPhone", e, result)
+	}()
+	db := repo.db()
+	if len(builders) == 0 {
+		e = db.Where(result).Last(result).Error
+		return
+	}
+	e = builders[0].Execute(db.Limit(1), result)
+	return
+}
+
+// findCustomerPhoneListByPrimarys .
+func findCustomerPhoneListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.CustomerPhone, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerPhone", "findCustomerPhoneListByPrimarys", e, now)
+		ormErrorLog(repo, "CustomerPhone", "findCustomerPhonesByPrimarys", e, primarys)
+	}()
+
+	e = repo.db().Find(&results, primarys).Error
+	return
+}
+
+// findCustomerPhoneByWhere .
+func findCustomerPhoneByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.CustomerPhone, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerPhone", "findCustomerPhoneByWhere", e, now)
+		ormErrorLog(repo, "CustomerPhone", "findCustomerPhoneByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findCustomerPhoneByMap .
+func findCustomerPhoneByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.CustomerPhone, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerPhone", "findCustomerPhoneByMap", e, now)
+		ormErrorLog(repo, "CustomerPhone", "findCustomerPhoneByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findCustomerPhoneList .
+func findCustomerPhoneList(repo GORMRepository, query po.CustomerPhone, builders ...Builder) (results []po.CustomerPhone, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerPhone", "findCustomerPhoneList", e, now)
+		ormErrorLog(repo, "CustomerPhone", "findCustomerPhones", e, query)
+	}()
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findCustomerPhoneListByWhere .
+func findCustomerPhoneListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.CustomerPhone, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerPhone", "findCustomerPhoneListByWhere", e, now)
+		ormErrorLog(repo, "CustomerPhone", "findCustomerPhonesByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findCustomerPhoneListByMap .
+func findCustomerPhoneListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.CustomerPhone, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerPhone", "findCustomerPhoneListByMap", e, now)
+		ormErrorLog(repo, "CustomerPhone", "findCustomerPhonesByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// createCustomerPhone .
+func createCustomerPhone(repo GORMRepository, object *po.CustomerPhone) (rowsAffected int64, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerPhone", "createCustomerPhone", e, now)
+		ormErrorLog(repo, "CustomerPhone", "createCustomerPhone", e, *object)
+	}()
+
+	db := repo.db().Create(object)
+	rowsAffected = db.RowsAffected
+	e = db.Error
+	return
+}
+
+// saveCustomerPhone .
+func saveCustomerPhone(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+	if len(object.Location()) == 0 {
+		return 0, errors.New("location cannot be empty")
+	}
+
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerPhone", "saveCustomerPhone", e, now)
+		ormErrorLog(repo, "CustomerPhone", "saveCustomerPhone", e, object)
+	}()
+
+	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())
+	e = db.Error
+	rowsAffected = db.RowsAffected
+	return
+}
+
+// findCustomerKey .
+func findCustomerKey(repo GORMRepository, result *po.CustomerKey, builders ...Builder) (e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerKey", "findCustomerKey", e, now)
+		ormErrorLog(repo, "CustomerKey", "findCustomerKey", e, result)
+	}()
+	db := repo.db()
+	if len(builders) == 0 {
+		e = db.Where(result).Last(result).Error
+		return
+	}
+	e = builders[0].Execute(db.Limit(1), result)
+	return
+}
+
+// findCustomerKeyListByPrimarys .
+func findCustomerKeyListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.CustomerKey, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerKey", "findCustomerKeyListByPrimarys", e, now)
+		ormErrorLog(repo, "CustomerKey", "findCustomerKeysByPrimarys", e, primarys)
+	}()
+
+	e = repo.db().Find(&results, primarys).Error
+	return
+}
+
+// findCustomerKeyByWhere .
+func findCustomerKeyByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.CustomerKey, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerKey", "findCustomerKeyByWhere", e, now)
+		ormErrorLog(repo, "CustomerKey", "findCustomerKeyByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findCustomerKeyByMap .
+func findCustomerKeyByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.CustomerKey, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerKey", "findCustomerKeyByMap", e, now)
+		ormErrorLog(repo, "CustomerKey", "findCustomerKeyByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findCustomerKeyList .
+func findCustomerKeyList(repo GORMRepository, query po.CustomerKey, builders ...Builder) (results []po.CustomerKey, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerKey", "findCustomerKeyList", e, now)
+		ormErrorLog(repo, "CustomerKey", "findCustomerKeys", e, query)
+	}()
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findCustomerKeyListByWhere .
+func findCustomerKeyListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.CustomerKey, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerKey", "findCustomerKeyListByWhere", e, now)
+		ormErrorLog(repo, "CustomerKey", "findCustomerKeysByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findCustomerKeyListByMap .
+func findCustomerKeyListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.CustomerKey, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerKey", "findCustomerKeyListByMap", e, now)
+		ormErrorLog(repo, "CustomerKey", "findCustomerKeysByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// createCustomerKey .
+func createCustomerKey(repo GORMRepository, object *po.CustomerKey) (rowsAffected int64, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerKey", "createCustomerKey", e, now)
+		ormErrorLog(repo, "CustomerKey", "createCustomerKey", e, *object)
+	}()
+
+	db := repo.db().Create(object)
+	rowsAffected = db.RowsAffected
+	e = db.Error
+	return
+}
+
+// saveCustomerKey .
+func saveCustomerKey(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+	if len(object.Location()) == 0 {
+		return 0, errors.New("location cannot be empty")
+	}
+
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerKey", "saveCustomerKey", e, now)
+		ormErrorLog(repo, "CustomerKey", "saveCustomerKey", e, object)
+	}()
+
+	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())
+	e = db.Error
+	rowsAffected = db.RowsAffected
+	return
+}
+
 // findCustomerExtensionTemplate .
 func findCustomerExtensionTemplate(repo GORMRepository, result *po.CustomerExtensionTemplate, builders ...Builder) (e error) {
 	now := time.Now()
@@ -425,6 +1037,159 @@ func saveCustomerExtension(repo GORMRepository, object saveObject) (rowsAffected
 	defer func() {
 		freedom.Prometheus().OrmWithLabelValues("CustomerExtension", "saveCustomerExtension", e, now)
 		ormErrorLog(repo, "CustomerExtension", "saveCustomerExtension", e, object)
+	}()
+
+	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())
+	e = db.Error
+	rowsAffected = db.RowsAffected
+	return
+}
+
+// findCustomerCasual .
+func findCustomerCasual(repo GORMRepository, result *po.CustomerCasual, builders ...Builder) (e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerCasual", "findCustomerCasual", e, now)
+		ormErrorLog(repo, "CustomerCasual", "findCustomerCasual", e, result)
+	}()
+	db := repo.db()
+	if len(builders) == 0 {
+		e = db.Where(result).Last(result).Error
+		return
+	}
+	e = builders[0].Execute(db.Limit(1), result)
+	return
+}
+
+// findCustomerCasualListByPrimarys .
+func findCustomerCasualListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.CustomerCasual, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerCasual", "findCustomerCasualListByPrimarys", e, now)
+		ormErrorLog(repo, "CustomerCasual", "findCustomerCasualsByPrimarys", e, primarys)
+	}()
+
+	e = repo.db().Find(&results, primarys).Error
+	return
+}
+
+// findCustomerCasualByWhere .
+func findCustomerCasualByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.CustomerCasual, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerCasual", "findCustomerCasualByWhere", e, now)
+		ormErrorLog(repo, "CustomerCasual", "findCustomerCasualByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findCustomerCasualByMap .
+func findCustomerCasualByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.CustomerCasual, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerCasual", "findCustomerCasualByMap", e, now)
+		ormErrorLog(repo, "CustomerCasual", "findCustomerCasualByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findCustomerCasualList .
+func findCustomerCasualList(repo GORMRepository, query po.CustomerCasual, builders ...Builder) (results []po.CustomerCasual, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerCasual", "findCustomerCasualList", e, now)
+		ormErrorLog(repo, "CustomerCasual", "findCustomerCasuals", e, query)
+	}()
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findCustomerCasualListByWhere .
+func findCustomerCasualListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.CustomerCasual, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerCasual", "findCustomerCasualListByWhere", e, now)
+		ormErrorLog(repo, "CustomerCasual", "findCustomerCasualsByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findCustomerCasualListByMap .
+func findCustomerCasualListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.CustomerCasual, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerCasual", "findCustomerCasualListByMap", e, now)
+		ormErrorLog(repo, "CustomerCasual", "findCustomerCasualsByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// createCustomerCasual .
+func createCustomerCasual(repo GORMRepository, object *po.CustomerCasual) (rowsAffected int64, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerCasual", "createCustomerCasual", e, now)
+		ormErrorLog(repo, "CustomerCasual", "createCustomerCasual", e, *object)
+	}()
+
+	db := repo.db().Create(object)
+	rowsAffected = db.RowsAffected
+	e = db.Error
+	return
+}
+
+// saveCustomerCasual .
+func saveCustomerCasual(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+	if len(object.Location()) == 0 {
+		return 0, errors.New("location cannot be empty")
+	}
+
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerCasual", "saveCustomerCasual", e, now)
+		ormErrorLog(repo, "CustomerCasual", "saveCustomerCasual", e, object)
 	}()
 
 	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())

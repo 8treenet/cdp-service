@@ -1,5 +1,6 @@
 package controller_test
 
+/*
 import (
 	"encoding/json"
 	"fmt"
@@ -128,3 +129,6 @@ func TestCustomerController_DeleteBy(t *testing.T) {
 func TestCustomerController_GetList(t *testing.T) {
 
 }
+
+
+*/

@@ -3,9 +3,9 @@ package entity
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/8treenet/cdp-service/domain/po"
-	"github.com/8treenet/cdp-service/utils"
 	"github.com/8treenet/freedom"
 )
 
@@ -52,27 +52,31 @@ func (entity *Customer) updateExtension(putData map[string]interface{}) {
 }
 
 func (entity *Customer) UpdateByMap(putData map[string]interface{}) error {
-
 	i, ok := putData["extension"]
 	if ok {
 		extensionMap, _ := i.(map[string]interface{})
 		entity.updateExtension(extensionMap)
 	}
 	for key, item := range putData {
-		i, iErr := utils.ToInt(item)
 		switch key {
 		case "name":
 			entity.SetName(fmt.Sprint(item))
 		case "gender":
-			if iErr != nil {
-				return iErr
+			entity.SetGender(fmt.Sprint(item))
+		case "email":
+			entity.SetEmail(fmt.Sprint(item))
+		case "birthday":
+			_, err := time.Parse("2006-01-02", fmt.Sprint(item))
+			if err != nil {
+				return err
 			}
-			entity.SetGender(i)
-		case "age":
-			if iErr != nil {
-				return iErr
-			}
-			entity.SetAge(i)
+			entity.SetBirthday(fmt.Sprint(item))
+		case "province":
+			entity.SetProvince(fmt.Sprint(item))
+		case "city":
+			entity.SetCity(fmt.Sprint(item))
+		case "region":
+			entity.SetRegion(fmt.Sprint(item))
 		}
 	}
 	return nil

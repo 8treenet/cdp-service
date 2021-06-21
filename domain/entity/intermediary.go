@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
+	"time"
 
 	"github.com/8treenet/cdp-service/domain/po"
 	"github.com/8treenet/cdp-service/utils"
@@ -51,20 +52,31 @@ func (entity *Intermediary) VerifyCustomer(customer *Customer, isNew bool) error
 			if ok := regexp.MustCompile(po.Reg).MatchString(value.(string)); !ok {
 				return fmt.Errorf("正则匹配失败 %v %s:%v", po.Reg, po.Name, value)
 			}
-		case "Boolean":
-			if val.Kind() != reflect.Bool {
-				return fmt.Errorf("错误类型 %v %s:%v", "Boolean", po.Name, value)
-			}
-		case "Double":
+		case "Float32", "Float64":
 			if val.Kind() != reflect.Float32 && val.Kind() != reflect.Float64 {
-				return fmt.Errorf("错误类型 %v %s:%v", "Double", po.Name, value)
+				return fmt.Errorf("错误类型 %v %s:%v", "Float", po.Name, value)
+			}
+		case "DateTime":
+			if val.Kind() != reflect.String {
+				return fmt.Errorf("错误类型 %v %s:%v", "DateTime", po.Name, value)
+			}
+			if _, err := time.Parse("2006-01-02 15:04:05", fmt.Sprint(value)); err != nil {
+				return fmt.Errorf("错误类型 %v %s:%v", "DateTime", po.Name, value)
+			}
+
+		case "Date":
+			if val.Kind() != reflect.String {
+				return fmt.Errorf("错误类型 %v %s:%v", "Date", po.Name, value)
+			}
+			if _, err := time.Parse("2006-01-02", fmt.Sprint(value)); err != nil {
+				return fmt.Errorf("错误类型 %v %s:%v", "Date", po.Name, value)
 			}
 		default:
 			ok := utils.InSlice([]reflect.Kind{reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32,
 				reflect.Int64, reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32,
 				reflect.Uint64, reflect.Float32, reflect.Float64}, val.Kind())
 			if !ok {
-				return fmt.Errorf("错误类型 %v %s:%v", "Integer", po.Name, value)
+				return fmt.Errorf("错误类型 %v %s:%v", "Number", po.Name, value)
 			}
 		}
 	}

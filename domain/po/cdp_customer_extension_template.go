@@ -2,23 +2,22 @@
 package po
 
 import (
-	"time"
-
 	"gorm.io/gorm"
+	"time"
 )
 
 // CustomerExtensionTemplate .
 type CustomerExtensionTemplate struct {
 	changes  map[string]interface{}
-	ID       int       `gorm:"primaryKey;column:id" json:"id"`
-	Name     string    `gorm:"column:name" json:"name" validate:"required"` // key
-	Kind     string    `gorm:"column:kind" json:"kind" validate:"required"` // 类型
-	Dict     string    `gorm:"column:dict" json:"dict"`                     // 关联字典的key
-	Reg      string    `gorm:"column:reg" json:"reg"`                       // 正则
-	Required int       `gorm:"column:required" json:"required"`             // 1 必填
-	Sort     int       `gorm:"column:sort" json:"sort"`                     // 排序
-	Created  time.Time `gorm:"column:created" json:"created"`
-	Updated  time.Time `gorm:"column:updated" json:"updated"`
+	ID       int       `gorm:"primaryKey;column:id"`
+	Name     string    `gorm:"column:name"`     // key
+	Kind     string    `gorm:"column:kind"`     // 类型
+	Dict     string    `gorm:"column:dict"`     // 关联字典的key
+	Reg      string    `gorm:"column:reg"`      // 正则
+	Required int       `gorm:"column:required"` // 1 必填
+	Sort     int       `gorm:"column:sort"`     // 排序
+	Created  time.Time `gorm:"column:created"`
+	Updated  time.Time `gorm:"column:updated"`
 }
 
 // TableName .

@@ -23,8 +23,8 @@ func (cmd *CustomerCreateCmd) Do(customerDto vo.CustomerDTO) (e error) {
 	customer.Customer.UserID = 0
 	customer.Customer.Created = time.Now()
 	customer.Customer.Updated = time.Now()
-
 	customer.SetExtension(customerDto.Extension)
+
 	if e = cmd.VerifyCustomer(customer, true); e != nil {
 		return
 	}

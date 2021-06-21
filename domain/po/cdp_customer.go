@@ -9,13 +9,22 @@ import (
 
 // Customer .
 type Customer struct {
-	changes map[string]interface{}
-	UserID  int       `gorm:"primaryKey;column:userId" json:"userId"`
-	Name    string    `gorm:"column:name" json:"name"`
-	Gender  int       `gorm:"column:gender" json:"gender"` // 0未知 1男 2女
-	Age     int       `gorm:"column:age" json:"age"`       // 年龄
-	Created time.Time `gorm:"column:created" json:"created"`
-	Updated time.Time `gorm:"column:updated" json:"updated"`
+	changes        map[string]interface{}
+	UserID         int       `gorm:"primaryKey;column:userId" json:"userId"`
+	Casual         int       `gorm:"column:casual" json:"casual"`                 // 1临时用户
+	Name           string    `gorm:"column:name" json:"name"`                     // 名称
+	Email          string    `gorm:"column:email" json:"email"`                   // 邮箱
+	Phone          string    `gorm:"column:phone" json:"phone"`                   // 电话
+	Gender         string    `gorm:"column:gender" json:"gender"`                 // 性别
+	Birthday       string    `gorm:"column:birthday" json:"birthday"`             // 生日
+	Province       string    `gorm:"column:province" json:"province"`             // 省
+	City           string    `gorm:"column:city" json:"city"`                     // 市
+	Region         string    `gorm:"column:region" json:"region"`                 // 区
+	WechatUnionID  string    `gorm:"column:wechatUnionId" json:"wechatUnionID"`   // 微信唯一id
+	CookieIdentify string    `gorm:"column:cookieIdentify" json:"cookieIdentify"` // cookie识别
+	Key            string    `gorm:"column:key" json:"key"`                       // 自定义识别key
+	Created        time.Time `gorm:"column:created" json:"created"`
+	Updated        time.Time `gorm:"column:updated" json:"updated"`
 }
 
 // TableName .
@@ -49,22 +58,76 @@ func (obj *Customer) Update(name string, value interface{}) {
 	obj.changes[name] = value
 }
 
+// SetCasual .
+func (obj *Customer) SetCasual(casual int) {
+	obj.Casual = casual
+	obj.Update("casual", casual)
+}
+
 // SetName .
 func (obj *Customer) SetName(name string) {
 	obj.Name = name
 	obj.Update("name", name)
 }
 
+// SetEmail .
+func (obj *Customer) SetEmail(email string) {
+	obj.Email = email
+	obj.Update("email", email)
+}
+
+// SetPhone .
+func (obj *Customer) SetPhone(phone string) {
+	obj.Phone = phone
+	obj.Update("phone", phone)
+}
+
 // SetGender .
-func (obj *Customer) SetGender(gender int) {
+func (obj *Customer) SetGender(gender string) {
 	obj.Gender = gender
 	obj.Update("gender", gender)
 }
 
-// SetAge .
-func (obj *Customer) SetAge(age int) {
-	obj.Age = age
-	obj.Update("age", age)
+// SetBirthday .
+func (obj *Customer) SetBirthday(birthday string) {
+	obj.Birthday = birthday
+	obj.Update("birthday", birthday)
+}
+
+// SetProvince .
+func (obj *Customer) SetProvince(province string) {
+	obj.Province = province
+	obj.Update("province", province)
+}
+
+// SetCity .
+func (obj *Customer) SetCity(city string) {
+	obj.City = city
+	obj.Update("city", city)
+}
+
+// SetRegion .
+func (obj *Customer) SetRegion(region string) {
+	obj.Region = region
+	obj.Update("region", region)
+}
+
+// SetWechatUnionID .
+func (obj *Customer) SetWechatUnionID(wechatUnionID string) {
+	obj.WechatUnionID = wechatUnionID
+	obj.Update("wechatUnionId", wechatUnionID)
+}
+
+// SetCookieIdentify .
+func (obj *Customer) SetCookieIdentify(cookieIdentify string) {
+	obj.CookieIdentify = cookieIdentify
+	obj.Update("cookieIdentify", cookieIdentify)
+}
+
+// SetKey .
+func (obj *Customer) SetKey(key string) {
+	obj.Key = key
+	obj.Update("key", key)
 }
 
 // SetCreated .
@@ -79,14 +142,8 @@ func (obj *Customer) SetUpdated(updated time.Time) {
 	obj.Update("updated", updated)
 }
 
-// AddGender .
-func (obj *Customer) AddGender(gender int) {
-	obj.Gender += gender
-	obj.Update("gender", gorm.Expr("gender + ?", gender))
-}
-
-// AddAge .
-func (obj *Customer) AddAge(age int) {
-	obj.Age += age
-	obj.Update("age", gorm.Expr("age + ?", age))
+// AddCasual .
+func (obj *Customer) AddCasual(casual int) {
+	obj.Casual += casual
+	obj.Update("casual", gorm.Expr("casual + ?", casual))
 }
