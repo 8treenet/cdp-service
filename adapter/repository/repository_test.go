@@ -15,7 +15,7 @@ func getUnitTest() freedom.UnitTest {
 	//创建单元测试工具
 	unitTest := freedom.NewUnitTest()
 	unitTest.InstallDB(func() interface{} {
-		db, e := gorm.Open(mysql.Open("root:123123@tcp(127.0.0.1:3306)/template?charset=utf8&parseTime=True&loc=Local"))
+		db, e := gorm.Open(mysql.Open("root:123123@tcp(127.0.0.1:3306)/cdp?charset=utf8&parseTime=True&loc=Local"))
 		if e != nil {
 			freedom.Logger().Fatal(e.Error())
 		}
@@ -37,22 +37,40 @@ func getUnitTest() freedom.UnitTest {
 }
 
 // CustomerRepository
-func TestAddTempleteField(t *testing.T) {
+func TestOne(t *testing.T) {
 	//获取单测工具
 	unitTest := getUnitTest()
 	unitTest.Run()
 
-	var repo *IntermediaryRepository
+	var repo *CustomerRepository
 	//获取资源库
 	unitTest.FetchRepository(&repo)
-	repo.db().Exec("DELETE FROM `cdp_customer_template` WHERE 1").Row()
+	entity1, err1 := repo.GetCustomerByKey("yangshu611113513517944")
+	if err1 != nil {
+		panic(err1)
+	}
 
-	e := repo.AddTemplete("name", "String", "", "", 0)
-	t.Log(e)
-	repo.AddTemplete("sex", "Integer", "dsb", "", 0)
-	repo.AddTemplete("age", "Integer", "", "", 0)
-	repo.AddTemplete("mobile", "String", "", "", 0)
-	repo.AddTemplete("desc", "String", "", "", 0)
-	repo.AddTemplete("iq", "Integer", "", "", 0)
+	j, _ := entity1.MarshalJSON()
+	t.Log("||||||||||" + string(j) + "||||||||||")
+
+	entity2, err2 := repo.GetCustomerByPhone("13513517944")
+	if err2 != nil {
+		panic(err2)
+	}
+
+	j, _ = entity2.MarshalJSON()
+	t.Log("||||||||||" + string(j) + "||||||||||")
 	//t.Log(err)
+
+	entity3, err3 := repo.GetCustomerByWechat("1001212")
+	if err3 != nil {
+		panic(err3)
+	}
+
+	j, _ = entity3.MarshalJSON()
+	t.Log("||||||||||" + string(j) + "||||||||||")
+
+	if entity1.UserID != entity2.UserID || entity1.UserID != entity3.UserID {
+		panic("fuck")
+	}
 }
