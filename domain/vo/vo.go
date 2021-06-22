@@ -8,5 +8,6 @@ import (
 
 type CustomerDTO struct {
 	po.Customer
-	Extension map[string]interface{} `json:"extension"`
+	Extension          map[string]interface{} `json:"extension"`
+	BirthdaySubstitute string                 `json:"birthday"`
 }

@@ -62,14 +62,15 @@ func TestCustomerController_Post(t *testing.T) {
 	var data struct {
 		po.Customer
 		Extension map[string]interface{} `json:"extension"`
+		Birthday2 string                 `json:"birthday"`
 	}
-	data.Name = "yangshu6111"
+	data.Name = "yangshu3333"
 	data.Gender = "男"
-	data.Birthday = "1989-05-11"
+	data.Birthday2 = "1989-05-13"
 	data.Email = "4932004@qq.com"
-	data.Phone = "13513517944"
-	data.Key = "yangshu611113513517944"
-	data.WechatUnionID = "1001212"
+	data.Phone = "135135179333"
+	data.Key = "yangshu611113513517944333"
+	data.WechatUnionID = "10012133333"
 	data.Province = "山西"
 	data.City = "太原"
 	data.Region = "迎泽区"
@@ -85,18 +86,19 @@ func TestCustomerController_Post(t *testing.T) {
 }
 
 func TestCustomerController_GetBy(t *testing.T) {
-	req := requests.NewHTTPRequest(domain + "/customers/2").Get()
+	req := requests.NewHTTPRequest(domain + "/customers/855a9b98d30811eb8441804a1460b6f5").Get()
 	str, resp := req.ToString()
 	t.Log(str, resp)
 }
 
 func TestCustomerController_PutBy(t *testing.T) {
-	req := requests.NewHTTPRequest(domain + "/customers/4").Put()
+	req := requests.NewHTTPRequest(domain + "/customers/855a9b98d30811eb8441804a1460b6f5").Put()
 	data := map[string]interface{}{
-		"age":    11,
-		"gender": 1,
+		"birthday": "1991-05-13",
+		"gender":   "女",
 		"extension": map[string]interface{}{
 			"star": 1158,
+			"addr": "西城区",
 		},
 	}
 
@@ -109,15 +111,24 @@ func TestCustomerController_PostList(t *testing.T) {
 	datas := make([]struct {
 		po.Customer
 		Extension map[string]interface{} `json:"extension"`
-	}, 3)
-	for i := 0; i < 3; i++ {
+		Birthday2 string                 `json:"birthday"`
+	}, 5)
+	for i := 0; i < 5; i++ {
 		datas[i].Name = "yangshuList-" + fmt.Sprint(i)
-		datas[i].Gender = "女"
+		datas[i].Gender = "男"
+		datas[i].Birthday2 = "1989-05-13"
+		datas[i].Email = "4932004@qq.com"
+		datas[i].Phone = "13513517939" + fmt.Sprint(i)
+		datas[i].Key = "yangshu611113513517944333" + fmt.Sprint(i)
+		datas[i].WechatUnionID = "10012133333" + fmt.Sprint(i)
+		datas[i].Province = "山西"
+		datas[i].City = "太原"
+		datas[i].Region = "迎泽区"
 		datas[i].Extension = make(map[string]interface{})
 		datas[i].Extension["score"] = 100 + i
 		datas[i].Extension["star"] = 50 + i
 		datas[i].Extension["level"] = 20 + i
-		datas[i].Extension["addr"] = "11111-" + fmt.Sprint(i)
+		datas[i].Extension["addr"] = "刺恒小区sss-" + fmt.Sprint(i)
 	}
 
 	str, resp := req.SetJSONBody(datas).ToString()
@@ -127,7 +138,7 @@ func TestCustomerController_PostList(t *testing.T) {
 func TestCustomerController_DeleteBy(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customers").Delete()
 
-	req = req.SetQueryParam("id", []int{12, 11, 10, 9})
+	req = req.SetQueryParam("id", []string{"335d0e42d30911eb8441804a1460b6f5", "3360773ad30911eb8441804a1460b6f5", "33602866d30911eb8441804a1460b6f5", "335fb516d30911eb8441804a1460b6f5"})
 	str, resp := req.ToString()
 	t.Log(str, resp)
 }

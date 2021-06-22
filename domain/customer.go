@@ -37,8 +37,10 @@ func (service *CustomerService) DeleteCustomer(id []string) error {
 	for i := 0; i < len(id); i++ {
 		customer, err := service.GetCustomer(id[i])
 		if err != nil {
-			return err
+			service.Worker.Logger().Error(err)
+			continue
 		}
+
 		if err = service.CustomerRepository.DeleteCustomer(customer); err != nil {
 			return err
 		}

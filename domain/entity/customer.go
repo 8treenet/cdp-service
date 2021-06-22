@@ -37,10 +37,16 @@ func (entity *Customer) GetExtension() map[string]interface{} {
 func (entity *Customer) MarshalJSON() ([]byte, error) {
 	var jsonData struct {
 		po.Customer
-		Extension map[string]interface{} `json:"extension"`
+		Extension          map[string]interface{} `json:"extension"`
+		BirthdaySubstitute string                 `json:"birthday"`
+		Age                int                    `json:"age"`
 	}
 	jsonData.Customer = entity.Customer
 	jsonData.Extension = entity.Extension
+	if jsonData.Birthday != nil {
+		jsonData.BirthdaySubstitute = jsonData.Birthday.Format("2006-01-02")
+		jsonData.Age = time.Now().Year() - jsonData.Birthday.Year()
+	}
 
 	return json.Marshal(jsonData)
 }
@@ -66,11 +72,11 @@ func (entity *Customer) UpdateByMap(putData map[string]interface{}) error {
 		case "email":
 			entity.SetEmail(fmt.Sprint(item))
 		case "birthday":
-			_, err := time.Parse("2006-01-02", fmt.Sprint(item))
+			itemTimer, err := time.Parse("2006-01-02", fmt.Sprint(item))
 			if err != nil {
 				return err
 			}
-			entity.SetBirthday(fmt.Sprint(item))
+			entity.SetBirthday(itemTimer)
 		case "province":
 			entity.SetProvince(fmt.Sprint(item))
 		case "city":

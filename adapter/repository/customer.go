@@ -129,6 +129,21 @@ func (repo *CustomerRepository) DeleteCustomer(entity *entity.Customer) (e error
 	if e = repo.db().Where(entity.Location()).Delete(&po.Customer{}).Error; e != nil {
 		return
 	}
+	if e = repo.db().Where("userId = ?", entity.UserID).Delete(&po.CustomerExtension{}).Error; e != nil {
+		return
+	}
+	if entity.Phone != "" {
+		repo.db().Where("userId = ?", entity.UserID).Delete(&po.CustomerPhone{})
+	}
+
+	if entity.WechatUnionID != "" {
+		repo.db().Where("userId = ?", entity.UserID).Delete(&po.CustomerWechat{})
+	}
+
+	if entity.Key != "" {
+		repo.db().Where("userId = ?", entity.UserID).Delete(&po.CustomerKey{})
+	}
+
 	return repo.db().Where("userId = ?", entity.UserID).Delete(&po.CustomerExtension{}).Error
 }
 

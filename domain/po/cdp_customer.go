@@ -8,19 +8,19 @@ import (
 // Customer .
 type Customer struct {
 	changes       map[string]interface{}
-	UserID        string    `gorm:"primaryKey;column:userId" json:"userID"`
-	Name          string    `gorm:"column:name" json:"name"`                   // 名称
-	Email         string    `gorm:"column:email" json:"email"`                 // 邮箱
-	Phone         string    `gorm:"column:phone" json:"phone"`                 // 电话
-	Gender        string    `gorm:"column:gender" json:"gender"`               // 性别
-	Birthday      string    `gorm:"column:birthday" json:"birthday"`           // 生日
-	Province      string    `gorm:"column:province" json:"province"`           // 省
-	City          string    `gorm:"column:city" json:"city"`                   // 市
-	Region        string    `gorm:"column:region" json:"region"`               // 区
-	WechatUnionID string    `gorm:"column:wechatUnionId" json:"wechatUnionID"` // 微信唯一id
-	Key           string    `gorm:"column:key" json:"key"`                     // 自定义识别key
-	Created       time.Time `gorm:"column:created" json:"created"`
-	Updated       time.Time `gorm:"column:updated" json:"updated"`
+	UserID        string     `gorm:"primaryKey;column:userId" json:"userID"`
+	Name          string     `gorm:"column:name" json:"name"`                   // 名称
+	Email         string     `gorm:"column:email" json:"email"`                 // 邮箱
+	Phone         string     `gorm:"column:phone" json:"phone"`                 // 电话
+	Gender        string     `gorm:"column:gender" json:"gender"`               // 性别
+	Birthday      *time.Time `gorm:"column:birthday" json:"-"`                  // 生日
+	Province      string     `gorm:"column:province" json:"province"`           // 省
+	City          string     `gorm:"column:city" json:"city"`                   // 市
+	Region        string     `gorm:"column:region" json:"region"`               // 区
+	WechatUnionID string     `gorm:"column:wechatUnionId" json:"wechatUnionID"` // 微信唯一id
+	Key           string     `gorm:"column:key" json:"key"`                     // 自定义识别key
+	Created       time.Time  `gorm:"column:created" json:"-"`
+	Updated       time.Time  `gorm:"column:updated" json:"-"`
 }
 
 // TableName .
@@ -79,8 +79,8 @@ func (obj *Customer) SetGender(gender string) {
 }
 
 // SetBirthday .
-func (obj *Customer) SetBirthday(birthday string) {
-	obj.Birthday = birthday
+func (obj *Customer) SetBirthday(birthday time.Time) {
+	obj.Birthday = &birthday
 	obj.Update("birthday", birthday)
 }
 

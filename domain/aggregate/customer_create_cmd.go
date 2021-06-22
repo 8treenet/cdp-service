@@ -23,6 +23,12 @@ type CustomerCreateCmd struct {
 func (cmd *CustomerCreateCmd) Do(customerDto vo.CustomerDTO) (e error) {
 	customer := cmd.CustomerRepo.CreateCustomer()
 	customer.Customer = customerDto.Customer
+	if customerDto.BirthdaySubstitute != "" {
+		birthday, err := time.Parse("2006-01-02", customerDto.BirthdaySubstitute)
+		if err == nil {
+			customer.Customer.Birthday = &birthday
+		}
+	}
 	customer.Customer.Created = time.Now()
 	customer.Customer.Updated = time.Now()
 	customer.SetExtension(customerDto.Extension)
