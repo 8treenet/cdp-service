@@ -105,6 +105,10 @@ func (c *CustomerController) Delete() freedom.Result {
 		return &infra.JSONResponse{Error: err}
 	}
 
+	if len(query.ID) == 0 || len(query.ID) > 1000 {
+		return &infra.JSONResponse{Error: errors.New("userId数组必须大于0和小等于1000")}
+	}
+
 	if e := c.CustomerService.DeleteCustomer(query.ID); e != nil {
 		return &infra.JSONResponse{Error: e}
 	}
@@ -161,7 +165,7 @@ func (c *CustomerController) GetWechat() freedom.Result {
 	}
 
 	if len(query.UnionId) == 0 || len(query.UnionId) > 1000 {
-		return &infra.JSONResponse{Error: errors.New("UnionId数组必须大于0和小等于1000")}
+		return &infra.JSONResponse{Error: errors.New("unionId数组必须大于0和小等于1000")}
 	}
 
 	list, err := c.CustomerService.GetCustomersByWechat(query.UnionId)
