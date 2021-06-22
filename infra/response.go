@@ -69,7 +69,7 @@ func getErrorCode(work freedom.Worker) int {
 
 type PageResponse struct {
 	List     interface{} `json:"list"`
-	Total    int64       `json:"total"`
+	Total    int         `json:"total"`
 	Page     int         `json:"page"`
 	PageSize int         `json:"pageSize"`
 }

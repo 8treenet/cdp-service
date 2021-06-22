@@ -74,3 +74,8 @@ func (service *CustomerService) CreateCustomers(source []vo.CustomerDTO) error {
 	}
 	return cmd.BatcheDo(source)
 }
+
+// GetCustomersByPage 获取客户信息.
+func (service *CustomerService) GetCustomersByPage() (result []*entity.Customer, totalPage int, e error) {
+	return service.CustomerRepository.GetCustomersByPage()
+}

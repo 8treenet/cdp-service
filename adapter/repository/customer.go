@@ -268,6 +268,46 @@ func (repo *CustomerRepository) GetCustomers(userIdList []string) (result []*ent
 	return
 }
 
+// GetCustomer .
+func (repo *CustomerRepository) GetCustomersByPage() (result []*entity.Customer, totalPage int, e error) {
+	result = make([]*entity.Customer, 0)
+
+	page, pageSize := repo.Common.GetPage()
+	pager := NewDescPager("id").SetPage(page, pageSize)
+	list, e := findCustomerList(repo, po.Customer{}, pager)
+	if e != nil {
+		return
+	}
+
+	var extensionConds []interface{}
+	for _, primary := range list {
+		extensionConds = append(extensionConds, primary.UserID)
+	}
+
+	extensions, e := findCustomerExtensionListByWhere(repo, "userId in ?", extensionConds)
+	if e != nil {
+		return
+	}
+
+	for i := 0; i < len(list); i++ {
+		centity := &entity.Customer{Customer: list[i], Extension: make(map[string]interface{})}
+
+		for j := 0; j < len(extensions); j++ {
+			if extensions[j].UserID != centity.UserID {
+				continue
+			}
+			if e := json.Unmarshal(extensions[j].Data, &centity.Extension); e != nil {
+				repo.Worker().Logger().Error("CustomerRepository.GetCustomers ", e)
+			}
+			break
+		}
+		result = append(result, centity)
+	}
+	totalPage = pager.TotalPage()
+	repo.InjectBaseEntitys(result)
+	return
+}
+
 // db .
 func (repo *CustomerRepository) db() *gorm.DB {
 	var db *gorm.DB

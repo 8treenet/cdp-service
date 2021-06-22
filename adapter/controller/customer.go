@@ -21,6 +21,7 @@ type CustomerController struct {
 	CustomerService *domain.CustomerService
 	Worker          freedom.Worker
 	Request         *infra.Request
+	Common          *infra.CommonRequest
 }
 
 //PutBy handles the PUT: /customers/id:string route.
@@ -46,7 +47,19 @@ func (c *CustomerController) GetBy(id string) freedom.Result {
 
 //GetList handles the Get: /customers/list route.
 func (c *CustomerController) GetList() freedom.Result {
-	return &infra.JSONResponse{Object: ""}
+	list, total, e := c.CustomerService.GetCustomersByPage()
+	if e != nil {
+		return &infra.JSONResponse{Error: e}
+	}
+
+	page, pageSize := c.Common.GetPage()
+	pageData := infra.PageResponse{
+		List:     list,
+		Total:    total,
+		Page:     page,
+		PageSize: pageSize,
+	}
+	return &infra.JSONResponse{Object: pageData}
 }
 
 //Post handles the Get: /customers route.
