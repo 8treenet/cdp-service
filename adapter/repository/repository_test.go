@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/8treenet/freedom"
 	"github.com/go-redis/redis"
@@ -73,4 +75,26 @@ func TestOne(t *testing.T) {
 	if entity1.UserID != entity2.UserID || entity1.UserID != entity3.UserID {
 		panic("fuck")
 	}
+}
+
+func TestTemp(t *testing.T) {
+	unitTest := getUnitTest()
+	unitTest.Run()
+
+	var repo *CustomerRepository
+	//获取资源库
+	unitTest.FetchRepository(&repo)
+
+	uuid := fmt.Sprint(time.Now().Unix())
+	_, err := repo.CreateTempCustomer(uuid)
+	if err != nil {
+		panic(err)
+	}
+
+	entity, err := repo.GetTempCustomer(uuid)
+	if err != nil {
+		panic(err)
+	}
+	str, _ := entity.Marshal()
+	t.Log(string(str))
 }

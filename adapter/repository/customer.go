@@ -58,6 +58,32 @@ func (repo *CustomerRepository) CreateCustomer() *entity.Customer {
 	return result
 }
 
+// CreateCustomer .
+func (repo *CustomerRepository) CreateTempCustomer(uuid string) (*entity.TempCustomer, error) {
+	userId, err := utils.GenerateUUID()
+	if err != nil {
+		return nil, err
+	}
+
+	result := &entity.TempCustomer{CustomerTemporary: po.CustomerTemporary{UserID: userId, UUID: uuid, Created: time.Now(), Updated: time.Now()}}
+	if _, err := createCustomerTemporary(repo, &result.CustomerTemporary); err != nil {
+		return nil, err
+	}
+
+	repo.InjectBaseEntity(result)
+	return result, nil
+}
+
+// GetTempCustomer .
+func (repo *CustomerRepository) GetTempCustomer(uuid string) (*entity.TempCustomer, error) {
+	result := &entity.TempCustomer{CustomerTemporary: po.CustomerTemporary{UUID: uuid}}
+	repo.InjectBaseEntity(result)
+	if e := findCustomerTemporary(repo, &result.CustomerTemporary); e != nil {
+		return nil, e
+	}
+	return result, nil
+}
+
 func (repo *CustomerRepository) insertCustomer(customer *entity.Customer) error {
 	uuid, err := utils.GenerateUUID()
 	if err != nil {

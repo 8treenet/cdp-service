@@ -433,6 +433,159 @@ func saveCustomerWechat(repo GORMRepository, object saveObject) (rowsAffected in
 	return
 }
 
+// findCustomerTemporary .
+func findCustomerTemporary(repo GORMRepository, result *po.CustomerTemporary, builders ...Builder) (e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerTemporary", "findCustomerTemporary", e, now)
+		ormErrorLog(repo, "CustomerTemporary", "findCustomerTemporary", e, result)
+	}()
+	db := repo.db()
+	if len(builders) == 0 {
+		e = db.Where(result).Last(result).Error
+		return
+	}
+	e = builders[0].Execute(db.Limit(1), result)
+	return
+}
+
+// findCustomerTemporaryListByPrimarys .
+func findCustomerTemporaryListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.CustomerTemporary, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerTemporary", "findCustomerTemporaryListByPrimarys", e, now)
+		ormErrorLog(repo, "CustomerTemporary", "findCustomerTemporarysByPrimarys", e, primarys)
+	}()
+
+	e = repo.db().Find(&results, primarys).Error
+	return
+}
+
+// findCustomerTemporaryByWhere .
+func findCustomerTemporaryByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.CustomerTemporary, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerTemporary", "findCustomerTemporaryByWhere", e, now)
+		ormErrorLog(repo, "CustomerTemporary", "findCustomerTemporaryByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findCustomerTemporaryByMap .
+func findCustomerTemporaryByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.CustomerTemporary, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerTemporary", "findCustomerTemporaryByMap", e, now)
+		ormErrorLog(repo, "CustomerTemporary", "findCustomerTemporaryByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findCustomerTemporaryList .
+func findCustomerTemporaryList(repo GORMRepository, query po.CustomerTemporary, builders ...Builder) (results []po.CustomerTemporary, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerTemporary", "findCustomerTemporaryList", e, now)
+		ormErrorLog(repo, "CustomerTemporary", "findCustomerTemporarys", e, query)
+	}()
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findCustomerTemporaryListByWhere .
+func findCustomerTemporaryListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.CustomerTemporary, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerTemporary", "findCustomerTemporaryListByWhere", e, now)
+		ormErrorLog(repo, "CustomerTemporary", "findCustomerTemporarysByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findCustomerTemporaryListByMap .
+func findCustomerTemporaryListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.CustomerTemporary, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerTemporary", "findCustomerTemporaryListByMap", e, now)
+		ormErrorLog(repo, "CustomerTemporary", "findCustomerTemporarysByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// createCustomerTemporary .
+func createCustomerTemporary(repo GORMRepository, object *po.CustomerTemporary) (rowsAffected int64, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerTemporary", "createCustomerTemporary", e, now)
+		ormErrorLog(repo, "CustomerTemporary", "createCustomerTemporary", e, *object)
+	}()
+
+	db := repo.db().Create(object)
+	rowsAffected = db.RowsAffected
+	e = db.Error
+	return
+}
+
+// saveCustomerTemporary .
+func saveCustomerTemporary(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+	if len(object.Location()) == 0 {
+		return 0, errors.New("location cannot be empty")
+	}
+
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("CustomerTemporary", "saveCustomerTemporary", e, now)
+		ormErrorLog(repo, "CustomerTemporary", "saveCustomerTemporary", e, object)
+	}()
+
+	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())
+	e = db.Error
+	rowsAffected = db.RowsAffected
+	return
+}
+
 // findCustomerPhone .
 func findCustomerPhone(repo GORMRepository, result *po.CustomerPhone, builders ...Builder) (e error) {
 	now := time.Now()
