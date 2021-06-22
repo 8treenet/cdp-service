@@ -43,7 +43,7 @@ func (repo *SignRepository) GetPhone(phone string) (result *po.CustomerPhone, e 
 
 // GetKey .
 func (repo *SignRepository) GetKey(key string) (result *po.CustomerKey, e error) {
-	result = &po.CustomerKey{Key: key}
+	result = &po.CustomerKey{UserKey: key}
 	if e = findCustomerKey(repo, result); e != nil {
 		return
 	}

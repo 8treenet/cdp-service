@@ -68,7 +68,7 @@ func (c *CustomerController) Post() freedom.Result {
 	if e := c.Request.ReadJSON(&postData); e != nil {
 		return &infra.JSONResponse{Error: e}
 	}
-	if postData.Key == "" && postData.Phone == "" && postData.WechatUnionID == "" {
+	if postData.UserKey == "" && postData.Phone == "" && postData.WechatUnionID == "" {
 		return &infra.JSONResponse{Error: errors.New("未填写客户识别参数")}
 	}
 
@@ -84,7 +84,11 @@ func (c *CustomerController) PostList() freedom.Result {
 	if e := c.Request.ReadJSON(&postData); e != nil {
 		return &infra.JSONResponse{Error: e}
 	}
-
+	for _, v := range postData {
+		if v.UserKey == "" && v.Phone == "" && v.WechatUnionID == "" {
+			return &infra.JSONResponse{Error: errors.New("未填写客户识别参数")}
+		}
+	}
 	if e := c.CustomerService.CreateCustomers(postData); e != nil {
 		return &infra.JSONResponse{Error: e}
 	}
@@ -94,8 +98,9 @@ func (c *CustomerController) PostList() freedom.Result {
 //DeleteBy handles the delete: /customers route.
 func (c *CustomerController) Delete() freedom.Result {
 	var query struct {
-		ID []string `url:"id" validate:"required"` //Support array parameters
+		ID []string `url:"userId" validate:"required"` //Support array parameters
 	}
+
 	if err := c.Request.ReadQuery(&query, true); err != nil {
 		return &infra.JSONResponse{Error: err}
 	}
@@ -104,4 +109,64 @@ func (c *CustomerController) Delete() freedom.Result {
 		return &infra.JSONResponse{Error: e}
 	}
 	return &infra.JSONResponse{}
+}
+
+//GetKey handles the Get: /customers/key route.
+func (c *CustomerController) GetKey() freedom.Result {
+	var query struct {
+		UserKey []string `url:"userKey" validate:"required"` //Support array parameters
+	}
+	if err := c.Request.ReadQuery(&query, true); err != nil {
+		return &infra.JSONResponse{Error: err}
+	}
+
+	if len(query.UserKey) == 0 || len(query.UserKey) > 1000 {
+		return &infra.JSONResponse{Error: errors.New("key数组必须大于0和小等于1000")}
+	}
+
+	list, err := c.CustomerService.GetCustomersByKeys(query.UserKey)
+	if err != nil {
+		return &infra.JSONResponse{Error: err}
+	}
+	return &infra.JSONResponse{Object: list}
+}
+
+//GetPhone handles the Get: /customers/phone route.
+func (c *CustomerController) GetPhone() freedom.Result {
+	var query struct {
+		Phone []string `url:"phone" validate:"required"` //Support array parameters
+	}
+	if err := c.Request.ReadQuery(&query, true); err != nil {
+		return &infra.JSONResponse{Error: err}
+	}
+
+	if len(query.Phone) == 0 || len(query.Phone) > 1000 {
+		return &infra.JSONResponse{Error: errors.New("phone数组必须大于0和小等于1000")}
+	}
+
+	list, err := c.CustomerService.GetCustomersByPhone(query.Phone)
+	if err != nil {
+		return &infra.JSONResponse{Error: err}
+	}
+	return &infra.JSONResponse{Object: list}
+}
+
+//GetWechat handles the Get: /customers/wechat route.
+func (c *CustomerController) GetWechat() freedom.Result {
+	var query struct {
+		UnionId []string `url:"unionId" validate:"required"` //Support array parameters
+	}
+	if err := c.Request.ReadQuery(&query, true); err != nil {
+		return &infra.JSONResponse{Error: err}
+	}
+
+	if len(query.UnionId) == 0 || len(query.UnionId) > 1000 {
+		return &infra.JSONResponse{Error: errors.New("phone数组必须大于0和小等于1000")}
+	}
+
+	list, err := c.CustomerService.GetCustomersByWechat(query.UnionId)
+	if err != nil {
+		return &infra.JSONResponse{Error: err}
+	}
+	return &infra.JSONResponse{Object: list}
 }

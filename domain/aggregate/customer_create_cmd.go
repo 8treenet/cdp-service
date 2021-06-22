@@ -97,7 +97,7 @@ func (cmd *CustomerCreateCmd) getWechat(unionId string) *po.CustomerWechat {
 }
 
 func (cmd *CustomerCreateCmd) sign(customerDto vo.CustomerDTO) (*entity.Customer, error) {
-	key := cmd.getKey(customerDto.Key)
+	key := cmd.getKey(customerDto.UserKey)
 	phone := cmd.getPhone(customerDto.Phone)
 	wechat := cmd.getWechat(customerDto.WechatUnionID)
 
@@ -115,13 +115,13 @@ func (cmd *CustomerCreateCmd) sign(customerDto vo.CustomerDTO) (*entity.Customer
 		userId = wechat.UserID
 	}
 
-	if customerDto.Key != "" && key != nil {
+	if customerDto.UserKey != "" && key != nil {
 		key.SetUserID(userId)
 		fmt.Println("fuck")
 		cmd.SignRepo.SaveKey(key)
 	}
-	if customerDto.Key != "" && key == nil {
-		obj := po.CustomerKey{UserID: userId, Key: customerDto.Key}
+	if customerDto.UserKey != "" && key == nil {
+		obj := po.CustomerKey{UserID: userId, UserKey: customerDto.UserKey}
 		cmd.SignRepo.SaveKey(&obj)
 	}
 

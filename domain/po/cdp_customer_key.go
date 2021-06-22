@@ -9,8 +9,8 @@ import (
 type CustomerKey struct {
 	changes map[string]interface{}
 	ID      int       `gorm:"primaryKey;column:id"`
-	UserID  string    `gorm:"column:userId"` // 用户userid
-	Key     string    `gorm:"column:key"`    // 唯一id
+	UserID  string    `gorm:"column:userId"`  // 用户userid
+	UserKey string    `gorm:"column:userKey"` // 唯一key
 	Created time.Time `gorm:"column:created"`
 	Updated time.Time `gorm:"column:updated"`
 }
@@ -52,10 +52,10 @@ func (obj *CustomerKey) SetUserID(userID string) {
 	obj.Update("userId", userID)
 }
 
-// SetKey .
-func (obj *CustomerKey) SetKey(key string) {
-	obj.Key = key
-	obj.Update("key", key)
+// SetUserKey .
+func (obj *CustomerKey) SetUserKey(userKey string) {
+	obj.UserKey = userKey
+	obj.Update("userKey", userKey)
 }
 
 // SetCreated .

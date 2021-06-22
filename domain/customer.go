@@ -75,7 +75,22 @@ func (service *CustomerService) CreateCustomers(source []vo.CustomerDTO) error {
 	return cmd.BatcheDo(source)
 }
 
-// GetCustomersByPage 获取客户信息.
+// GetCustomersByPage 获取客户信息列表.
 func (service *CustomerService) GetCustomersByPage() (result []*entity.Customer, totalPage int, e error) {
 	return service.CustomerRepository.GetCustomersByPage()
+}
+
+// GetCustomersByKeys 获取客户信息列表.
+func (service *CustomerService) GetCustomersByKeys(keys []string) (result []*entity.Customer, e error) {
+	return service.CustomerRepository.GetCustomersByKey(keys)
+}
+
+// GetCustomersByPhone 获取客户信息列表.
+func (service *CustomerService) GetCustomersByPhone(phones []string) (result []*entity.Customer, e error) {
+	return service.CustomerRepository.GetCustomersByPhone(phones)
+}
+
+// GetCustomersByWechat 获取客户信息列表.
+func (service *CustomerService) GetCustomersByWechat(unionIds []string) (result []*entity.Customer, e error) {
+	return service.CustomerRepository.GetCustomersByWechat(unionIds)
 }

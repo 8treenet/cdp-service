@@ -8,7 +8,8 @@ import (
 // Customer .
 type Customer struct {
 	changes       map[string]interface{}
-	UserID        string     `gorm:"primaryKey;column:userId" json:"userID"`
+	ID            int        `gorm:"primaryKey;column:id" json:"-"`
+	UserID        string     `gorm:"column:userId" json:"userId"`
 	Name          string     `gorm:"column:name" json:"name"`                   // 名称
 	Email         string     `gorm:"column:email" json:"email"`                 // 邮箱
 	Phone         string     `gorm:"column:phone" json:"phone"`                 // 电话
@@ -18,7 +19,7 @@ type Customer struct {
 	City          string     `gorm:"column:city" json:"city"`                   // 市
 	Region        string     `gorm:"column:region" json:"region"`               // 区
 	WechatUnionID string     `gorm:"column:wechatUnionId" json:"wechatUnionID"` // 微信唯一id
-	Key           string     `gorm:"column:key" json:"key"`                     // 自定义识别key
+	UserKey       string     `gorm:"column:userKey" json:"userKey"`             // 自定义识别key
 	Created       time.Time  `gorm:"column:created" json:"-"`
 	Updated       time.Time  `gorm:"column:updated" json:"-"`
 }
@@ -108,10 +109,10 @@ func (obj *Customer) SetWechatUnionID(wechatUnionID string) {
 	obj.Update("wechatUnionId", wechatUnionID)
 }
 
-// SetKey .
-func (obj *Customer) SetKey(key string) {
-	obj.Key = key
-	obj.Update("key", key)
+// SetUserKey .
+func (obj *Customer) SetUserKey(userKey string) {
+	obj.UserKey = userKey
+	obj.Update("userKey", userKey)
 }
 
 // SetCreated .

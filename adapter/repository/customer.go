@@ -78,8 +78,8 @@ func (repo *CustomerRepository) insertCustomer(customer *entity.Customer) error 
 		return err
 	}
 
-	if customer.Key != "" {
-		if err := repo.SaveKey(&po.CustomerKey{Key: customer.Key, UserID: uuid}); err != nil {
+	if customer.UserKey != "" {
+		if err := repo.SaveKey(&po.CustomerKey{UserKey: customer.UserKey, UserID: uuid}); err != nil {
 			return err
 		}
 	}
@@ -140,7 +140,7 @@ func (repo *CustomerRepository) DeleteCustomer(entity *entity.Customer) (e error
 		repo.db().Where("userId = ?", entity.UserID).Delete(&po.CustomerWechat{})
 	}
 
-	if entity.Key != "" {
+	if entity.UserKey != "" {
 		repo.db().Where("userId = ?", entity.UserID).Delete(&po.CustomerKey{})
 	}
 
@@ -149,7 +149,7 @@ func (repo *CustomerRepository) DeleteCustomer(entity *entity.Customer) (e error
 
 // GetCustomerKey .
 func (repo *CustomerRepository) GetCustomerByKey(key string) (result *entity.Customer, e error) {
-	obj := po.CustomerKey{Key: key}
+	obj := po.CustomerKey{UserKey: key}
 	if e = findCustomerKey(repo, &obj); e != nil {
 		return
 	}
@@ -157,13 +157,8 @@ func (repo *CustomerRepository) GetCustomerByKey(key string) (result *entity.Cus
 }
 
 // GetCustomersByKeys .
-func (repo *CustomerRepository) GetCustomersByKeys(keys []string) (result []*entity.Customer, e error) {
-	var keysCond []interface{}
-	for _, cond := range keys {
-		keysCond = append(keysCond, cond)
-	}
-
-	objs, e := findCustomerKeyListByWhere(repo, "key in ?", keysCond)
+func (repo *CustomerRepository) GetCustomersByKey(keys []string) (result []*entity.Customer, e error) {
+	objs, e := findCustomerKeyListByWhere(repo, "userKey in (?)", []interface{}{keys})
 	if e != nil || len(objs) == 0 {
 		return
 	}
@@ -185,13 +180,8 @@ func (repo *CustomerRepository) GetCustomerByPhone(phone string) (result *entity
 }
 
 // GetCustomersByPhones .
-func (repo *CustomerRepository) GetCustomersByPhones(phones []string) (result []*entity.Customer, e error) {
-	var phonesCond []interface{}
-	for _, cond := range phones {
-		phonesCond = append(phonesCond, cond)
-	}
-
-	objs, e := findCustomerPhoneListByWhere(repo, "phone in ?", phonesCond)
+func (repo *CustomerRepository) GetCustomersByPhone(phones []string) (result []*entity.Customer, e error) {
+	objs, e := findCustomerPhoneListByWhere(repo, "phone in (?)", []interface{}{phones})
 	if e != nil || len(objs) == 0 {
 		return
 	}
@@ -212,14 +202,9 @@ func (repo *CustomerRepository) GetCustomerByWechat(unionId string) (result *ent
 	return repo.GetCustomer(obj.UserID)
 }
 
-// GetCustomersByWechats .
-func (repo *CustomerRepository) GetCustomersByWechats(unionIds []string) (result []*entity.Customer, e error) {
-	var unionIdsCond []interface{}
-	for _, cond := range unionIds {
-		unionIdsCond = append(unionIdsCond, cond)
-	}
-
-	objs, e := findCustomerWechatListByWhere(repo, "unionId in ?", unionIdsCond)
+// GetCustomersByWechat .
+func (repo *CustomerRepository) GetCustomersByWechat(unionIds []string) (result []*entity.Customer, e error) {
+	objs, e := findCustomerWechatListByWhere(repo, "unionId in (?)", []interface{}{unionIds})
 	if e != nil || len(objs) == 0 {
 		return
 	}
@@ -234,17 +219,13 @@ func (repo *CustomerRepository) GetCustomersByWechats(unionIds []string) (result
 // GetCustomer .
 func (repo *CustomerRepository) GetCustomers(userIdList []string) (result []*entity.Customer, e error) {
 	result = make([]*entity.Customer, 0)
-	var primarys []interface{}
-	for _, primary := range result {
-		primarys = append(primarys, primary)
-	}
 
-	list, e := findCustomerListByPrimarys(repo, primarys...)
+	list, e := findCustomerListByWhere(repo, "userId in (?)", []interface{}{userIdList})
 	if e != nil {
 		return
 	}
 
-	extensions, e := findCustomerExtensionListByWhere(repo, "userId in ?", primarys)
+	extensions, e := findCustomerExtensionListByWhere(repo, "userId in (?)", []interface{}{userIdList})
 	if e != nil {
 		return
 	}
@@ -279,12 +260,12 @@ func (repo *CustomerRepository) GetCustomersByPage() (result []*entity.Customer,
 		return
 	}
 
-	var extensionConds []interface{}
-	for _, primary := range list {
-		extensionConds = append(extensionConds, primary.UserID)
+	var extensionConds []string
+	for _, customerPO := range list {
+		extensionConds = append(extensionConds, customerPO.UserID)
 	}
 
-	extensions, e := findCustomerExtensionListByWhere(repo, "userId in ?", extensionConds)
+	extensions, e := findCustomerExtensionListByWhere(repo, "userId in (?)", []interface{}{extensionConds})
 	if e != nil {
 		return
 	}
