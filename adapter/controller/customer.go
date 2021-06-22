@@ -121,7 +121,7 @@ func (c *CustomerController) GetKey() freedom.Result {
 	}
 
 	if len(query.UserKey) == 0 || len(query.UserKey) > 1000 {
-		return &infra.JSONResponse{Error: errors.New("key数组必须大于0和小等于1000")}
+		return &infra.JSONResponse{Error: errors.New("userKey数组必须大于0和小等于1000")}
 	}
 
 	list, err := c.CustomerService.GetCustomersByKeys(query.UserKey)
@@ -161,7 +161,7 @@ func (c *CustomerController) GetWechat() freedom.Result {
 	}
 
 	if len(query.UnionId) == 0 || len(query.UnionId) > 1000 {
-		return &infra.JSONResponse{Error: errors.New("phone数组必须大于0和小等于1000")}
+		return &infra.JSONResponse{Error: errors.New("UnionId数组必须大于0和小等于1000")}
 	}
 
 	list, err := c.CustomerService.GetCustomersByWechat(query.UnionId)
