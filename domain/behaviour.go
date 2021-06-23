@@ -11,7 +11,7 @@ import (
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
 		initiator.BindService(func() *BehaviourService {
-			return &BehaviourService{}
+			return &BehaviourService{waitBufferTime: 5 * time.Second, waitBufferCount: 500}
 		})
 		initiator.InjectController(func(ctx freedom.Context) (service *BehaviourService) {
 			initiator.FetchService(ctx, &service)
@@ -24,44 +24,49 @@ func init() {
 type BehaviourService struct {
 	Worker              freedom.Worker
 	BehaviourRepository *repository.BehaviourRepository
+	waitBufferTime      time.Duration
+	waitBufferCount     int
 }
 
 // BatchProcess
 func (service *BehaviourService) BatchProcess() {
-	var list []*entity.Behaviour
-	shutdown := false
-	for shutdown {
+	service.Worker.Logger().Debug("BatchProcess")
+	buffer := []*entity.Behaviour{}
+
+	stop := false
+	for !stop {
 		select {
-		case entityObj := <-service.BehaviourRepository.GetTask():
-			if entityObj == nil {
-				//程序关闭处理
-				shutdown = true
-				if len(list) > 0 {
-					service.batch(list)
+		case obj, ok := <-service.BehaviourRepository.GetTask():
+			if !ok {
+				stop = true //close(chan)
+				if len(buffer) > 0 {
+					service.batch(buffer)
 				}
-				list = make([]*entity.Behaviour, 0)
+				buffer = []*entity.Behaviour{}
+				service.BehaviourRepository.TaskOver() //优雅关闭
 				continue
 			}
 
-			list = append(list, entityObj)
-			if len(list) < 500 {
+			buffer = append(buffer, obj)
+			if len(buffer) < service.waitBufferCount {
 				continue
 			}
 
-			service.batch(list)
-			list = make([]*entity.Behaviour, 0)
+			service.batch(buffer)
+			buffer = []*entity.Behaviour{}
+
 		case <-time.After(5 * time.Second):
-			if len(list) == 0 {
+			if len(buffer) == 0 {
 				continue
 			}
 
-			service.batch(list)
-			list = make([]*entity.Behaviour, 0)
+			service.batch(buffer)
+			buffer = []*entity.Behaviour{}
 		}
 	}
 }
 
 // batch
 func (service *BehaviourService) batch(list []*entity.Behaviour) {
-
+	service.Worker.Logger().Debug("batch len:", len(list))
 }

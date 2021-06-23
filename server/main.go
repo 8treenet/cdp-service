@@ -103,11 +103,11 @@ func liveness(app freedom.Application) {
 }
 
 func behaviourLoop() {
-	time.Sleep(1 * time.Second)
 	go func() {
+		time.Sleep(1 * time.Second)
 		defer func() {
 			if err := recover(); err != nil {
-				freedom.Logger().Error("loop panic:", err)
+				freedom.Logger().Error("behaviourLoop recover:", err)
 				behaviourLoop()
 			}
 		}()
