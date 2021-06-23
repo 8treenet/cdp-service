@@ -1,18 +1,15 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/8treenet/cdp-service/domain/entity"
 	"github.com/8treenet/freedom"
 )
 
-var (
-	behaviourChan chan *entity.Behaviour
-	bufferOver    chan bool
-)
-
 func init() {
 	behaviourChan = make(chan *entity.Behaviour, 2000)
-	bufferOver = make(chan bool)
+	bufferOver = make(chan bool, 1)
 
 	freedom.Prepare(func(initiator freedom.Initiator) {
 		initiator.BindRepository(func() *BehaviourRepository {
@@ -20,29 +17,52 @@ func init() {
 		})
 
 		initiator.BindBooting(func(bootManager freedom.BootManager) {
-
 			bootManager.RegisterShutdown(func() {
-				//注册程序关闭事件。关闭行为管道，并且等buffer全部处理完成
+				//注册程序关闭事件。关闭行为管道
 				close(behaviourChan)
-				<-bufferOver
+				//等全部处理完成的over通知或3秒超时
+				select {
+				case <-bufferOver:
+					break
+				case <-time.After(3 * time.Second):
+					break
+				}
+
 			})
 		})
 	})
 }
+
+var (
+	behaviourChan chan *entity.Behaviour
+	bufferOver    chan bool
+)
 
 // BehaviourRepository .
 type BehaviourRepository struct {
 	freedom.Repository
 }
 
-// ReadStream .
-func (repo *BehaviourRepository) ReadStream() <-chan *entity.Behaviour {
-	return behaviourChan
-}
+// FetchBehaviours max:最大数量, duration:等待时间.
+func (repo *BehaviourRepository) FetchBehaviours(max int, duration time.Duration) (list []*entity.Behaviour, cancel func() bool) {
+	cancel = func() bool { return false }
 
-// TaskOver .
-func (repo *BehaviourRepository) TaskOver() {
-	repo.Worker().Logger().Debug("TaskOver")
-	bufferOver <- true
+	for len(list) < max {
+		select {
+		case obj, ok := <-behaviourChan:
+			if !ok {
+				cancel = func() bool {
+					//返回匿名函数控制over
+					bufferOver <- true
+					return true
+				}
+				return
+			}
+
+			list = append(list, obj)
+		case <-time.After(duration):
+			return
+		}
+	}
 	return
 }

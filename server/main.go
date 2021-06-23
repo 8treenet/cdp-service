@@ -4,10 +4,10 @@ package main
 import (
 	"time"
 
-	_ "github.com/8treenet/cdp-service/adapter/controller" //Implicit initialization controller
+	//Implicit initialization controller
+	"github.com/8treenet/cdp-service/adapter/controller"
 	_ "github.com/8treenet/cdp-service/adapter/repository" //Implicit initialization repository
-	"github.com/8treenet/cdp-service/domain"
-	_ "github.com/8treenet/cdp-service/infra" //Implicit initialization infra
+	_ "github.com/8treenet/cdp-service/infra"              //Implicit initialization infra
 	localMiddleware "github.com/8treenet/cdp-service/middleware"
 
 	"github.com/8treenet/cdp-service/server/conf"
@@ -27,7 +27,7 @@ func main() {
 	liveness(app)
 	installDatabase(app)
 	installRedis(app)
-	behaviourLoop()
+	controller.BehaviourLoop()
 	app.Run(runner, *conf.Get().App)
 }
 
@@ -100,20 +100,4 @@ func liveness(app freedom.Application) {
 	app.Iris().Get("/ping", func(ctx freedom.Context) {
 		ctx.WriteString("pong")
 	})
-}
-
-func behaviourLoop() {
-	go func() {
-		time.Sleep(1 * time.Second)
-		defer func() {
-			if err := recover(); err != nil {
-				freedom.Logger().Error("behaviourLoop recover:", err)
-				behaviourLoop()
-			}
-		}()
-
-		freedom.ServiceLocator().Call(func(service *domain.BehaviourService) {
-			service.BatchProcess()
-		})
-	}()
 }
