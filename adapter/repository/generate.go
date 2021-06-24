@@ -280,6 +280,159 @@ func saveSystemConfig(repo GORMRepository, object saveObject) (rowsAffected int6
 	return
 }
 
+// findIPAddr .
+func findIPAddr(repo GORMRepository, result *po.IPAddr, builders ...Builder) (e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("IPAddr", "findIPAddr", e, now)
+		ormErrorLog(repo, "IPAddr", "findIPAddr", e, result)
+	}()
+	db := repo.db()
+	if len(builders) == 0 {
+		e = db.Where(result).Last(result).Error
+		return
+	}
+	e = builders[0].Execute(db.Limit(1), result)
+	return
+}
+
+// findIPAddrListByPrimarys .
+func findIPAddrListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.IPAddr, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("IPAddr", "findIPAddrListByPrimarys", e, now)
+		ormErrorLog(repo, "IPAddr", "findIPAddrsByPrimarys", e, primarys)
+	}()
+
+	e = repo.db().Find(&results, primarys).Error
+	return
+}
+
+// findIPAddrByWhere .
+func findIPAddrByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.IPAddr, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("IPAddr", "findIPAddrByWhere", e, now)
+		ormErrorLog(repo, "IPAddr", "findIPAddrByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findIPAddrByMap .
+func findIPAddrByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.IPAddr, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("IPAddr", "findIPAddrByMap", e, now)
+		ormErrorLog(repo, "IPAddr", "findIPAddrByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findIPAddrList .
+func findIPAddrList(repo GORMRepository, query po.IPAddr, builders ...Builder) (results []po.IPAddr, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("IPAddr", "findIPAddrList", e, now)
+		ormErrorLog(repo, "IPAddr", "findIPAddrs", e, query)
+	}()
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findIPAddrListByWhere .
+func findIPAddrListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.IPAddr, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("IPAddr", "findIPAddrListByWhere", e, now)
+		ormErrorLog(repo, "IPAddr", "findIPAddrsByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findIPAddrListByMap .
+func findIPAddrListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.IPAddr, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("IPAddr", "findIPAddrListByMap", e, now)
+		ormErrorLog(repo, "IPAddr", "findIPAddrsByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// createIPAddr .
+func createIPAddr(repo GORMRepository, object *po.IPAddr) (rowsAffected int64, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("IPAddr", "createIPAddr", e, now)
+		ormErrorLog(repo, "IPAddr", "createIPAddr", e, *object)
+	}()
+
+	db := repo.db().Create(object)
+	rowsAffected = db.RowsAffected
+	e = db.Error
+	return
+}
+
+// saveIPAddr .
+func saveIPAddr(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+	if len(object.Location()) == 0 {
+		return 0, errors.New("location cannot be empty")
+	}
+
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("IPAddr", "saveIPAddr", e, now)
+		ormErrorLog(repo, "IPAddr", "saveIPAddr", e, object)
+	}()
+
+	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())
+	e = db.Error
+	rowsAffected = db.RowsAffected
+	return
+}
+
 // findCustomerWechat .
 func findCustomerWechat(repo GORMRepository, result *po.CustomerWechat, builders ...Builder) (e error) {
 	now := time.Now()
@@ -1343,6 +1496,159 @@ func saveCustomer(repo GORMRepository, object saveObject) (rowsAffected int64, e
 	defer func() {
 		freedom.Prometheus().OrmWithLabelValues("Customer", "saveCustomer", e, now)
 		ormErrorLog(repo, "Customer", "saveCustomer", e, object)
+	}()
+
+	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())
+	e = db.Error
+	rowsAffected = db.RowsAffected
+	return
+}
+
+// findBehaviour .
+func findBehaviour(repo GORMRepository, result *po.Behaviour, builders ...Builder) (e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Behaviour", "findBehaviour", e, now)
+		ormErrorLog(repo, "Behaviour", "findBehaviour", e, result)
+	}()
+	db := repo.db()
+	if len(builders) == 0 {
+		e = db.Where(result).Last(result).Error
+		return
+	}
+	e = builders[0].Execute(db.Limit(1), result)
+	return
+}
+
+// findBehaviourListByPrimarys .
+func findBehaviourListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.Behaviour, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Behaviour", "findBehaviourListByPrimarys", e, now)
+		ormErrorLog(repo, "Behaviour", "findBehavioursByPrimarys", e, primarys)
+	}()
+
+	e = repo.db().Find(&results, primarys).Error
+	return
+}
+
+// findBehaviourByWhere .
+func findBehaviourByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.Behaviour, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Behaviour", "findBehaviourByWhere", e, now)
+		ormErrorLog(repo, "Behaviour", "findBehaviourByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findBehaviourByMap .
+func findBehaviourByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.Behaviour, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Behaviour", "findBehaviourByMap", e, now)
+		ormErrorLog(repo, "Behaviour", "findBehaviourByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findBehaviourList .
+func findBehaviourList(repo GORMRepository, query po.Behaviour, builders ...Builder) (results []po.Behaviour, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Behaviour", "findBehaviourList", e, now)
+		ormErrorLog(repo, "Behaviour", "findBehaviours", e, query)
+	}()
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findBehaviourListByWhere .
+func findBehaviourListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.Behaviour, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Behaviour", "findBehaviourListByWhere", e, now)
+		ormErrorLog(repo, "Behaviour", "findBehavioursByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findBehaviourListByMap .
+func findBehaviourListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.Behaviour, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Behaviour", "findBehaviourListByMap", e, now)
+		ormErrorLog(repo, "Behaviour", "findBehavioursByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// createBehaviour .
+func createBehaviour(repo GORMRepository, object *po.Behaviour) (rowsAffected int64, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Behaviour", "createBehaviour", e, now)
+		ormErrorLog(repo, "Behaviour", "createBehaviour", e, *object)
+	}()
+
+	db := repo.db().Create(object)
+	rowsAffected = db.RowsAffected
+	e = db.Error
+	return
+}
+
+// saveBehaviour .
+func saveBehaviour(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+	if len(object.Location()) == 0 {
+		return 0, errors.New("location cannot be empty")
+	}
+
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Behaviour", "saveBehaviour", e, now)
+		ormErrorLog(repo, "Behaviour", "saveBehaviour", e, object)
 	}()
 
 	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())

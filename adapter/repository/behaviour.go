@@ -3,13 +3,14 @@ package repository
 import (
 	"time"
 
-	"github.com/8treenet/cdp-service/domain/entity"
+	"github.com/8treenet/cdp-service/domain/po"
 	"github.com/8treenet/cdp-service/infra"
 	"github.com/8treenet/freedom"
+	"gorm.io/gorm"
 )
 
 func init() {
-	behaviourChan = make(chan *entity.Behaviour, 5000)
+	behaviourChan = make(chan *po.Behaviour, 3000)
 	bufferOver = make(chan bool, 1)
 
 	freedom.Prepare(func(initiator freedom.Initiator) {
@@ -35,7 +36,7 @@ func init() {
 }
 
 var (
-	behaviourChan chan *entity.Behaviour
+	behaviourChan chan *po.Behaviour
 	bufferOver    chan bool
 )
 
@@ -45,8 +46,8 @@ type BehaviourRepository struct {
 	GEO *infra.GEO
 }
 
-// FetchBehaviours max:最大数量, duration:等待时间.
-func (repo *BehaviourRepository) FetchBehaviours(max int, duration time.Duration) (list []*entity.Behaviour, cancel func() bool) {
+// FetchQueue max:最大数量, duration:等待时间.
+func (repo *BehaviourRepository) FetchQueue(max int, duration time.Duration) (list []*po.Behaviour, cancel func() bool) {
 	cancel = func() bool { return false }
 
 	for len(list) < max {
@@ -69,7 +70,29 @@ func (repo *BehaviourRepository) FetchBehaviours(max int, duration time.Duration
 	return
 }
 
+// AddQueue
+func (repo *BehaviourRepository) AddQueue(list []*po.Behaviour) {
+	for i := 0; i < len(list); i++ {
+		behaviourChan <- list[i]
+	}
+	return
+}
+
+// EnteringWarehouse
+func (repo *BehaviourRepository) EnteringWarehouse(list []*po.Behaviour) error {
+	return repo.db().CreateInBatches(list, 500).Error
+}
+
 // getIP
 func (repo *BehaviourRepository) getIP(addr []string) (map[string]*infra.GEOInfo, error) {
 	return repo.GEO.ParseBatchIP(addr)
+}
+
+// db .
+func (repo *BehaviourRepository) db() *gorm.DB {
+	var db *gorm.DB
+	if err := repo.FetchDB(&db); err != nil {
+		panic(err)
+	}
+	return db
 }
