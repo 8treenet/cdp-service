@@ -145,7 +145,7 @@ func TestCustomerController_DeleteBy(t *testing.T) {
 
 func TestCustomerController_GetList(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customers/list").Get()
-	str, _ := req.SetQueryParam("page", 1).SetQueryParam("pageSize", 10).ToString()
+	str, _ := req.SetQueryParam("page", 1).SetQueryParam("pageSize", 3).ToString()
 	t.Log(str)
 }
 

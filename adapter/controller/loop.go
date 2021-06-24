@@ -20,7 +20,7 @@ func BehaviourLoop() {
 
 		freedom.ServiceLocator().Call(func(service *domain.BehaviourService) {
 			for {
-				cancel := service.BatchProcess()
+				cancel := service.EnteringWarehouse()
 				if cancel() {
 					freedom.Logger().Info("BehaviourLoop cancel")
 					break //取消

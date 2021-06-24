@@ -30,13 +30,13 @@ type BehaviourService struct {
 // EnteringWarehouse //批量入库
 func (service *BehaviourService) EnteringWarehouse() func() bool {
 	service.Worker.Logger().Debug("BatchProcess")
-	list, cancel := service.BehaviourRepository.FetchPOs(service.fetchCount, service.fetchTime)
+	list, cancel := service.BehaviourRepository.FetchQueue(service.fetchCount, service.fetchTime)
 	if len(list) == 0 {
 		return cancel
 	}
 
 	for i := 0; i < 2; i++ {
-		err := service.BehaviourRepository.InsertPOs(list)
+		err := service.BehaviourRepository.EnteringWarehouse(list)
 		if err == nil {
 			break
 		}
