@@ -1045,12 +1045,12 @@ func saveCustomerKey(repo GORMRepository, object saveObject) (rowsAffected int64
 	return
 }
 
-// findCustomerExtensionTemplate .
-func findCustomerExtensionTemplate(repo GORMRepository, result *po.CustomerExtensionTemplate, builders ...Builder) (e error) {
+// findCustomerExtensionMetadata .
+func findCustomerExtensionMetadata(repo GORMRepository, result *po.CustomerExtensionMetadata, builders ...Builder) (e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "findCustomerExtensionTemplate", e, now)
-		ormErrorLog(repo, "CustomerExtensionTemplate", "findCustomerExtensionTemplate", e, result)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionMetadata", "findCustomerExtensionMetadata", e, now)
+		ormErrorLog(repo, "CustomerExtensionMetadata", "findCustomerExtensionMetadata", e, result)
 	}()
 	db := repo.db()
 	if len(builders) == 0 {
@@ -1061,24 +1061,24 @@ func findCustomerExtensionTemplate(repo GORMRepository, result *po.CustomerExten
 	return
 }
 
-// findCustomerExtensionTemplateListByPrimarys .
-func findCustomerExtensionTemplateListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.CustomerExtensionTemplate, e error) {
+// findCustomerExtensionMetadataListByPrimarys .
+func findCustomerExtensionMetadataListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.CustomerExtensionMetadata, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "findCustomerExtensionTemplateListByPrimarys", e, now)
-		ormErrorLog(repo, "CustomerExtensionTemplate", "findCustomerExtensionTemplatesByPrimarys", e, primarys)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionMetadata", "findCustomerExtensionMetadataListByPrimarys", e, now)
+		ormErrorLog(repo, "CustomerExtensionMetadata", "findCustomerExtensionMetadatasByPrimarys", e, primarys)
 	}()
 
 	e = repo.db().Find(&results, primarys).Error
 	return
 }
 
-// findCustomerExtensionTemplateByWhere .
-func findCustomerExtensionTemplateByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.CustomerExtensionTemplate, e error) {
+// findCustomerExtensionMetadataByWhere .
+func findCustomerExtensionMetadataByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.CustomerExtensionMetadata, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "findCustomerExtensionTemplateByWhere", e, now)
-		ormErrorLog(repo, "CustomerExtensionTemplate", "findCustomerExtensionTemplateByWhere", e, query, args)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionMetadata", "findCustomerExtensionMetadataByWhere", e, now)
+		ormErrorLog(repo, "CustomerExtensionMetadata", "findCustomerExtensionMetadataByWhere", e, query, args)
 	}()
 	db := repo.db()
 	if query != "" {
@@ -1093,12 +1093,12 @@ func findCustomerExtensionTemplateByWhere(repo GORMRepository, query string, arg
 	return
 }
 
-// findCustomerExtensionTemplateByMap .
-func findCustomerExtensionTemplateByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.CustomerExtensionTemplate, e error) {
+// findCustomerExtensionMetadataByMap .
+func findCustomerExtensionMetadataByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.CustomerExtensionMetadata, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "findCustomerExtensionTemplateByMap", e, now)
-		ormErrorLog(repo, "CustomerExtensionTemplate", "findCustomerExtensionTemplateByMap", e, query)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionMetadata", "findCustomerExtensionMetadataByMap", e, now)
+		ormErrorLog(repo, "CustomerExtensionMetadata", "findCustomerExtensionMetadataByMap", e, query)
 	}()
 
 	db := repo.db().Where(query)
@@ -1111,12 +1111,12 @@ func findCustomerExtensionTemplateByMap(repo GORMRepository, query map[string]in
 	return
 }
 
-// findCustomerExtensionTemplateList .
-func findCustomerExtensionTemplateList(repo GORMRepository, query po.CustomerExtensionTemplate, builders ...Builder) (results []po.CustomerExtensionTemplate, e error) {
+// findCustomerExtensionMetadataList .
+func findCustomerExtensionMetadataList(repo GORMRepository, query po.CustomerExtensionMetadata, builders ...Builder) (results []po.CustomerExtensionMetadata, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "findCustomerExtensionTemplateList", e, now)
-		ormErrorLog(repo, "CustomerExtensionTemplate", "findCustomerExtensionTemplates", e, query)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionMetadata", "findCustomerExtensionMetadataList", e, now)
+		ormErrorLog(repo, "CustomerExtensionMetadata", "findCustomerExtensionMetadatas", e, query)
 	}()
 	db := repo.db().Where(query)
 
@@ -1128,12 +1128,12 @@ func findCustomerExtensionTemplateList(repo GORMRepository, query po.CustomerExt
 	return
 }
 
-// findCustomerExtensionTemplateListByWhere .
-func findCustomerExtensionTemplateListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.CustomerExtensionTemplate, e error) {
+// findCustomerExtensionMetadataListByWhere .
+func findCustomerExtensionMetadataListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.CustomerExtensionMetadata, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "findCustomerExtensionTemplateListByWhere", e, now)
-		ormErrorLog(repo, "CustomerExtensionTemplate", "findCustomerExtensionTemplatesByWhere", e, query, args)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionMetadata", "findCustomerExtensionMetadataListByWhere", e, now)
+		ormErrorLog(repo, "CustomerExtensionMetadata", "findCustomerExtensionMetadatasByWhere", e, query, args)
 	}()
 	db := repo.db()
 	if query != "" {
@@ -1148,12 +1148,12 @@ func findCustomerExtensionTemplateListByWhere(repo GORMRepository, query string,
 	return
 }
 
-// findCustomerExtensionTemplateListByMap .
-func findCustomerExtensionTemplateListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.CustomerExtensionTemplate, e error) {
+// findCustomerExtensionMetadataListByMap .
+func findCustomerExtensionMetadataListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.CustomerExtensionMetadata, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "findCustomerExtensionTemplateListByMap", e, now)
-		ormErrorLog(repo, "CustomerExtensionTemplate", "findCustomerExtensionTemplatesByMap", e, query)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionMetadata", "findCustomerExtensionMetadataListByMap", e, now)
+		ormErrorLog(repo, "CustomerExtensionMetadata", "findCustomerExtensionMetadatasByMap", e, query)
 	}()
 
 	db := repo.db().Where(query)
@@ -1166,12 +1166,12 @@ func findCustomerExtensionTemplateListByMap(repo GORMRepository, query map[strin
 	return
 }
 
-// createCustomerExtensionTemplate .
-func createCustomerExtensionTemplate(repo GORMRepository, object *po.CustomerExtensionTemplate) (rowsAffected int64, e error) {
+// createCustomerExtensionMetadata .
+func createCustomerExtensionMetadata(repo GORMRepository, object *po.CustomerExtensionMetadata) (rowsAffected int64, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "createCustomerExtensionTemplate", e, now)
-		ormErrorLog(repo, "CustomerExtensionTemplate", "createCustomerExtensionTemplate", e, *object)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionMetadata", "createCustomerExtensionMetadata", e, now)
+		ormErrorLog(repo, "CustomerExtensionMetadata", "createCustomerExtensionMetadata", e, *object)
 	}()
 
 	db := repo.db().Create(object)
@@ -1180,16 +1180,16 @@ func createCustomerExtensionTemplate(repo GORMRepository, object *po.CustomerExt
 	return
 }
 
-// saveCustomerExtensionTemplate .
-func saveCustomerExtensionTemplate(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+// saveCustomerExtensionMetadata .
+func saveCustomerExtensionMetadata(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
 	if len(object.Location()) == 0 {
 		return 0, errors.New("location cannot be empty")
 	}
 
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionTemplate", "saveCustomerExtensionTemplate", e, now)
-		ormErrorLog(repo, "CustomerExtensionTemplate", "saveCustomerExtensionTemplate", e, object)
+		freedom.Prometheus().OrmWithLabelValues("CustomerExtensionMetadata", "saveCustomerExtensionMetadata", e, now)
+		ormErrorLog(repo, "CustomerExtensionMetadata", "saveCustomerExtensionMetadata", e, object)
 	}()
 
 	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())
@@ -1496,6 +1496,312 @@ func saveCustomer(repo GORMRepository, object saveObject) (rowsAffected int64, e
 	defer func() {
 		freedom.Prometheus().OrmWithLabelValues("Customer", "saveCustomer", e, now)
 		ormErrorLog(repo, "Customer", "saveCustomer", e, object)
+	}()
+
+	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())
+	e = db.Error
+	rowsAffected = db.RowsAffected
+	return
+}
+
+// findBehaviourSource .
+func findBehaviourSource(repo GORMRepository, result *po.BehaviourSource, builders ...Builder) (e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "findBehaviourSource", e, now)
+		ormErrorLog(repo, "BehaviourSource", "findBehaviourSource", e, result)
+	}()
+	db := repo.db()
+	if len(builders) == 0 {
+		e = db.Where(result).Last(result).Error
+		return
+	}
+	e = builders[0].Execute(db.Limit(1), result)
+	return
+}
+
+// findBehaviourSourceListByPrimarys .
+func findBehaviourSourceListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.BehaviourSource, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "findBehaviourSourceListByPrimarys", e, now)
+		ormErrorLog(repo, "BehaviourSource", "findBehaviourSourcesByPrimarys", e, primarys)
+	}()
+
+	e = repo.db().Find(&results, primarys).Error
+	return
+}
+
+// findBehaviourSourceByWhere .
+func findBehaviourSourceByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.BehaviourSource, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "findBehaviourSourceByWhere", e, now)
+		ormErrorLog(repo, "BehaviourSource", "findBehaviourSourceByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findBehaviourSourceByMap .
+func findBehaviourSourceByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.BehaviourSource, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "findBehaviourSourceByMap", e, now)
+		ormErrorLog(repo, "BehaviourSource", "findBehaviourSourceByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findBehaviourSourceList .
+func findBehaviourSourceList(repo GORMRepository, query po.BehaviourSource, builders ...Builder) (results []po.BehaviourSource, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "findBehaviourSourceList", e, now)
+		ormErrorLog(repo, "BehaviourSource", "findBehaviourSources", e, query)
+	}()
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findBehaviourSourceListByWhere .
+func findBehaviourSourceListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.BehaviourSource, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "findBehaviourSourceListByWhere", e, now)
+		ormErrorLog(repo, "BehaviourSource", "findBehaviourSourcesByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findBehaviourSourceListByMap .
+func findBehaviourSourceListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.BehaviourSource, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "findBehaviourSourceListByMap", e, now)
+		ormErrorLog(repo, "BehaviourSource", "findBehaviourSourcesByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// createBehaviourSource .
+func createBehaviourSource(repo GORMRepository, object *po.BehaviourSource) (rowsAffected int64, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "createBehaviourSource", e, now)
+		ormErrorLog(repo, "BehaviourSource", "createBehaviourSource", e, *object)
+	}()
+
+	db := repo.db().Create(object)
+	rowsAffected = db.RowsAffected
+	e = db.Error
+	return
+}
+
+// saveBehaviourSource .
+func saveBehaviourSource(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+	if len(object.Location()) == 0 {
+		return 0, errors.New("location cannot be empty")
+	}
+
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "saveBehaviourSource", e, now)
+		ormErrorLog(repo, "BehaviourSource", "saveBehaviourSource", e, object)
+	}()
+
+	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())
+	e = db.Error
+	rowsAffected = db.RowsAffected
+	return
+}
+
+// findBehaviourMetadata .
+func findBehaviourMetadata(repo GORMRepository, result *po.BehaviourMetadata, builders ...Builder) (e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "findBehaviourMetadata", e, now)
+		ormErrorLog(repo, "BehaviourMetadata", "findBehaviourMetadata", e, result)
+	}()
+	db := repo.db()
+	if len(builders) == 0 {
+		e = db.Where(result).Last(result).Error
+		return
+	}
+	e = builders[0].Execute(db.Limit(1), result)
+	return
+}
+
+// findBehaviourMetadataListByPrimarys .
+func findBehaviourMetadataListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.BehaviourMetadata, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "findBehaviourMetadataListByPrimarys", e, now)
+		ormErrorLog(repo, "BehaviourMetadata", "findBehaviourMetadatasByPrimarys", e, primarys)
+	}()
+
+	e = repo.db().Find(&results, primarys).Error
+	return
+}
+
+// findBehaviourMetadataByWhere .
+func findBehaviourMetadataByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.BehaviourMetadata, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "findBehaviourMetadataByWhere", e, now)
+		ormErrorLog(repo, "BehaviourMetadata", "findBehaviourMetadataByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findBehaviourMetadataByMap .
+func findBehaviourMetadataByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.BehaviourMetadata, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "findBehaviourMetadataByMap", e, now)
+		ormErrorLog(repo, "BehaviourMetadata", "findBehaviourMetadataByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findBehaviourMetadataList .
+func findBehaviourMetadataList(repo GORMRepository, query po.BehaviourMetadata, builders ...Builder) (results []po.BehaviourMetadata, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "findBehaviourMetadataList", e, now)
+		ormErrorLog(repo, "BehaviourMetadata", "findBehaviourMetadatas", e, query)
+	}()
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findBehaviourMetadataListByWhere .
+func findBehaviourMetadataListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.BehaviourMetadata, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "findBehaviourMetadataListByWhere", e, now)
+		ormErrorLog(repo, "BehaviourMetadata", "findBehaviourMetadatasByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findBehaviourMetadataListByMap .
+func findBehaviourMetadataListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.BehaviourMetadata, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "findBehaviourMetadataListByMap", e, now)
+		ormErrorLog(repo, "BehaviourMetadata", "findBehaviourMetadatasByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// createBehaviourMetadata .
+func createBehaviourMetadata(repo GORMRepository, object *po.BehaviourMetadata) (rowsAffected int64, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "createBehaviourMetadata", e, now)
+		ormErrorLog(repo, "BehaviourMetadata", "createBehaviourMetadata", e, *object)
+	}()
+
+	db := repo.db().Create(object)
+	rowsAffected = db.RowsAffected
+	e = db.Error
+	return
+}
+
+// saveBehaviourMetadata .
+func saveBehaviourMetadata(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+	if len(object.Location()) == 0 {
+		return 0, errors.New("location cannot be empty")
+	}
+
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "saveBehaviourMetadata", e, now)
+		ormErrorLog(repo, "BehaviourMetadata", "saveBehaviourMetadata", e, object)
 	}()
 
 	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())

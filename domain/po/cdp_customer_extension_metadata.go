@@ -7,8 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// CustomerExtensionTemplate .
-type CustomerExtensionTemplate struct {
+// CustomerExtensionMetadata .
+type CustomerExtensionMetadata struct {
 	changes  map[string]interface{}
 	ID       int       `gorm:"primaryKey;column:id" json:"id"`
 	Name     string    `gorm:"column:name" json:"name"`         // key
@@ -22,17 +22,17 @@ type CustomerExtensionTemplate struct {
 }
 
 // TableName .
-func (obj *CustomerExtensionTemplate) TableName() string {
-	return "cdp_customer_extension_template"
+func (obj *CustomerExtensionMetadata) TableName() string {
+	return "cdp_customer_extension_metadata"
 }
 
 // Location .
-func (obj *CustomerExtensionTemplate) Location() map[string]interface{} {
+func (obj *CustomerExtensionMetadata) Location() map[string]interface{} {
 	return map[string]interface{}{"id": obj.ID}
 }
 
 // GetChanges .
-func (obj *CustomerExtensionTemplate) GetChanges() map[string]interface{} {
+func (obj *CustomerExtensionMetadata) GetChanges() map[string]interface{} {
 	if obj.changes == nil {
 		return nil
 	}
@@ -45,7 +45,7 @@ func (obj *CustomerExtensionTemplate) GetChanges() map[string]interface{} {
 }
 
 // Update .
-func (obj *CustomerExtensionTemplate) Update(name string, value interface{}) {
+func (obj *CustomerExtensionMetadata) Update(name string, value interface{}) {
 	if obj.changes == nil {
 		obj.changes = make(map[string]interface{})
 	}
@@ -53,61 +53,61 @@ func (obj *CustomerExtensionTemplate) Update(name string, value interface{}) {
 }
 
 // SetName .
-func (obj *CustomerExtensionTemplate) SetName(name string) {
+func (obj *CustomerExtensionMetadata) SetName(name string) {
 	obj.Name = name
 	obj.Update("name", name)
 }
 
 // SetKind .
-func (obj *CustomerExtensionTemplate) SetKind(kind string) {
+func (obj *CustomerExtensionMetadata) SetKind(kind string) {
 	obj.Kind = kind
 	obj.Update("kind", kind)
 }
 
 // SetDict .
-func (obj *CustomerExtensionTemplate) SetDict(dict string) {
+func (obj *CustomerExtensionMetadata) SetDict(dict string) {
 	obj.Dict = dict
 	obj.Update("dict", dict)
 }
 
 // SetReg .
-func (obj *CustomerExtensionTemplate) SetReg(reg string) {
+func (obj *CustomerExtensionMetadata) SetReg(reg string) {
 	obj.Reg = reg
 	obj.Update("reg", reg)
 }
 
 // SetRequired .
-func (obj *CustomerExtensionTemplate) SetRequired(required int) {
+func (obj *CustomerExtensionMetadata) SetRequired(required int) {
 	obj.Required = required
 	obj.Update("required", required)
 }
 
 // SetSort .
-func (obj *CustomerExtensionTemplate) SetSort(sort int) {
+func (obj *CustomerExtensionMetadata) SetSort(sort int) {
 	obj.Sort = sort
 	obj.Update("sort", sort)
 }
 
 // SetCreated .
-func (obj *CustomerExtensionTemplate) SetCreated(created time.Time) {
+func (obj *CustomerExtensionMetadata) SetCreated(created time.Time) {
 	obj.Created = created
 	obj.Update("created", created)
 }
 
 // SetUpdated .
-func (obj *CustomerExtensionTemplate) SetUpdated(updated time.Time) {
+func (obj *CustomerExtensionMetadata) SetUpdated(updated time.Time) {
 	obj.Updated = updated
 	obj.Update("updated", updated)
 }
 
 // AddRequired .
-func (obj *CustomerExtensionTemplate) AddRequired(required int) {
+func (obj *CustomerExtensionMetadata) AddRequired(required int) {
 	obj.Required += required
 	obj.Update("required", gorm.Expr("required + ?", required))
 }
 
 // AddSort .
-func (obj *CustomerExtensionTemplate) AddSort(sort int) {
+func (obj *CustomerExtensionMetadata) AddSort(sort int) {
 	obj.Sort += sort
 	obj.Update("sort", gorm.Expr("sort + ?", sort))
 }

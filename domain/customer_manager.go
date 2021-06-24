@@ -25,13 +25,13 @@ type CustomerManagerService struct {
 }
 
 // GetTempletes 获取客户模板列表.
-func (service *CustomerManagerService) GetTempletes() (result []*po.CustomerExtensionTemplate, e error) {
+func (service *CustomerManagerService) GetTempletes() (result []*po.CustomerExtensionMetadata, e error) {
 	result, e = service.CustomerRepository.GetTempletes()
 	return
 }
 
 // AddTempletes 添加客户模板列表.
-func (service *CustomerManagerService) AddTempletes(templates []po.CustomerExtensionTemplate) (e error) {
+func (service *CustomerManagerService) AddTempletes(templates []po.CustomerExtensionMetadata) (e error) {
 	for _, v := range templates {
 		if v.ID != 0 {
 			continue

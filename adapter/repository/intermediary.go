@@ -43,7 +43,7 @@ func (repo *IntermediaryRepository) AddTemplete(name, kind, dict, reg string, re
 			repo.Worker().Logger().Error(e)
 		}
 	}()
-	pobject := &po.CustomerExtensionTemplate{
+	pobject := &po.CustomerExtensionMetadata{
 		Name:     name,
 		Kind:     kind,
 		Dict:     dict,
@@ -53,12 +53,13 @@ func (repo *IntermediaryRepository) AddTemplete(name, kind, dict, reg string, re
 		Created:  time.Now(),
 		Updated:  time.Now(),
 	}
-	_, err := createCustomerExtensionTemplate(repo, pobject)
+
+	_, err := createCustomerExtensionMetadata(repo, pobject)
 	return err
 }
 
 // GetTempletes .
-func (repo *IntermediaryRepository) GetTempletes() ([]*po.CustomerExtensionTemplate, error) {
+func (repo *IntermediaryRepository) GetTempletes() ([]*po.CustomerExtensionMetadata, error) {
 	templetes, err := repo.getTempletes()
 	if err != nil {
 		return nil, err
@@ -67,30 +68,30 @@ func (repo *IntermediaryRepository) GetTempletes() ([]*po.CustomerExtensionTempl
 }
 
 // GetTemplete .
-func (repo *IntermediaryRepository) GetTemplete(id int) (*po.CustomerExtensionTemplate, error) {
-	tmpl := &po.CustomerExtensionTemplate{ID: id}
-	return tmpl, findCustomerExtensionTemplate(repo, tmpl)
+func (repo *IntermediaryRepository) GetTemplete(id int) (*po.CustomerExtensionMetadata, error) {
+	tmpl := &po.CustomerExtensionMetadata{ID: id}
+	return tmpl, findCustomerExtensionMetadata(repo, tmpl)
 }
 
 // SaveTemplete .
-func (repo *IntermediaryRepository) SaveTemplete(tmpl *po.CustomerExtensionTemplate) error {
+func (repo *IntermediaryRepository) SaveTemplete(tmpl *po.CustomerExtensionMetadata) error {
 	defer func() {
 		if e := repo.Redis().Del(repo.customerTemplateCacheKey).Err(); e != nil {
 			repo.Worker().Logger().Error(e)
 		}
 	}()
 
-	_, err := saveCustomerExtensionTemplate(repo, tmpl)
+	_, err := saveCustomerExtensionMetadata(repo, tmpl)
 	return err
 }
 
-func (repo *IntermediaryRepository) getTempletes() (result []*po.CustomerExtensionTemplate, err error) {
+func (repo *IntermediaryRepository) getTempletes() (result []*po.CustomerExtensionMetadata, err error) {
 	err = redisJSONGet(repo.Redis(), repo.customerTemplateCacheKey, &result)
 	if err == nil || err != redis.Nil {
 		return
 	}
 
-	list, err := findCustomerExtensionTemplateList(repo, po.CustomerExtensionTemplate{}, NewDescPager("sort", "id"))
+	list, err := findCustomerExtensionMetadataList(repo, po.CustomerExtensionMetadata{}, NewDescPager("sort", "id"))
 	if err != nil {
 		return
 	}

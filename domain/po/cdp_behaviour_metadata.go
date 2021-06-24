@@ -5,28 +5,27 @@ import (
 	"time"
 )
 
-// CustomerKey .
-type CustomerKey struct {
+// BehaviourMetadata .
+type BehaviourMetadata struct {
 	changes map[string]interface{}
 	ID      int       `gorm:"primaryKey;column:id"`
-	UserID  string    `gorm:"column:userId"`  // 用户userid
-	UserKey string    `gorm:"column:userKey"` // 唯一Key
+	Type    string    `gorm:"column:type"` // 行为的类型
 	Created time.Time `gorm:"column:created"`
 	Updated time.Time `gorm:"column:updated"`
 }
 
 // TableName .
-func (obj *CustomerKey) TableName() string {
-	return "cdp_customer_key"
+func (obj *BehaviourMetadata) TableName() string {
+	return "cdp_behaviour_metadata"
 }
 
 // Location .
-func (obj *CustomerKey) Location() map[string]interface{} {
+func (obj *BehaviourMetadata) Location() map[string]interface{} {
 	return map[string]interface{}{"id": obj.ID}
 }
 
 // GetChanges .
-func (obj *CustomerKey) GetChanges() map[string]interface{} {
+func (obj *BehaviourMetadata) GetChanges() map[string]interface{} {
 	if obj.changes == nil {
 		return nil
 	}
@@ -39,33 +38,27 @@ func (obj *CustomerKey) GetChanges() map[string]interface{} {
 }
 
 // Update .
-func (obj *CustomerKey) Update(name string, value interface{}) {
+func (obj *BehaviourMetadata) Update(name string, value interface{}) {
 	if obj.changes == nil {
 		obj.changes = make(map[string]interface{})
 	}
 	obj.changes[name] = value
 }
 
-// SetUserID .
-func (obj *CustomerKey) SetUserID(userID string) {
-	obj.UserID = userID
-	obj.Update("userId", userID)
-}
-
-// SetUserKey .
-func (obj *CustomerKey) SetUserKey(userKey string) {
-	obj.UserKey = userKey
-	obj.Update("userKey", userKey)
+// SetType .
+func (obj *BehaviourMetadata) SetType(type1 string) {
+	obj.Type = type1
+	obj.Update("type", type1)
 }
 
 // SetCreated .
-func (obj *CustomerKey) SetCreated(created time.Time) {
+func (obj *BehaviourMetadata) SetCreated(created time.Time) {
 	obj.Created = created
 	obj.Update("created", created)
 }
 
 // SetUpdated .
-func (obj *CustomerKey) SetUpdated(updated time.Time) {
+func (obj *BehaviourMetadata) SetUpdated(updated time.Time) {
 	obj.Updated = updated
 	obj.Update("updated", updated)
 }

@@ -2,17 +2,19 @@
 package po
 
 import (
+	"gorm.io/gorm"
 	"time"
 )
 
 // CustomerTemporary .
 type CustomerTemporary struct {
-	changes map[string]interface{}
-	ID      int       `gorm:"primaryKey;column:id"`
-	UUID    string    `gorm:"column:uuid"` // 临时用户的唯一id
-	UserID  string    `gorm:"column:userId"`
-	Created time.Time `gorm:"column:created"`
-	Updated time.Time `gorm:"column:updated"`
+	changes  map[string]interface{}
+	ID       int       `gorm:"primaryKey;column:id"`
+	UUID     string    `gorm:"column:uuid"` // 临时用户的唯一id
+	UserID   string    `gorm:"column:userId"`
+	Internal int       `gorm:"column:internal"` // 非0内部生成
+	Created  time.Time `gorm:"column:created"`
+	Updated  time.Time `gorm:"column:updated"`
 }
 
 // TableName .
@@ -58,6 +60,12 @@ func (obj *CustomerTemporary) SetUserID(userID string) {
 	obj.Update("userId", userID)
 }
 
+// SetInternal .
+func (obj *CustomerTemporary) SetInternal(internal int) {
+	obj.Internal = internal
+	obj.Update("internal", internal)
+}
+
 // SetCreated .
 func (obj *CustomerTemporary) SetCreated(created time.Time) {
 	obj.Created = created
@@ -68,4 +76,10 @@ func (obj *CustomerTemporary) SetCreated(created time.Time) {
 func (obj *CustomerTemporary) SetUpdated(updated time.Time) {
 	obj.Updated = updated
 	obj.Update("updated", updated)
+}
+
+// AddInternal .
+func (obj *CustomerTemporary) AddInternal(internal int) {
+	obj.Internal += internal
+	obj.Update("internal", gorm.Expr("internal + ?", internal))
 }

@@ -5,17 +5,23 @@ import (
 	"time"
 
 	"gorm.io/datatypes"
+	"gorm.io/gorm"
 )
 
 // Behaviour .
 type Behaviour struct {
-	changes   map[string]interface{}
-	ID        int            `gorm:"primaryKey;column:id"`
-	IPAddr    string         `gorm:"column:ipAddr"`
-	EventType string         `gorm:"column:eventType"` // 事件类型
-	EventTime time.Time      `gorm:"column:eventTime"` // 事件时间
-	EventData datatypes.JSON `gorm:"column:eventData"` // 事件数据
-	Created   time.Time      `gorm:"column:created"`
+	changes       map[string]interface{}
+	ID            int            `gorm:"primaryKey;column:id"`
+	WechatUnionID string         `gorm:"column:wechatUnionId"` // 微信唯一id
+	UserKey       string         `gorm:"column:userKey"`       // 用户自定义key
+	UserPhone     string         `gorm:"column:userPhone"`     // 用户手机号
+	TempUserID    string         `gorm:"column:tempUserId"`    // 临时用户唯一id
+	UserIPAddr    string         `gorm:"column:userIpAddr"`    // 用户ip地址
+	Type          string         `gorm:"column:type"`          // 行为类型
+	CreateTime    time.Time      `gorm:"column:createTime"`    // 行为的时间
+	Data          datatypes.JSON `gorm:"column:data"`          // 数据
+	Souce         int            `gorm:"column:souce"`         // 来源
+	Created       time.Time      `gorm:"column:created"`
 }
 
 // TableName .
@@ -49,32 +55,68 @@ func (obj *Behaviour) Update(name string, value interface{}) {
 	obj.changes[name] = value
 }
 
-// SetIPAddr .
-func (obj *Behaviour) SetIPAddr(iPAddr string) {
-	obj.IPAddr = iPAddr
-	obj.Update("ipAddr", iPAddr)
+// SetWechatUnionID .
+func (obj *Behaviour) SetWechatUnionID(wechatUnionID string) {
+	obj.WechatUnionID = wechatUnionID
+	obj.Update("wechatUnionId", wechatUnionID)
 }
 
-// SetEventType .
-func (obj *Behaviour) SetEventType(eventType string) {
-	obj.EventType = eventType
-	obj.Update("eventType", eventType)
+// SetUserKey .
+func (obj *Behaviour) SetUserKey(userKey string) {
+	obj.UserKey = userKey
+	obj.Update("userKey", userKey)
 }
 
-// SetEventTime .
-func (obj *Behaviour) SetEventTime(eventTime time.Time) {
-	obj.EventTime = eventTime
-	obj.Update("eventTime", eventTime)
+// SetUserPhone .
+func (obj *Behaviour) SetUserPhone(userPhone string) {
+	obj.UserPhone = userPhone
+	obj.Update("userPhone", userPhone)
 }
 
-// SetEventData .
-func (obj *Behaviour) SetEventData(eventData datatypes.JSON) {
-	obj.EventData = eventData
-	obj.Update("eventData", eventData)
+// SetTempUserID .
+func (obj *Behaviour) SetTempUserID(tempUserID string) {
+	obj.TempUserID = tempUserID
+	obj.Update("tempUserId", tempUserID)
+}
+
+// SetUserIPAddr .
+func (obj *Behaviour) SetUserIPAddr(userIPAddr string) {
+	obj.UserIPAddr = userIPAddr
+	obj.Update("userIpAddr", userIPAddr)
+}
+
+// SetType .
+func (obj *Behaviour) SetType(type1 string) {
+	obj.Type = type1
+	obj.Update("type", type1)
+}
+
+// SetCreateTime .
+func (obj *Behaviour) SetCreateTime(createTime time.Time) {
+	obj.CreateTime = createTime
+	obj.Update("createTime", createTime)
+}
+
+// SetData .
+func (obj *Behaviour) SetData(data datatypes.JSON) {
+	obj.Data = data
+	obj.Update("data", data)
+}
+
+// SetSouce .
+func (obj *Behaviour) SetSouce(souce int) {
+	obj.Souce = souce
+	obj.Update("souce", souce)
 }
 
 // SetCreated .
 func (obj *Behaviour) SetCreated(created time.Time) {
 	obj.Created = created
 	obj.Update("created", created)
+}
+
+// AddSouce .
+func (obj *Behaviour) AddSouce(souce int) {
+	obj.Souce += souce
+	obj.Update("souce", gorm.Expr("souce + ?", souce))
 }
