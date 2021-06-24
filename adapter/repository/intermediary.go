@@ -13,7 +13,7 @@ import (
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
 		initiator.BindRepository(func() *IntermediaryRepository {
-			return &IntermediaryRepository{customerTemplateCacheKey: "cdp_customer_template"}
+			return &IntermediaryRepository{customerMetaDataCacheKey: "cdp_customer_metaData"}
 		})
 	})
 }
@@ -21,12 +21,12 @@ func init() {
 // IntermediaryRepository 客户中介仓库 .
 type IntermediaryRepository struct {
 	freedom.Repository
-	customerTemplateCacheKey string
+	customerMetaDataCacheKey string
 }
 
 // GetEntity .
 func (repo *IntermediaryRepository) GetEntity() (result *entity.Intermediary, e error) {
-	templetes, err := repo.getTempletes()
+	templetes, err := repo.getMetaData()
 	if err != nil {
 		return nil, err
 	}
@@ -36,47 +36,38 @@ func (repo *IntermediaryRepository) GetEntity() (result *entity.Intermediary, e 
 	return
 }
 
-// AddTemplete .
-func (repo *IntermediaryRepository) AddTemplete(name, kind, dict, reg string, required int) error {
+// AddMetaData .
+func (repo *IntermediaryRepository) AddMetaData(data po.CustomerExtensionMetadata) error {
 	defer func() {
-		if e := repo.Redis().Del(repo.customerTemplateCacheKey).Err(); e != nil {
+		if e := repo.Redis().Del(repo.customerMetaDataCacheKey).Err(); e != nil {
 			repo.Worker().Logger().Error(e)
 		}
 	}()
-	pobject := &po.CustomerExtensionMetadata{
-		Name:     name,
-		Kind:     kind,
-		Dict:     dict,
-		Reg:      reg,
-		Required: required,
-		Sort:     1000,
-		Created:  time.Now(),
-		Updated:  time.Now(),
-	}
-
-	_, err := createCustomerExtensionMetadata(repo, pobject)
+	data.Created = time.Now()
+	data.Updated = data.Created
+	_, err := createCustomerExtensionMetadata(repo, &data)
 	return err
 }
 
-// GetTempletes .
-func (repo *IntermediaryRepository) GetTempletes() ([]*po.CustomerExtensionMetadata, error) {
-	templetes, err := repo.getTempletes()
+// GetMetaData .
+func (repo *IntermediaryRepository) GetMetaData() ([]*po.CustomerExtensionMetadata, error) {
+	templetes, err := repo.getMetaData()
 	if err != nil {
 		return nil, err
 	}
 	return templetes, nil
 }
 
-// GetTemplete .
-func (repo *IntermediaryRepository) GetTemplete(id int) (*po.CustomerExtensionMetadata, error) {
+// GetOneMetaData .
+func (repo *IntermediaryRepository) GetOneMetaData(id int) (*po.CustomerExtensionMetadata, error) {
 	tmpl := &po.CustomerExtensionMetadata{ID: id}
 	return tmpl, findCustomerExtensionMetadata(repo, tmpl)
 }
 
-// SaveTemplete .
-func (repo *IntermediaryRepository) SaveTemplete(tmpl *po.CustomerExtensionMetadata) error {
+// SaveMetaData .
+func (repo *IntermediaryRepository) SaveMetaData(tmpl *po.CustomerExtensionMetadata) error {
 	defer func() {
-		if e := repo.Redis().Del(repo.customerTemplateCacheKey).Err(); e != nil {
+		if e := repo.Redis().Del(repo.customerMetaDataCacheKey).Err(); e != nil {
 			repo.Worker().Logger().Error(e)
 		}
 	}()
@@ -85,8 +76,8 @@ func (repo *IntermediaryRepository) SaveTemplete(tmpl *po.CustomerExtensionMetad
 	return err
 }
 
-func (repo *IntermediaryRepository) getTempletes() (result []*po.CustomerExtensionMetadata, err error) {
-	err = redisJSONGet(repo.Redis(), repo.customerTemplateCacheKey, &result)
+func (repo *IntermediaryRepository) getMetaData() (result []*po.CustomerExtensionMetadata, err error) {
+	err = redisJSONGet(repo.Redis(), repo.customerMetaDataCacheKey, &result)
 	if err == nil || err != redis.Nil {
 		return
 	}
@@ -98,7 +89,7 @@ func (repo *IntermediaryRepository) getTempletes() (result []*po.CustomerExtensi
 	for i := 0; i < len(list); i++ {
 		result = append(result, &list[i])
 	}
-	err = redisJSONSet(repo.Redis(), repo.customerTemplateCacheKey, result)
+	err = redisJSONSet(repo.Redis(), repo.customerMetaDataCacheKey, result)
 	return
 }
 

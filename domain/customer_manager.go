@@ -24,19 +24,19 @@ type CustomerManagerService struct {
 	CustomerRepository *repository.IntermediaryRepository
 }
 
-// GetTempletes 获取客户模板列表.
-func (service *CustomerManagerService) GetTempletes() (result []*po.CustomerExtensionMetadata, e error) {
+// GetMetaData 获取客户元数据列表.
+func (service *CustomerManagerService) GetMetaData() (result []*po.CustomerExtensionMetadata, e error) {
 	result, e = service.CustomerRepository.GetTempletes()
 	return
 }
 
-// AddTempletes 添加客户模板列表.
-func (service *CustomerManagerService) AddTempletes(templates []po.CustomerExtensionMetadata) (e error) {
+// AddMetaData 添加客户元数据列表.
+func (service *CustomerManagerService) AddMetaData(templates []po.CustomerExtensionMetadata) (e error) {
 	for _, v := range templates {
 		if v.ID != 0 {
 			continue
 		}
-		e = service.CustomerRepository.AddTemplete(v.Name, v.Kind, v.Dict, v.Reg, v.Required)
+		e = service.CustomerRepository.AddTemplete(v)
 		if e != nil {
 			return
 		}
@@ -44,8 +44,8 @@ func (service *CustomerManagerService) AddTempletes(templates []po.CustomerExten
 	return
 }
 
-// UpdateTempleteSort
-func (service *CustomerManagerService) UpdateTempleteSort(id int, sort int) (e error) {
+// UpdateMetaDataSort
+func (service *CustomerManagerService) UpdateMetaDataSort(id int, sort int) (e error) {
 	//return service.CustomerRepository.UpdateTempleteSort(id, sort)
 	entity, err := service.CustomerRepository.GetTemplete(id)
 	if err != nil {

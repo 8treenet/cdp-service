@@ -2,10 +2,9 @@
 package po
 
 import (
-	"time"
-
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
+	"time"
 )
 
 // Behaviour .
@@ -17,7 +16,7 @@ type Behaviour struct {
 	UserPhone     string         `gorm:"column:userPhone"`     // 用户手机号
 	TempUserID    string         `gorm:"column:tempUserId"`    // 临时用户唯一id
 	UserIPAddr    string         `gorm:"column:userIpAddr"`    // 用户ip地址
-	Type          string         `gorm:"column:type"`          // 行为类型
+	Feature       string         `gorm:"column:feature"`       // 行为的类型
 	CreateTime    time.Time      `gorm:"column:createTime"`    // 行为的时间
 	Data          datatypes.JSON `gorm:"column:data"`          // 数据
 	Souce         int            `gorm:"column:souce"`         // 来源
@@ -85,10 +84,10 @@ func (obj *Behaviour) SetUserIPAddr(userIPAddr string) {
 	obj.Update("userIpAddr", userIPAddr)
 }
 
-// SetType .
-func (obj *Behaviour) SetType(type1 string) {
-	obj.Type = type1
-	obj.Update("type", type1)
+// SetFeature .
+func (obj *Behaviour) SetFeature(feature string) {
+	obj.Feature = feature
+	obj.Update("feature", feature)
 }
 
 // SetCreateTime .

@@ -9,7 +9,7 @@ import (
 type BehaviourMetadata struct {
 	changes map[string]interface{}
 	ID      int       `gorm:"primaryKey;column:id"`
-	Type    string    `gorm:"column:type"` // 行为的类型
+	Feature string    `gorm:"column:feature"` // 行为的类型
 	Created time.Time `gorm:"column:created"`
 	Updated time.Time `gorm:"column:updated"`
 }
@@ -45,10 +45,10 @@ func (obj *BehaviourMetadata) Update(name string, value interface{}) {
 	obj.changes[name] = value
 }
 
-// SetType .
-func (obj *BehaviourMetadata) SetType(type1 string) {
-	obj.Type = type1
-	obj.Update("type", type1)
+// SetFeature .
+func (obj *BehaviourMetadata) SetFeature(feature string) {
+	obj.Feature = feature
+	obj.Update("feature", feature)
 }
 
 // SetCreated .

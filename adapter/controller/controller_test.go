@@ -13,23 +13,27 @@ var domain = "http://127.0.0.1:8000/cdp-service"
 
 func TestCustomerManagerController_PostList(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customer/tmplManager/list").Post()
-	var list []po.CustomerExtensionTemplate
-	list = append(list, po.CustomerExtensionTemplate{
-		Name: "score",
-		Kind: "Int32",
+	var list []po.CustomerExtensionMetadata
+	list = append(list, po.CustomerExtensionMetadata{
+		Variable: "score",
+		Kind:     "Int32",
+		Title:    "积分",
 	})
-	list = append(list, po.CustomerExtensionTemplate{
-		Name: "star",
-		Kind: "UInt32",
+	list = append(list, po.CustomerExtensionMetadata{
+		Variable: "star",
+		Kind:     "UInt32",
+		Title:    "关注",
 	})
-	list = append(list, po.CustomerExtensionTemplate{
-		Name: "addr",
-		Kind: "String",
+	list = append(list, po.CustomerExtensionMetadata{
+		Variable: "addr",
+		Kind:     "String",
+		Title:    "地址",
 	})
-	list = append(list, po.CustomerExtensionTemplate{
-		Name:     "level",
+	list = append(list, po.CustomerExtensionMetadata{
+		Variable: "level",
 		Kind:     "UInt16",
 		Required: 1,
+		Title:    "级别",
 	})
 
 	data, resp := req.SetJSONBody(list).ToString()
@@ -41,7 +45,7 @@ func TestCustomerManagerController_GetList(t *testing.T) {
 	var body struct {
 		Code int                            `json:"code"`
 		Msg  string                         `json:"msg"`
-		Data []po.CustomerExtensionTemplate `json:"data,omitempty"`
+		Data []po.CustomerExtensionMetadata `json:"data,omitempty"`
 	}
 	resp := req.ToJSON(&body)
 

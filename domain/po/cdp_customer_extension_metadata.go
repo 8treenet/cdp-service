@@ -11,14 +11,15 @@ import (
 type CustomerExtensionMetadata struct {
 	changes  map[string]interface{}
 	ID       int       `gorm:"primaryKey;column:id" json:"id"`
-	Name     string    `gorm:"column:name" json:"name"`         // key
+	Variable string    `gorm:"column:variable" json:"variable"` // 类型的名称
+	Title    string    `gorm:"column:title" json:"title"`       // 中文的标题
 	Kind     string    `gorm:"column:kind" json:"kind"`         // 类型
 	Dict     string    `gorm:"column:dict" json:"dict"`         // 关联字典的key
 	Reg      string    `gorm:"column:reg" json:"reg"`           // 正则
 	Required int       `gorm:"column:required" json:"required"` // 1 必填
 	Sort     int       `gorm:"column:sort" json:"sort"`         // 排序
-	Created  time.Time `gorm:"column:created" json:"created"`
-	Updated  time.Time `gorm:"column:updated" json:"updated"`
+	Created  time.Time `gorm:"column:created" json:"-"`
+	Updated  time.Time `gorm:"column:updated" json:"-"`
 }
 
 // TableName .
@@ -52,10 +53,16 @@ func (obj *CustomerExtensionMetadata) Update(name string, value interface{}) {
 	obj.changes[name] = value
 }
 
-// SetName .
-func (obj *CustomerExtensionMetadata) SetName(name string) {
-	obj.Name = name
-	obj.Update("name", name)
+// SetVariable .
+func (obj *CustomerExtensionMetadata) SetVariable(variable string) {
+	obj.Variable = variable
+	obj.Update("variable", variable)
+}
+
+// SetTitle .
+func (obj *CustomerExtensionMetadata) SetTitle(title string) {
+	obj.Title = title
+	obj.Update("title", title)
 }
 
 // SetKind .

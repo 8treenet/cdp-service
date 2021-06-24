@@ -10,7 +10,7 @@ import (
 
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
-		initiator.BindController("/customer/tmplManager", &CustomerManagerController{})
+		initiator.BindController("/customer/metaDataManager", &CustomerManagerController{})
 	})
 }
 
@@ -21,9 +21,9 @@ type CustomerManagerController struct {
 	Request                 *infra.Request
 }
 
-//Post handles the Post: /customer/tmplManager/list route.
+//Post handles the Post: /customer/metaDataManager/list route.
 func (c *CustomerManagerController) PostList() freedom.Result {
-	var list []po.CustomerExtensionTemplate
+	var list []po.CustomerExtensionMetadata
 	if e := c.Request.ReadJSON(&list, true); e != nil {
 		return &infra.JSONResponse{Error: e}
 	}
@@ -34,7 +34,7 @@ func (c *CustomerManagerController) PostList() freedom.Result {
 	return &infra.JSONResponse{}
 }
 
-//Get handles the Get: /customer/tmplManager/list route.
+//Get handles the Get: /customer/metaDataManager/list route.
 func (c *CustomerManagerController) GetList() freedom.Result {
 	data, e := c.CustomerTempleteService.GetTempletes()
 	if e != nil {
@@ -43,7 +43,7 @@ func (c *CustomerManagerController) GetList() freedom.Result {
 	return &infra.JSONResponse{Object: data}
 }
 
-//PutSort handles the put: /customer/tmplManager/sort route.
+//PutSort handles the put: /customer/metaDataManager/sort route.
 func (c *CustomerManagerController) PutSort() freedom.Result {
 	var arg struct {
 		ID   int `url:"id" validate:"required"`
