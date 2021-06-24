@@ -26,7 +26,7 @@ type CustomerManagerService struct {
 
 // GetMetaData 获取客户元数据列表.
 func (service *CustomerManagerService) GetMetaData() (result []*po.CustomerExtensionMetadata, e error) {
-	result, e = service.CustomerRepository.GetTempletes()
+	result, e = service.CustomerRepository.GetMetaData()
 	return
 }
 
@@ -36,7 +36,7 @@ func (service *CustomerManagerService) AddMetaData(templates []po.CustomerExtens
 		if v.ID != 0 {
 			continue
 		}
-		e = service.CustomerRepository.AddTemplete(v)
+		e = service.CustomerRepository.AddMetaData(v)
 		if e != nil {
 			return
 		}
@@ -47,11 +47,11 @@ func (service *CustomerManagerService) AddMetaData(templates []po.CustomerExtens
 // UpdateMetaDataSort
 func (service *CustomerManagerService) UpdateMetaDataSort(id int, sort int) (e error) {
 	//return service.CustomerRepository.UpdateTempleteSort(id, sort)
-	entity, err := service.CustomerRepository.GetTemplete(id)
+	entity, err := service.CustomerRepository.GetOneMetaData(id)
 	if err != nil {
 		return err
 	}
 	entity.SetSort(sort)
 
-	return service.CustomerRepository.SaveTemplete(entity)
+	return service.CustomerRepository.SaveMetaData(entity)
 }

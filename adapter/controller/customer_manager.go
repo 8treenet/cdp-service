@@ -28,7 +28,7 @@ func (c *CustomerManagerController) PostList() freedom.Result {
 		return &infra.JSONResponse{Error: e}
 	}
 
-	if e := c.CustomerTempleteService.AddTempletes(list); e != nil {
+	if e := c.CustomerTempleteService.AddMetaData(list); e != nil {
 		return &infra.JSONResponse{Error: e}
 	}
 	return &infra.JSONResponse{}
@@ -36,7 +36,7 @@ func (c *CustomerManagerController) PostList() freedom.Result {
 
 //Get handles the Get: /customer/metaDataManager/list route.
 func (c *CustomerManagerController) GetList() freedom.Result {
-	data, e := c.CustomerTempleteService.GetTempletes()
+	data, e := c.CustomerTempleteService.GetMetaData()
 	if e != nil {
 		return &infra.JSONResponse{Error: e}
 	}
@@ -54,7 +54,7 @@ func (c *CustomerManagerController) PutSort() freedom.Result {
 		return &infra.JSONResponse{Error: err}
 	}
 
-	if e := c.CustomerTempleteService.UpdateTempleteSort(arg.ID, arg.Sort); e != nil {
+	if e := c.CustomerTempleteService.UpdateMetaDataSort(arg.ID, arg.Sort); e != nil {
 		return &infra.JSONResponse{Error: e}
 	}
 	return &infra.JSONResponse{}
