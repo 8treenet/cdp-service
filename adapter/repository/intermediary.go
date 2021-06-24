@@ -45,6 +45,9 @@ func (repo *IntermediaryRepository) AddMetaData(data po.CustomerExtensionMetadat
 	}()
 	data.Created = time.Now()
 	data.Updated = data.Created
+	if data.Sort == 0 {
+		data.Sort = 1000
+	}
 	_, err := createCustomerExtensionMetadata(repo, &data)
 	return err
 }

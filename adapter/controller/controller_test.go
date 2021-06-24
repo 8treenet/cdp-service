@@ -57,7 +57,7 @@ func TestCustomerManagerController_GetList(t *testing.T) {
 
 func TestCustomerManagerController_PutSort(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customer/metaDataManager/sort").Put()
-	str, _ := req.SetQueryParam("id", 53).SetQueryParam("sort", 1002).ToString()
+	str, _ := req.SetQueryParam("id", 60).SetQueryParam("sort", 1002).ToString()
 	t.Log(string(str))
 }
 
@@ -90,13 +90,13 @@ func TestCustomerController_Post(t *testing.T) {
 }
 
 func TestCustomerController_GetBy(t *testing.T) {
-	req := requests.NewHTTPRequest(domain + "/customers/855a9b98d30811eb8441804a1460b6f5").Get()
+	req := requests.NewHTTPRequest(domain + "/customers/466ff946d4e311eb9337804a1460b6f5").Get()
 	str, resp := req.ToString()
 	t.Log(str, resp)
 }
 
 func TestCustomerController_PutBy(t *testing.T) {
-	req := requests.NewHTTPRequest(domain + "/customers/855a9b98d30811eb8441804a1460b6f5").Put()
+	req := requests.NewHTTPRequest(domain + "/customers/466ff946d4e311eb9337804a1460b6f5").Put()
 	data := map[string]interface{}{
 		"birthday": "1991-05-13",
 		"gender":   "女",
@@ -142,20 +142,20 @@ func TestCustomerController_PostList(t *testing.T) {
 func TestCustomerController_DeleteBy(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customers").Delete()
 
-	req = req.SetQueryParam("userId", []string{"79297552d32511eba16a804a1460b6f5", "792a6ea8d32511eba16a804a1460b6f5", "792ac47ad32511eba16a804a1460b6f5", "792b2730d32511eba16a804a1460b6f5", "792b6d08d32511eba16a804a1460b6f5", "792bb70ed32511eba16a804a1460b6f5", "792c0376d32511eba16a804a1460b6f5", "792c48ccd32511eba16a804a1460b6f5", "792c8f8ad32511eba16a804a1460b6f5", "792cef8ed32511eba16a804a1460b6f5", "792d4100d32511eba16a804a1460b6f5", "792d8ab6d32511eba16a804a1460b6f5", "792dd05cd32511eba16a804a1460b6f5", "792e1620d32511eba16a804a1460b6f5", "792e5ebed32511eba16a804a1460b6f5", "792ea068d32511eba16a804a1460b6f5", "792ee258d32511eba16a804a1460b6f5", "792f25e2d32511eba16a804a1460b6f5", "792f6a7ad32511eba16a804a1460b6f5", "792fb84ad32511eba16a804a1460b6f5"})
+	req = req.SetQueryParam("userId", []string{"827680b8d4e311eb9337804a1460b6f5", "8276373ed4e311eb9337804a1460b6f5"})
 	str, resp := req.ToString()
 	t.Log(str, resp)
 }
 
 func TestCustomerController_GetList(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customers/list").Get()
-	str, _ := req.SetQueryParam("page", 1).SetQueryParam("pageSize", 3).ToString()
+	str, _ := req.SetQueryParam("page", 1).SetQueryParam("pageSize", 2).ToString()
 	t.Log(str)
 }
 
 func TestCustomerController_GetKeys(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customers/key").Get()
-	param := []string{"yangshu6111135135179443332", "yangshu6111135135179443334"}
+	param := []string{"yangshu611113513517944333", "yangshu6111135135179443330"}
 
 	str, _ := req.SetQueryParam("userKey", param).ToString()
 	t.Log(str)
@@ -163,7 +163,7 @@ func TestCustomerController_GetKeys(t *testing.T) {
 
 func TestCustomerController_GetPhones(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customers/phone").Get()
-	param := []string{"135135179394", "135135179392"}
+	param := []string{"135135179333", "135135179390"}
 
 	str, _ := req.SetQueryParam("phone", param).ToString()
 	t.Log(str)
@@ -171,7 +171,7 @@ func TestCustomerController_GetPhones(t *testing.T) {
 
 func TestCustomerController_GetWechat(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customers/wechat").Get()
-	param := []string{"1001212", "10012122222"}
+	param := []string{"10012133333", "100121333331"}
 
 	str, _ := req.SetQueryParam("unionId", param).ToString()
 	t.Log(str)
