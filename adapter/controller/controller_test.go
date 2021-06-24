@@ -12,7 +12,7 @@ import (
 var domain = "http://127.0.0.1:8000/cdp-service"
 
 func TestCustomerManagerController_PostList(t *testing.T) {
-	req := requests.NewHTTPRequest(domain + "/customer/tmplManager/list").Post()
+	req := requests.NewHTTPRequest(domain + "/customer/metaDataManager/list").Post()
 	var list []po.CustomerExtensionMetadata
 	list = append(list, po.CustomerExtensionMetadata{
 		Variable: "score",
@@ -41,7 +41,7 @@ func TestCustomerManagerController_PostList(t *testing.T) {
 }
 
 func TestCustomerManagerController_GetList(t *testing.T) {
-	req := requests.NewHTTPRequest(domain + "/customer/tmplManager/list").Get()
+	req := requests.NewHTTPRequest(domain + "/customer/metaDataManager/list").Get()
 	var body struct {
 		Code int                            `json:"code"`
 		Msg  string                         `json:"msg"`
@@ -56,7 +56,7 @@ func TestCustomerManagerController_GetList(t *testing.T) {
 }
 
 func TestCustomerManagerController_PutSort(t *testing.T) {
-	req := requests.NewHTTPRequest(domain + "/customer/tmplManager/sort").Put()
+	req := requests.NewHTTPRequest(domain + "/customer/metaDataManager/sort").Put()
 	str, _ := req.SetQueryParam("id", 53).SetQueryParam("sort", 1002).ToString()
 	t.Log(string(str))
 }
