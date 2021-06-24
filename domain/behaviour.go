@@ -11,7 +11,7 @@ import (
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
 		initiator.BindService(func() *BehaviourService {
-			return &BehaviourService{fetchTime: 5 * time.Second, fetchCount: 500}
+			return &BehaviourService{fetchTime: 8 * time.Second, fetchCount: 800}
 		})
 		initiator.InjectController(func(ctx freedom.Context) (service *BehaviourService) {
 			initiator.FetchService(ctx, &service)

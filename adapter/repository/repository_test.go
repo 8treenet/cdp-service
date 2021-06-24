@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"math/rand"
 	"testing"
 	"time"
 
@@ -97,4 +98,40 @@ func TestTemp(t *testing.T) {
 	}
 	str, _ := entity.Marshal()
 	t.Log(string(str))
+}
+
+func TestIP(t *testing.T) {
+	unitTest := getUnitTest()
+	unitTest.Run()
+
+	var repo *BehaviourRepository
+	//获取资源库
+	unitTest.FetchRepository(&repo)
+
+	list1 := []string{}
+	list2 := []string{}
+	list3 := []string{}
+	for i := 0; i < 60; i++ {
+		list1 = append(list1, fmt.Sprintf("111.117.222.%d", 100+i))
+		list2 = append(list2, fmt.Sprintf("113.46.163.%d", 50+i))
+		list3 = append(list3, fmt.Sprintf("119.7.146.%d", 35+i))
+	}
+
+	for i := 0; i < 50; i++ {
+		list555 := []string{}
+		list555 = append(list555, list1...)
+		list555 = append(list555, list2...)
+		list555 = append(list555, list3...)
+
+		postLen := len(list555) - rand.Intn(5)
+		res, err := repo.getIP(list555[0:postLen])
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("fuck1", postLen, len(res))
+
+		for _, v := range res {
+			fmt.Println("fuck3", v)
+		}
+	}
 }

@@ -4,11 +4,12 @@ import (
 	"time"
 
 	"github.com/8treenet/cdp-service/domain/entity"
+	"github.com/8treenet/cdp-service/infra"
 	"github.com/8treenet/freedom"
 )
 
 func init() {
-	behaviourChan = make(chan *entity.Behaviour, 2000)
+	behaviourChan = make(chan *entity.Behaviour, 5000)
 	bufferOver = make(chan bool, 1)
 
 	freedom.Prepare(func(initiator freedom.Initiator) {
@@ -41,6 +42,7 @@ var (
 // BehaviourRepository .
 type BehaviourRepository struct {
 	freedom.Repository
+	GEO *infra.GEO
 }
 
 // FetchBehaviours max:最大数量, duration:等待时间.
@@ -65,4 +67,9 @@ func (repo *BehaviourRepository) FetchBehaviours(max int, duration time.Duration
 		}
 	}
 	return
+}
+
+// getIP
+func (repo *BehaviourRepository) getIP(addr []string) (map[string]*infra.GEOInfo, error) {
+	return repo.GEO.ParseBatchIP(addr)
 }

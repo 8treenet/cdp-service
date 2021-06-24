@@ -7,4 +7,5 @@ import (
 // Behaviour 客户行为
 type Behaviour struct {
 	freedom.Entity
+	IP string
 }
