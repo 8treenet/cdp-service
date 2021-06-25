@@ -19,6 +19,7 @@ type logrusRow struct {
 
 func NewLogrusMiddleware(logFolder string, console bool) func(value *freedom.LogRow) bool {
 	initLogger(logFolder)
+
 	write := make(chan *logrusRow, 3000)
 	go func() {
 		for row := range write {
