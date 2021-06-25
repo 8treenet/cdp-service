@@ -87,7 +87,7 @@ func TestTemp(t *testing.T) {
 	unitTest.FetchRepository(&repo)
 
 	uuid := fmt.Sprint(time.Now().Unix())
-	_, err := repo.CreateTempCustomer(uuid)
+	_, err := repo.CreateTempCustomer(uuid, 0)
 	if err != nil {
 		panic(err)
 	}

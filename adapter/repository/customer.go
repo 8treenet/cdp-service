@@ -59,13 +59,13 @@ func (repo *CustomerRepository) CreateCustomer() *entity.Customer {
 }
 
 // CreateCustomer .
-func (repo *CustomerRepository) CreateTempCustomer(uuid string) (*entity.TempCustomer, error) {
+func (repo *CustomerRepository) CreateTempCustomer(uuid string, sourceID int) (*entity.TempCustomer, error) {
 	userId, err := utils.GenerateUUID()
 	if err != nil {
 		return nil, err
 	}
 
-	result := &entity.TempCustomer{CustomerTemporary: po.CustomerTemporary{UserID: userId, UUID: uuid, Created: time.Now(), Updated: time.Now()}}
+	result := &entity.TempCustomer{CustomerTemporary: po.CustomerTemporary{UserID: userId, UUID: uuid, SourceID: sourceID, Created: time.Now(), Updated: time.Now()}}
 	if _, err := createCustomerTemporary(repo, &result.CustomerTemporary); err != nil {
 		return nil, err
 	}
