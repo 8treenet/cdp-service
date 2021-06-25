@@ -6,13 +6,14 @@ import (
 
 	"github.com/8treenet/cdp-service/domain/po"
 	"github.com/8treenet/freedom"
+	"github.com/go-redis/redis"
 	"gorm.io/gorm"
 )
 
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
 		initiator.BindRepository(func() *SupportRepository {
-			return &SupportRepository{}
+			return &SupportRepository{sourceCacheKey: "cdp_support_source"}
 		})
 	})
 }
@@ -20,12 +21,32 @@ func init() {
 // SupportRepository .
 type SupportRepository struct {
 	freedom.Repository
+	sourceCacheKey string
 }
 
 // CreateSouce .
 func (repo *SupportRepository) CreateSouce(source string) error {
 	_, e := createSource(repo, &po.Source{Source: source, Created: time.Now(), Updated: time.Now()})
 	return e
+}
+
+func (repo *SupportRepository) FindSource(source string) int {
+	if source == "" {
+		return 0
+	}
+	var obj po.Source
+	key := repo.sourceCacheKey + ":" + source
+	if err := redisJSONGet(repo.Redis(), key, &obj); err != nil && err != redis.Nil {
+		return obj.ID
+	}
+
+	obj.Source = source
+	if findSource(repo, &obj) != nil {
+		return 0
+	}
+
+	redisJSONSet(repo.Redis(), key, obj, time.Minute*100)
+	return obj.ID
 }
 
 // GetAllSource .

@@ -14,9 +14,10 @@ import (
 // CustomerCreateCmd
 type CustomerCreateCmd struct {
 	entity.Intermediary
-	CustomerRepo *repository.CustomerRepository //客户仓库
-	SignRepo     *repository.SignRepository     //识别仓库
-	TX           transaction.Transaction        //依赖倒置事务组件
+	CustomerRepo      *repository.CustomerRepository //客户仓库
+	SignRepo          *repository.SignRepository     //识别仓库
+	TX                transaction.Transaction        //依赖倒置事务组件
+	SupportRepository *repository.SupportRepository
 }
 
 // Do .
@@ -32,6 +33,12 @@ func (cmd *CustomerCreateCmd) Do(customerDto vo.CustomerDTO) (e error) {
 	customer.Customer.Created = time.Now()
 	customer.Customer.Updated = time.Now()
 	customer.SetExtension(customerDto.Extension)
+	if customer.SourceID == 0 {
+		customer.SourceID = cmd.SupportRepository.FindSource(customerDto.Source)
+	}
+	if customer.SourceID == -1 {
+		customer.SourceID = 0
+	}
 
 	if e = cmd.VerifyCustomer(customer, true); e != nil {
 		return
@@ -52,7 +59,18 @@ func (cmd *CustomerCreateCmd) Do(customerDto vo.CustomerDTO) (e error) {
 
 // BatcheDo .
 func (cmd *CustomerCreateCmd) BatcheDo(customerDtos []vo.CustomerDTO) (e error) {
+	sourceMap := map[string]int{}
+	for i := 0; i < len(customerDtos); i++ {
+		sourceMap[customerDtos[i].Source] = -1
+	}
+	for key := range sourceMap {
+		if id := cmd.SupportRepository.FindSource(key); id != 0 {
+			sourceMap[key] = cmd.SupportRepository.FindSource(key)
+		}
+	}
+
 	for _, v := range customerDtos {
+		v.SourceID = sourceMap[v.Source]
 		if e = cmd.Do(v); e != nil {
 			return
 		}

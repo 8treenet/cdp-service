@@ -16,11 +16,12 @@ func init() {
 
 // IntermediaryFactory 中介工厂
 type IntermediaryFactory struct {
-	CustomerRepo *repository.CustomerRepository
-	Intermediary *repository.IntermediaryRepository
-	SignRepo     *repository.SignRepository
-	TX           transaction.Transaction //依赖倒置事务组件
-	Worker       freedom.Worker          //运行时，一个请求绑定一个运行时
+	CustomerRepo      *repository.CustomerRepository
+	Intermediary      *repository.IntermediaryRepository
+	SignRepo          *repository.SignRepository
+	SupportRepository *repository.SupportRepository
+	TX                transaction.Transaction //依赖倒置事务组件
+	Worker            freedom.Worker          //运行时，一个请求绑定一个运行时
 }
 
 // CreateCustomerNewCmd 返回添加客户命令
@@ -31,10 +32,11 @@ func (factory *IntermediaryFactory) CreateCustomerNewCmd() (cmd *CustomerCreateC
 	}
 
 	return &CustomerCreateCmd{
-		Intermediary: *ientity,
-		CustomerRepo: factory.CustomerRepo,
-		SignRepo:     factory.SignRepo,
-		TX:           factory.TX,
+		Intermediary:      *ientity,
+		CustomerRepo:      factory.CustomerRepo,
+		SignRepo:          factory.SignRepo,
+		TX:                factory.TX,
+		SupportRepository: factory.SupportRepository,
 	}, nil
 }
 

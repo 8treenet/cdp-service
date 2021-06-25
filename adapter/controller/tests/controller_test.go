@@ -67,6 +67,7 @@ func TestCustomerController_Post(t *testing.T) {
 		po.Customer
 		Extension map[string]interface{} `json:"extension"`
 		Birthday2 string                 `json:"birthday"`
+		Source    string                 `json:"source"`
 	}
 	data.Name = "yangshu3333"
 	data.Gender = "男"
@@ -78,6 +79,7 @@ func TestCustomerController_Post(t *testing.T) {
 	data.Province = "山西"
 	data.City = "太原"
 	data.Region = "迎泽区"
+	data.Source = "ali"
 
 	data.Extension = make(map[string]interface{})
 	data.Extension["score"] = 100
@@ -116,6 +118,7 @@ func TestCustomerController_PostList(t *testing.T) {
 		po.Customer
 		Extension map[string]interface{} `json:"extension"`
 		Birthday2 string                 `json:"birthday"`
+		Source    string                 `json:"source"`
 	}, 5)
 	for i := 0; i < 5; i++ {
 		datas[i].Name = "yangshuList-" + fmt.Sprint(i)
@@ -128,11 +131,15 @@ func TestCustomerController_PostList(t *testing.T) {
 		datas[i].Province = "山西"
 		datas[i].City = "太原"
 		datas[i].Region = "迎泽区"
+		datas[i].Source = "ali"
 		datas[i].Extension = make(map[string]interface{})
 		datas[i].Extension["score"] = 100 + i
 		datas[i].Extension["star"] = 50 + i
 		datas[i].Extension["level"] = 20 + i
 		datas[i].Extension["addr"] = "刺恒小区sss-" + fmt.Sprint(i)
+	}
+	for i := 0; i < 2; i++ {
+		datas[i].Source = ""
 	}
 
 	str, resp := req.SetJSONBody(datas).ToString()
