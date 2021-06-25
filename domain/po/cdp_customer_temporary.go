@@ -12,7 +12,7 @@ type CustomerTemporary struct {
 	ID       int       `gorm:"primaryKey;column:id"`
 	UUID     string    `gorm:"column:uuid"` // 临时用户的唯一id
 	UserID   string    `gorm:"column:userId"`
-	Internal int       `gorm:"column:internal"` // 非0内部生成
+	SourceID int       `gorm:"column:sourceId"` // 来源id
 	Created  time.Time `gorm:"column:created"`
 	Updated  time.Time `gorm:"column:updated"`
 }
@@ -60,10 +60,10 @@ func (obj *CustomerTemporary) SetUserID(userID string) {
 	obj.Update("userId", userID)
 }
 
-// SetInternal .
-func (obj *CustomerTemporary) SetInternal(internal int) {
-	obj.Internal = internal
-	obj.Update("internal", internal)
+// SetSourceID .
+func (obj *CustomerTemporary) SetSourceID(sourceID int) {
+	obj.SourceID = sourceID
+	obj.Update("sourceId", sourceID)
 }
 
 // SetCreated .
@@ -78,8 +78,8 @@ func (obj *CustomerTemporary) SetUpdated(updated time.Time) {
 	obj.Update("updated", updated)
 }
 
-// AddInternal .
-func (obj *CustomerTemporary) AddInternal(internal int) {
-	obj.Internal += internal
-	obj.Update("internal", gorm.Expr("internal + ?", internal))
+// AddSourceID .
+func (obj *CustomerTemporary) AddSourceID(sourceID int) {
+	obj.SourceID += sourceID
+	obj.Update("sourceId", gorm.Expr("sourceId + ?", sourceID))
 }

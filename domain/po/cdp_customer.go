@@ -20,6 +20,7 @@ type Customer struct {
 	Region        string     `gorm:"column:region" json:"region"`               // 区
 	WechatUnionID string     `gorm:"column:wechatUnionId" json:"wechatUnionID"` // 微信唯一id
 	UserKey       string     `gorm:"column:userKey" json:"userKey"`             // 自定义识别key
+	SourceID      int        `gorm:"column:sourceId" json:"sourceId"`           // 来源id
 	Created       time.Time  `gorm:"column:created" json:"-"`
 	Updated       time.Time  `gorm:"column:updated" json:"-"`
 }
@@ -125,4 +126,10 @@ func (obj *Customer) SetCreated(created time.Time) {
 func (obj *Customer) SetUpdated(updated time.Time) {
 	obj.Updated = updated
 	obj.Update("updated", updated)
+}
+
+// SetSourceID .
+func (obj *Customer) SetSourceID(sourceID int) {
+	obj.SourceID = sourceID
+	obj.Update("sourceId", sourceID)
 }
