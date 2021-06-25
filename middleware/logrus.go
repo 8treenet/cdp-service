@@ -11,12 +11,30 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type logrusRow struct {
+	Level   logrus.Level
+	Message string
+	Fields  logrus.Fields
+}
+
 func NewLogrusMiddleware(logFolder string, console bool) func(value *freedom.LogRow) bool {
 	initLogger(logFolder)
+	write := make(chan *logrusRow, 3000)
+	go func() {
+		for row := range write {
+			//使用Logrus输出
+			loggerEntity.WithFields(row.Fields).Log(row.Level, row.Message)
+		}
+	}()
+
 	return func(value *freedom.LogRow) bool {
-		//使用Logrus输出
-		level := toLogrusLevel(value.Level)
-		loggerEntity.WithFields(logrus.Fields(value.Fields)).Log(level, value.Message)
+		//打入管道
+		write <- &logrusRow{
+			Level:   toLogrusLevel(value.Level),
+			Message: value.Message,
+			Fields:  logrus.Fields(value.Fields),
+		}
+
 		if !console {
 			return true // 返回true 停止中间件遍历，最底层默认console
 		}
