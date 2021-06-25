@@ -15,9 +15,8 @@ type Customer struct {
 	Phone         string     `gorm:"column:phone" json:"phone"`                 // 电话
 	Gender        string     `gorm:"column:gender" json:"gender"`               // 性别
 	Birthday      *time.Time `gorm:"column:birthday" json:"-"`                  // 生日
-	Province      string     `gorm:"column:province" json:"province"`           // 省
 	City          string     `gorm:"column:city" json:"city"`                   // 市
-	Region        string     `gorm:"column:region" json:"region"`               // 区
+	Region        string     `gorm:"column:region" json:"region"`               // 省
 	WechatUnionID string     `gorm:"column:wechatUnionId" json:"wechatUnionID"` // 微信唯一id
 	UserKey       string     `gorm:"column:userKey" json:"userKey"`             // 自定义识别key
 	SourceID      int        `gorm:"column:sourceId" json:"sourceId"`           // 来源id
@@ -84,12 +83,6 @@ func (obj *Customer) SetGender(gender string) {
 func (obj *Customer) SetBirthday(birthday time.Time) {
 	obj.Birthday = &birthday
 	obj.Update("birthday", birthday)
-}
-
-// SetProvince .
-func (obj *Customer) SetProvince(province string) {
-	obj.Province = province
-	obj.Update("province", province)
 }
 
 // SetCity .

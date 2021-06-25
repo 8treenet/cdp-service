@@ -2,12 +2,15 @@ package aggregate
 
 import (
 	"fmt"
+	"net"
 	"time"
 
 	"github.com/8treenet/cdp-service/adapter/repository"
 	"github.com/8treenet/cdp-service/domain/entity"
 	"github.com/8treenet/cdp-service/domain/po"
 	"github.com/8treenet/cdp-service/domain/vo"
+	"github.com/8treenet/cdp-service/infra"
+	"github.com/8treenet/cdp-service/utils"
 	"github.com/8treenet/freedom/infra/transaction"
 )
 
@@ -17,11 +20,12 @@ type CustomerCreateCmd struct {
 	CustomerRepo      *repository.CustomerRepository //客户仓库
 	SignRepo          *repository.SignRepository     //识别仓库
 	TX                transaction.Transaction        //依赖倒置事务组件
+	GEO               *infra.GEO                     //geo
 	SupportRepository *repository.SupportRepository
 }
 
 // Do .
-func (cmd *CustomerCreateCmd) Do(customerDto vo.CustomerDTO) (e error) {
+func (cmd *CustomerCreateCmd) Do(customerDto vo.CustomerDTO, inBatche ...bool) (e error) {
 	customer := cmd.CustomerRepo.CreateCustomer()
 	customer.Customer = customerDto.Customer
 	if customerDto.BirthdaySubstitute != "" {
@@ -33,11 +37,18 @@ func (cmd *CustomerCreateCmd) Do(customerDto vo.CustomerDTO) (e error) {
 	customer.Customer.Created = time.Now()
 	customer.Customer.Updated = time.Now()
 	customer.SetExtension(customerDto.Extension)
-	if customer.SourceID == 0 {
+	for len(inBatche) == 0 {
 		customer.SourceID = cmd.SupportRepository.FindSource(customerDto.Source)
-	}
-	if customer.SourceID == -1 {
-		customer.SourceID = 0
+		if customerDto.IP == "" || net.ParseIP(customerDto.IP) == nil || customerDto.City != "" || customerDto.Region != "" {
+			break
+		}
+		geoInfo, err := cmd.GEO.ParseIP(customerDto.IP)
+		if err != nil && geoInfo != nil {
+			break
+		}
+		customer.City = geoInfo.City
+		customer.Region = geoInfo.Region
+		break
 	}
 
 	if e = cmd.VerifyCustomer(customer, true); e != nil {
@@ -60,18 +71,24 @@ func (cmd *CustomerCreateCmd) Do(customerDto vo.CustomerDTO) (e error) {
 // BatcheDo .
 func (cmd *CustomerCreateCmd) BatcheDo(customerDtos []vo.CustomerDTO) (e error) {
 	sourceMap := map[string]int{}
+	var ipAddrs []string
+
 	for i := 0; i < len(customerDtos); i++ {
-		sourceMap[customerDtos[i].Source] = -1
-	}
-	for key := range sourceMap {
-		if id := cmd.SupportRepository.FindSource(key); id != 0 {
-			sourceMap[key] = cmd.SupportRepository.FindSource(key)
+		customerDtos[i].SourceID = cmd.SupportRepository.FindSource(customerDtos[i].Source)
+		if customerDtos[i].IP == "" || utils.InSlice(ipAddrs, customerDtos[i].IP) {
+			continue
 		}
+		ipAddrs = append(ipAddrs, customerDtos[i].IP)
 	}
 
+	addrsMap, _ := cmd.GEO.ParseBatchIP(ipAddrs)
 	for _, v := range customerDtos {
+		if info, ok := addrsMap[v.IP]; ok {
+			v.City = info.City
+			v.Region = info.Region
+		}
 		v.SourceID = sourceMap[v.Source]
-		if e = cmd.Do(v); e != nil {
+		if e = cmd.Do(v, true); e != nil {
 			return
 		}
 	}

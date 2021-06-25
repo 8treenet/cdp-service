@@ -77,8 +77,6 @@ func (entity *Customer) UpdateByMap(putData map[string]interface{}) error {
 				return err
 			}
 			entity.SetBirthday(itemTimer)
-		case "province":
-			entity.SetProvince(fmt.Sprint(item))
 		case "city":
 			entity.SetCity(fmt.Sprint(item))
 		case "region":

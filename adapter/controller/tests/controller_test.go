@@ -68,6 +68,7 @@ func TestCustomerController_Post(t *testing.T) {
 		Extension map[string]interface{} `json:"extension"`
 		Birthday2 string                 `json:"birthday"`
 		Source    string                 `json:"source"`
+		IP        string                 `json:"ip"`
 	}
 	data.Name = "yangshu3333"
 	data.Gender = "男"
@@ -76,10 +77,10 @@ func TestCustomerController_Post(t *testing.T) {
 	data.Phone = "135135179333"
 	data.UserKey = "yangshu611113513517944333"
 	data.WechatUnionID = "10012133333"
-	data.Province = "山西"
-	data.City = "太原"
-	data.Region = "迎泽区"
+	//data.City = "太原"
+	//data.Region = "山西"
 	data.Source = "ali"
+	data.IP = "223.20.180.200"
 
 	data.Extension = make(map[string]interface{})
 	data.Extension["score"] = 100
@@ -119,6 +120,7 @@ func TestCustomerController_PostList(t *testing.T) {
 		Extension map[string]interface{} `json:"extension"`
 		Birthday2 string                 `json:"birthday"`
 		Source    string                 `json:"source"`
+		IP        string                 `json:"ip"`
 	}, 5)
 	for i := 0; i < 5; i++ {
 		datas[i].Name = "yangshuList-" + fmt.Sprint(i)
@@ -128,9 +130,8 @@ func TestCustomerController_PostList(t *testing.T) {
 		datas[i].Phone = "13513517939" + fmt.Sprint(i)
 		datas[i].UserKey = "yangshu611113513517944333" + fmt.Sprint(i)
 		datas[i].WechatUnionID = "10012133333" + fmt.Sprint(i)
-		datas[i].Province = "山西"
 		datas[i].City = "太原"
-		datas[i].Region = "迎泽区"
+		datas[i].Region = "山西"
 		datas[i].Source = "ali"
 		datas[i].Extension = make(map[string]interface{})
 		datas[i].Extension["score"] = 100 + i
@@ -141,6 +142,8 @@ func TestCustomerController_PostList(t *testing.T) {
 	for i := 0; i < 2; i++ {
 		datas[i].Source = ""
 	}
+	datas[0].IP = "125.38.82.23"
+	datas[1].IP = "1.192.119.149"
 
 	str, resp := req.SetJSONBody(datas).ToString()
 	t.Log(str, resp)

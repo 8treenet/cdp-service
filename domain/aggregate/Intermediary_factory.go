@@ -2,6 +2,7 @@ package aggregate
 
 import (
 	"github.com/8treenet/cdp-service/adapter/repository"
+	"github.com/8treenet/cdp-service/infra"
 	"github.com/8treenet/freedom"
 	"github.com/8treenet/freedom/infra/transaction"
 )
@@ -22,6 +23,7 @@ type IntermediaryFactory struct {
 	SupportRepository *repository.SupportRepository
 	TX                transaction.Transaction //依赖倒置事务组件
 	Worker            freedom.Worker          //运行时，一个请求绑定一个运行时
+	GEO               *infra.GEO              //geo
 }
 
 // CreateCustomerNewCmd 返回添加客户命令
@@ -37,6 +39,7 @@ func (factory *IntermediaryFactory) CreateCustomerNewCmd() (cmd *CustomerCreateC
 		SignRepo:          factory.SignRepo,
 		TX:                factory.TX,
 		SupportRepository: factory.SupportRepository,
+		GEO:               factory.GEO,
 	}, nil
 }
 

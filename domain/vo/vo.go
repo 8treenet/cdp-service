@@ -11,4 +11,5 @@ type CustomerDTO struct {
 	Extension          map[string]interface{} `json:"extension"`
 	BirthdaySubstitute string                 `json:"birthday"`
 	Source             string                 `json:"source"`
+	IP                 string                 `json:"ip"`
 }

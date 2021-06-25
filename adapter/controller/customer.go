@@ -84,6 +84,9 @@ func (c *CustomerController) PostList() freedom.Result {
 	if e := c.Request.ReadJSON(&postData); e != nil {
 		return &infra.JSONResponse{Error: e}
 	}
+	if len(postData) > 200 {
+		return &infra.JSONResponse{Error: errors.New("批量最多支持200人")}
+	}
 	for _, v := range postData {
 		if v.UserKey == "" && v.Phone == "" && v.WechatUnionID == "" {
 			return &infra.JSONResponse{Error: errors.New("未填写客户识别参数")}
