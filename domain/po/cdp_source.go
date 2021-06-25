@@ -5,27 +5,27 @@ import (
 	"time"
 )
 
-// BehaviourMetadata .
-type BehaviourMetadata struct {
+// Source .
+type Source struct {
 	changes map[string]interface{}
 	ID      int       `gorm:"primaryKey;column:id"`
-	Feature string    `gorm:"column:feature"` // 行为的类型
+	Source  string    `gorm:"column:source"`
 	Created time.Time `gorm:"column:created"`
 	Updated time.Time `gorm:"column:updated"`
 }
 
 // TableName .
-func (obj *BehaviourMetadata) TableName() string {
-	return "cdp_behaviour_metadata"
+func (obj *Source) TableName() string {
+	return "cdp_source"
 }
 
 // Location .
-func (obj *BehaviourMetadata) Location() map[string]interface{} {
+func (obj *Source) Location() map[string]interface{} {
 	return map[string]interface{}{"id": obj.ID}
 }
 
 // GetChanges .
-func (obj *BehaviourMetadata) GetChanges() map[string]interface{} {
+func (obj *Source) GetChanges() map[string]interface{} {
 	if obj.changes == nil {
 		return nil
 	}
@@ -38,27 +38,27 @@ func (obj *BehaviourMetadata) GetChanges() map[string]interface{} {
 }
 
 // Update .
-func (obj *BehaviourMetadata) Update(name string, value interface{}) {
+func (obj *Source) Update(name string, value interface{}) {
 	if obj.changes == nil {
 		obj.changes = make(map[string]interface{})
 	}
 	obj.changes[name] = value
 }
 
-// SetFeature .
-func (obj *BehaviourMetadata) SetFeature(feature string) {
-	obj.Feature = feature
-	obj.Update("feature", feature)
+// SetSource .
+func (obj *Source) SetSource(source string) {
+	obj.Source = source
+	obj.Update("source", source)
 }
 
 // SetCreated .
-func (obj *BehaviourMetadata) SetCreated(created time.Time) {
+func (obj *Source) SetCreated(created time.Time) {
 	obj.Created = created
 	obj.Update("created", created)
 }
 
 // SetUpdated .
-func (obj *BehaviourMetadata) SetUpdated(updated time.Time) {
+func (obj *Source) SetUpdated(updated time.Time) {
 	obj.Updated = updated
 	obj.Update("updated", updated)
 }

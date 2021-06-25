@@ -280,6 +280,159 @@ func saveSystemConfig(repo GORMRepository, object saveObject) (rowsAffected int6
 	return
 }
 
+// findSource .
+func findSource(repo GORMRepository, result *po.Source, builders ...Builder) (e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Source", "findSource", e, now)
+		ormErrorLog(repo, "Source", "findSource", e, result)
+	}()
+	db := repo.db()
+	if len(builders) == 0 {
+		e = db.Where(result).Last(result).Error
+		return
+	}
+	e = builders[0].Execute(db.Limit(1), result)
+	return
+}
+
+// findSourceListByPrimarys .
+func findSourceListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.Source, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Source", "findSourceListByPrimarys", e, now)
+		ormErrorLog(repo, "Source", "findSourcesByPrimarys", e, primarys)
+	}()
+
+	e = repo.db().Find(&results, primarys).Error
+	return
+}
+
+// findSourceByWhere .
+func findSourceByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.Source, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Source", "findSourceByWhere", e, now)
+		ormErrorLog(repo, "Source", "findSourceByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findSourceByMap .
+func findSourceByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.Source, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Source", "findSourceByMap", e, now)
+		ormErrorLog(repo, "Source", "findSourceByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findSourceList .
+func findSourceList(repo GORMRepository, query po.Source, builders ...Builder) (results []po.Source, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Source", "findSourceList", e, now)
+		ormErrorLog(repo, "Source", "findSources", e, query)
+	}()
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findSourceListByWhere .
+func findSourceListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.Source, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Source", "findSourceListByWhere", e, now)
+		ormErrorLog(repo, "Source", "findSourcesByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findSourceListByMap .
+func findSourceListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.Source, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Source", "findSourceListByMap", e, now)
+		ormErrorLog(repo, "Source", "findSourcesByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// createSource .
+func createSource(repo GORMRepository, object *po.Source) (rowsAffected int64, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Source", "createSource", e, now)
+		ormErrorLog(repo, "Source", "createSource", e, *object)
+	}()
+
+	db := repo.db().Create(object)
+	rowsAffected = db.RowsAffected
+	e = db.Error
+	return
+}
+
+// saveSource .
+func saveSource(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+	if len(object.Location()) == 0 {
+		return 0, errors.New("location cannot be empty")
+	}
+
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Source", "saveSource", e, now)
+		ormErrorLog(repo, "Source", "saveSource", e, object)
+	}()
+
+	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())
+	e = db.Error
+	rowsAffected = db.RowsAffected
+	return
+}
+
 // findIPAddr .
 func findIPAddr(repo GORMRepository, result *po.IPAddr, builders ...Builder) (e error) {
 	now := time.Now()
@@ -1504,12 +1657,12 @@ func saveCustomer(repo GORMRepository, object saveObject) (rowsAffected int64, e
 	return
 }
 
-// findBehaviourSource .
-func findBehaviourSource(repo GORMRepository, result *po.BehaviourSource, builders ...Builder) (e error) {
+// findBehaviourFeatureMetadata .
+func findBehaviourFeatureMetadata(repo GORMRepository, result *po.BehaviourFeatureMetadata, builders ...Builder) (e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "findBehaviourSource", e, now)
-		ormErrorLog(repo, "BehaviourSource", "findBehaviourSource", e, result)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeatureMetadata", "findBehaviourFeatureMetadata", e, now)
+		ormErrorLog(repo, "BehaviourFeatureMetadata", "findBehaviourFeatureMetadata", e, result)
 	}()
 	db := repo.db()
 	if len(builders) == 0 {
@@ -1520,24 +1673,24 @@ func findBehaviourSource(repo GORMRepository, result *po.BehaviourSource, builde
 	return
 }
 
-// findBehaviourSourceListByPrimarys .
-func findBehaviourSourceListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.BehaviourSource, e error) {
+// findBehaviourFeatureMetadataListByPrimarys .
+func findBehaviourFeatureMetadataListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.BehaviourFeatureMetadata, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "findBehaviourSourceListByPrimarys", e, now)
-		ormErrorLog(repo, "BehaviourSource", "findBehaviourSourcesByPrimarys", e, primarys)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeatureMetadata", "findBehaviourFeatureMetadataListByPrimarys", e, now)
+		ormErrorLog(repo, "BehaviourFeatureMetadata", "findBehaviourFeatureMetadatasByPrimarys", e, primarys)
 	}()
 
 	e = repo.db().Find(&results, primarys).Error
 	return
 }
 
-// findBehaviourSourceByWhere .
-func findBehaviourSourceByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.BehaviourSource, e error) {
+// findBehaviourFeatureMetadataByWhere .
+func findBehaviourFeatureMetadataByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.BehaviourFeatureMetadata, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "findBehaviourSourceByWhere", e, now)
-		ormErrorLog(repo, "BehaviourSource", "findBehaviourSourceByWhere", e, query, args)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeatureMetadata", "findBehaviourFeatureMetadataByWhere", e, now)
+		ormErrorLog(repo, "BehaviourFeatureMetadata", "findBehaviourFeatureMetadataByWhere", e, query, args)
 	}()
 	db := repo.db()
 	if query != "" {
@@ -1552,12 +1705,12 @@ func findBehaviourSourceByWhere(repo GORMRepository, query string, args []interf
 	return
 }
 
-// findBehaviourSourceByMap .
-func findBehaviourSourceByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.BehaviourSource, e error) {
+// findBehaviourFeatureMetadataByMap .
+func findBehaviourFeatureMetadataByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.BehaviourFeatureMetadata, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "findBehaviourSourceByMap", e, now)
-		ormErrorLog(repo, "BehaviourSource", "findBehaviourSourceByMap", e, query)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeatureMetadata", "findBehaviourFeatureMetadataByMap", e, now)
+		ormErrorLog(repo, "BehaviourFeatureMetadata", "findBehaviourFeatureMetadataByMap", e, query)
 	}()
 
 	db := repo.db().Where(query)
@@ -1570,12 +1723,12 @@ func findBehaviourSourceByMap(repo GORMRepository, query map[string]interface{},
 	return
 }
 
-// findBehaviourSourceList .
-func findBehaviourSourceList(repo GORMRepository, query po.BehaviourSource, builders ...Builder) (results []po.BehaviourSource, e error) {
+// findBehaviourFeatureMetadataList .
+func findBehaviourFeatureMetadataList(repo GORMRepository, query po.BehaviourFeatureMetadata, builders ...Builder) (results []po.BehaviourFeatureMetadata, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "findBehaviourSourceList", e, now)
-		ormErrorLog(repo, "BehaviourSource", "findBehaviourSources", e, query)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeatureMetadata", "findBehaviourFeatureMetadataList", e, now)
+		ormErrorLog(repo, "BehaviourFeatureMetadata", "findBehaviourFeatureMetadatas", e, query)
 	}()
 	db := repo.db().Where(query)
 
@@ -1587,12 +1740,12 @@ func findBehaviourSourceList(repo GORMRepository, query po.BehaviourSource, buil
 	return
 }
 
-// findBehaviourSourceListByWhere .
-func findBehaviourSourceListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.BehaviourSource, e error) {
+// findBehaviourFeatureMetadataListByWhere .
+func findBehaviourFeatureMetadataListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.BehaviourFeatureMetadata, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "findBehaviourSourceListByWhere", e, now)
-		ormErrorLog(repo, "BehaviourSource", "findBehaviourSourcesByWhere", e, query, args)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeatureMetadata", "findBehaviourFeatureMetadataListByWhere", e, now)
+		ormErrorLog(repo, "BehaviourFeatureMetadata", "findBehaviourFeatureMetadatasByWhere", e, query, args)
 	}()
 	db := repo.db()
 	if query != "" {
@@ -1607,12 +1760,12 @@ func findBehaviourSourceListByWhere(repo GORMRepository, query string, args []in
 	return
 }
 
-// findBehaviourSourceListByMap .
-func findBehaviourSourceListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.BehaviourSource, e error) {
+// findBehaviourFeatureMetadataListByMap .
+func findBehaviourFeatureMetadataListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.BehaviourFeatureMetadata, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "findBehaviourSourceListByMap", e, now)
-		ormErrorLog(repo, "BehaviourSource", "findBehaviourSourcesByMap", e, query)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeatureMetadata", "findBehaviourFeatureMetadataListByMap", e, now)
+		ormErrorLog(repo, "BehaviourFeatureMetadata", "findBehaviourFeatureMetadatasByMap", e, query)
 	}()
 
 	db := repo.db().Where(query)
@@ -1625,12 +1778,12 @@ func findBehaviourSourceListByMap(repo GORMRepository, query map[string]interfac
 	return
 }
 
-// createBehaviourSource .
-func createBehaviourSource(repo GORMRepository, object *po.BehaviourSource) (rowsAffected int64, e error) {
+// createBehaviourFeatureMetadata .
+func createBehaviourFeatureMetadata(repo GORMRepository, object *po.BehaviourFeatureMetadata) (rowsAffected int64, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "createBehaviourSource", e, now)
-		ormErrorLog(repo, "BehaviourSource", "createBehaviourSource", e, *object)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeatureMetadata", "createBehaviourFeatureMetadata", e, now)
+		ormErrorLog(repo, "BehaviourFeatureMetadata", "createBehaviourFeatureMetadata", e, *object)
 	}()
 
 	db := repo.db().Create(object)
@@ -1639,16 +1792,16 @@ func createBehaviourSource(repo GORMRepository, object *po.BehaviourSource) (row
 	return
 }
 
-// saveBehaviourSource .
-func saveBehaviourSource(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+// saveBehaviourFeatureMetadata .
+func saveBehaviourFeatureMetadata(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
 	if len(object.Location()) == 0 {
 		return 0, errors.New("location cannot be empty")
 	}
 
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourSource", "saveBehaviourSource", e, now)
-		ormErrorLog(repo, "BehaviourSource", "saveBehaviourSource", e, object)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeatureMetadata", "saveBehaviourFeatureMetadata", e, now)
+		ormErrorLog(repo, "BehaviourFeatureMetadata", "saveBehaviourFeatureMetadata", e, object)
 	}()
 
 	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())
@@ -1657,12 +1810,12 @@ func saveBehaviourSource(repo GORMRepository, object saveObject) (rowsAffected i
 	return
 }
 
-// findBehaviourMetadata .
-func findBehaviourMetadata(repo GORMRepository, result *po.BehaviourMetadata, builders ...Builder) (e error) {
+// findBehaviourFeature .
+func findBehaviourFeature(repo GORMRepository, result *po.BehaviourFeature, builders ...Builder) (e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "findBehaviourMetadata", e, now)
-		ormErrorLog(repo, "BehaviourMetadata", "findBehaviourMetadata", e, result)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeature", "findBehaviourFeature", e, now)
+		ormErrorLog(repo, "BehaviourFeature", "findBehaviourFeature", e, result)
 	}()
 	db := repo.db()
 	if len(builders) == 0 {
@@ -1673,24 +1826,24 @@ func findBehaviourMetadata(repo GORMRepository, result *po.BehaviourMetadata, bu
 	return
 }
 
-// findBehaviourMetadataListByPrimarys .
-func findBehaviourMetadataListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.BehaviourMetadata, e error) {
+// findBehaviourFeatureListByPrimarys .
+func findBehaviourFeatureListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.BehaviourFeature, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "findBehaviourMetadataListByPrimarys", e, now)
-		ormErrorLog(repo, "BehaviourMetadata", "findBehaviourMetadatasByPrimarys", e, primarys)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeature", "findBehaviourFeatureListByPrimarys", e, now)
+		ormErrorLog(repo, "BehaviourFeature", "findBehaviourFeaturesByPrimarys", e, primarys)
 	}()
 
 	e = repo.db().Find(&results, primarys).Error
 	return
 }
 
-// findBehaviourMetadataByWhere .
-func findBehaviourMetadataByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.BehaviourMetadata, e error) {
+// findBehaviourFeatureByWhere .
+func findBehaviourFeatureByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.BehaviourFeature, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "findBehaviourMetadataByWhere", e, now)
-		ormErrorLog(repo, "BehaviourMetadata", "findBehaviourMetadataByWhere", e, query, args)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeature", "findBehaviourFeatureByWhere", e, now)
+		ormErrorLog(repo, "BehaviourFeature", "findBehaviourFeatureByWhere", e, query, args)
 	}()
 	db := repo.db()
 	if query != "" {
@@ -1705,12 +1858,12 @@ func findBehaviourMetadataByWhere(repo GORMRepository, query string, args []inte
 	return
 }
 
-// findBehaviourMetadataByMap .
-func findBehaviourMetadataByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.BehaviourMetadata, e error) {
+// findBehaviourFeatureByMap .
+func findBehaviourFeatureByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.BehaviourFeature, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "findBehaviourMetadataByMap", e, now)
-		ormErrorLog(repo, "BehaviourMetadata", "findBehaviourMetadataByMap", e, query)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeature", "findBehaviourFeatureByMap", e, now)
+		ormErrorLog(repo, "BehaviourFeature", "findBehaviourFeatureByMap", e, query)
 	}()
 
 	db := repo.db().Where(query)
@@ -1723,12 +1876,12 @@ func findBehaviourMetadataByMap(repo GORMRepository, query map[string]interface{
 	return
 }
 
-// findBehaviourMetadataList .
-func findBehaviourMetadataList(repo GORMRepository, query po.BehaviourMetadata, builders ...Builder) (results []po.BehaviourMetadata, e error) {
+// findBehaviourFeatureList .
+func findBehaviourFeatureList(repo GORMRepository, query po.BehaviourFeature, builders ...Builder) (results []po.BehaviourFeature, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "findBehaviourMetadataList", e, now)
-		ormErrorLog(repo, "BehaviourMetadata", "findBehaviourMetadatas", e, query)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeature", "findBehaviourFeatureList", e, now)
+		ormErrorLog(repo, "BehaviourFeature", "findBehaviourFeatures", e, query)
 	}()
 	db := repo.db().Where(query)
 
@@ -1740,12 +1893,12 @@ func findBehaviourMetadataList(repo GORMRepository, query po.BehaviourMetadata, 
 	return
 }
 
-// findBehaviourMetadataListByWhere .
-func findBehaviourMetadataListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.BehaviourMetadata, e error) {
+// findBehaviourFeatureListByWhere .
+func findBehaviourFeatureListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.BehaviourFeature, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "findBehaviourMetadataListByWhere", e, now)
-		ormErrorLog(repo, "BehaviourMetadata", "findBehaviourMetadatasByWhere", e, query, args)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeature", "findBehaviourFeatureListByWhere", e, now)
+		ormErrorLog(repo, "BehaviourFeature", "findBehaviourFeaturesByWhere", e, query, args)
 	}()
 	db := repo.db()
 	if query != "" {
@@ -1760,12 +1913,12 @@ func findBehaviourMetadataListByWhere(repo GORMRepository, query string, args []
 	return
 }
 
-// findBehaviourMetadataListByMap .
-func findBehaviourMetadataListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.BehaviourMetadata, e error) {
+// findBehaviourFeatureListByMap .
+func findBehaviourFeatureListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.BehaviourFeature, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "findBehaviourMetadataListByMap", e, now)
-		ormErrorLog(repo, "BehaviourMetadata", "findBehaviourMetadatasByMap", e, query)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeature", "findBehaviourFeatureListByMap", e, now)
+		ormErrorLog(repo, "BehaviourFeature", "findBehaviourFeaturesByMap", e, query)
 	}()
 
 	db := repo.db().Where(query)
@@ -1778,12 +1931,12 @@ func findBehaviourMetadataListByMap(repo GORMRepository, query map[string]interf
 	return
 }
 
-// createBehaviourMetadata .
-func createBehaviourMetadata(repo GORMRepository, object *po.BehaviourMetadata) (rowsAffected int64, e error) {
+// createBehaviourFeature .
+func createBehaviourFeature(repo GORMRepository, object *po.BehaviourFeature) (rowsAffected int64, e error) {
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "createBehaviourMetadata", e, now)
-		ormErrorLog(repo, "BehaviourMetadata", "createBehaviourMetadata", e, *object)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeature", "createBehaviourFeature", e, now)
+		ormErrorLog(repo, "BehaviourFeature", "createBehaviourFeature", e, *object)
 	}()
 
 	db := repo.db().Create(object)
@@ -1792,16 +1945,16 @@ func createBehaviourMetadata(repo GORMRepository, object *po.BehaviourMetadata) 
 	return
 }
 
-// saveBehaviourMetadata .
-func saveBehaviourMetadata(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+// saveBehaviourFeature .
+func saveBehaviourFeature(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
 	if len(object.Location()) == 0 {
 		return 0, errors.New("location cannot be empty")
 	}
 
 	now := time.Now()
 	defer func() {
-		freedom.Prometheus().OrmWithLabelValues("BehaviourMetadata", "saveBehaviourMetadata", e, now)
-		ormErrorLog(repo, "BehaviourMetadata", "saveBehaviourMetadata", e, object)
+		freedom.Prometheus().OrmWithLabelValues("BehaviourFeature", "saveBehaviourFeature", e, now)
+		ormErrorLog(repo, "BehaviourFeature", "saveBehaviourFeature", e, object)
 	}()
 
 	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())

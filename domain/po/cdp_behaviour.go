@@ -16,10 +16,10 @@ type Behaviour struct {
 	UserPhone     string         `gorm:"column:userPhone"`     // 用户手机号
 	TempUserID    string         `gorm:"column:tempUserId"`    // 临时用户唯一id
 	UserIPAddr    string         `gorm:"column:userIpAddr"`    // 用户ip地址
-	Feature       string         `gorm:"column:feature"`       // 行为的类型
+	FeatureID     int            `gorm:"column:featureId"`     // 行为的类型
 	CreateTime    time.Time      `gorm:"column:createTime"`    // 行为的时间
 	Data          datatypes.JSON `gorm:"column:data"`          // 数据
-	Souce         int            `gorm:"column:souce"`         // 来源
+	SouceID       int            `gorm:"column:souceId"`       // 来源
 	Created       time.Time      `gorm:"column:created"`
 }
 
@@ -84,10 +84,10 @@ func (obj *Behaviour) SetUserIPAddr(userIPAddr string) {
 	obj.Update("userIpAddr", userIPAddr)
 }
 
-// SetFeature .
-func (obj *Behaviour) SetFeature(feature string) {
-	obj.Feature = feature
-	obj.Update("feature", feature)
+// SetFeatureID .
+func (obj *Behaviour) SetFeatureID(featureID int) {
+	obj.FeatureID = featureID
+	obj.Update("featureId", featureID)
 }
 
 // SetCreateTime .
@@ -102,10 +102,10 @@ func (obj *Behaviour) SetData(data datatypes.JSON) {
 	obj.Update("data", data)
 }
 
-// SetSouce .
-func (obj *Behaviour) SetSouce(souce int) {
-	obj.Souce = souce
-	obj.Update("souce", souce)
+// SetSouceID .
+func (obj *Behaviour) SetSouceID(souceID int) {
+	obj.SouceID = souceID
+	obj.Update("souceId", souceID)
 }
 
 // SetCreated .
@@ -114,8 +114,14 @@ func (obj *Behaviour) SetCreated(created time.Time) {
 	obj.Update("created", created)
 }
 
-// AddSouce .
-func (obj *Behaviour) AddSouce(souce int) {
-	obj.Souce += souce
-	obj.Update("souce", gorm.Expr("souce + ?", souce))
+// AddFeatureID .
+func (obj *Behaviour) AddFeatureID(featureID int) {
+	obj.FeatureID += featureID
+	obj.Update("featureId", gorm.Expr("featureId + ?", featureID))
+}
+
+// AddSouceID .
+func (obj *Behaviour) AddSouceID(souceID int) {
+	obj.SouceID += souceID
+	obj.Update("souceId", gorm.Expr("souceId + ?", souceID))
 }
