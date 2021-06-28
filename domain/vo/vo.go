@@ -13,3 +13,16 @@ type CustomerDTO struct {
 	Source             string                 `json:"source"`
 	IP                 string                 `json:"ip"`
 }
+
+type PostFeatureMetadataDTO struct {
+	Variable string `json:"variable"` // 类型的名称
+	Title    string `json:"title"`    // 中文的标题
+	Kind     string `json:"kind"`     // 类型
+	Dict     string `json:"dict"`     // 关联字典的key
+}
+
+type PostFeatureDTO struct {
+	Title     string                   `json:"title"`
+	Warehouse string                   `json:"warehouse"` // clickhouse的表名
+	Metadata  []PostFeatureMetadataDTO `json:"metadata"`
+}

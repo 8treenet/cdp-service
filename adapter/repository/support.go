@@ -2,9 +2,12 @@
 package repository
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/8treenet/cdp-service/domain/entity"
 	"github.com/8treenet/cdp-service/domain/po"
+	"github.com/8treenet/cdp-service/infra"
 	"github.com/8treenet/freedom"
 	"github.com/go-redis/redis"
 	"gorm.io/gorm"
@@ -13,7 +16,7 @@ import (
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
 		initiator.BindRepository(func() *SupportRepository {
-			return &SupportRepository{sourceCacheKey: "cdp_support_source"}
+			return &SupportRepository{sourceCacheKey: "cdp_support_source", featureCacheKey: "cdp_support_feature:%d"}
 		})
 	})
 }
@@ -21,7 +24,9 @@ func init() {
 // SupportRepository .
 type SupportRepository struct {
 	freedom.Repository
-	sourceCacheKey string
+	CommonRequest   *infra.CommonRequest
+	sourceCacheKey  string
+	featureCacheKey string
 }
 
 // CreateSouce .
@@ -61,6 +66,108 @@ func (repo *SupportRepository) GetAllSource() ([]*po.Source, error) {
 		result = append(result, &list[i])
 	}
 	return result, nil
+}
+
+// NewFeatureEntity .
+func (repo *SupportRepository) NewFeatureEntity() *entity.Feature {
+	pobj := po.BehaviourFeature{Created: time.Now(), Updated: time.Now()}
+	entity := &entity.Feature{BehaviourFeature: pobj}
+
+	repo.InjectBaseEntity(entity)
+	return entity
+}
+
+// SaveFeatureEntity .
+func (repo *SupportRepository) SaveFeatureEntity(entity *entity.Feature) error {
+	if entity.ID == 0 {
+		if _, e := createBehaviourFeature(repo, &entity.BehaviourFeature); e != nil {
+			return e
+		}
+		for _, metadata := range entity.FeatureMetadata {
+			metadata.FeatureID = entity.ID
+			if _, e := createBehaviourFeatureMetadata(repo, metadata); e != nil {
+				return e
+			}
+		}
+		return nil
+	}
+
+	defer func() {
+		if e := repo.Redis().Del(fmt.Sprintf(repo.featureCacheKey, entity.ID)).Err(); e != nil {
+			repo.Worker().Logger().Error(e)
+		}
+	}()
+
+	for _, metadata := range entity.FeatureMetadata {
+		if metadata.ID != 0 {
+			continue
+		}
+
+		if _, e := createBehaviourFeatureMetadata(repo, metadata); e != nil {
+			return e
+		}
+	}
+
+	return nil
+}
+
+// GetFeatureEntity .
+func (repo *SupportRepository) GetFeatureEntity(featureId int) (result *entity.Feature, err error) {
+	key := fmt.Sprintf(repo.featureCacheKey, featureId)
+	result = &entity.Feature{}
+	repo.InjectBaseEntity(result)
+	err = redisJSONGet(repo.Redis(), key, result)
+	if err == nil {
+		return
+	}
+
+	if err = findBehaviourFeature(repo, &result.BehaviourFeature); err != nil {
+		return
+	}
+
+	list, err := findBehaviourFeatureMetadataList(repo, po.BehaviourFeatureMetadata{FeatureID: featureId})
+	if err != nil {
+		return
+	}
+	for i := 0; i < len(list); i++ {
+		result.FeatureMetadata = append(result.FeatureMetadata, &list[i])
+	}
+
+	redisJSONSet(repo.Redis(), key, result)
+	return
+}
+
+// GetFeatureEntitys .
+func (repo *SupportRepository) GetFeatureEntitys() (result []*entity.Feature, total int, err error) {
+	page, pageSize := repo.CommonRequest.GetPage()
+
+	pager := NewDescPager("id").SetPage(page, pageSize)
+	entityList, err := findBehaviourFeatureList(repo, po.BehaviourFeature{}, pager)
+	if err != nil {
+		return
+	}
+
+	featureIds := []int{}
+	for i := 0; i < len(entityList); i++ {
+		featureIds = append(featureIds, entityList[i].ID)
+		result = append(result, &entity.Feature{BehaviourFeature: entityList[i]})
+	}
+
+	metadataList, err := findBehaviourFeatureMetadataListByWhere(repo, "featureId in (?)", []interface{}{featureIds})
+	if err != nil {
+		return
+	}
+	for i := 0; i < len(metadataList); i++ {
+		for _, entity := range result {
+			if entity.ID == metadataList[i].FeatureID {
+				entity.FeatureMetadata = append(entity.FeatureMetadata, &metadataList[i])
+				break
+			}
+		}
+	}
+
+	total = pager.TotalPage()
+	return
 }
 
 // db .

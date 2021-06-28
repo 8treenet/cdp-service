@@ -19,6 +19,7 @@ type Behaviour struct {
 	FeatureID     int            `gorm:"column:featureId"`     // 行为的类型
 	CreateTime    time.Time      `gorm:"column:createTime"`    // 行为的时间
 	Data          datatypes.JSON `gorm:"column:data"`          // 数据
+	Processed     int            `gorm:"column:processed"`     // 非0已处理
 	SouceID       int            `gorm:"column:souceId"`       // 来源
 	Created       time.Time      `gorm:"column:created"`
 }
@@ -102,6 +103,12 @@ func (obj *Behaviour) SetData(data datatypes.JSON) {
 	obj.Update("data", data)
 }
 
+// SetProcessed .
+func (obj *Behaviour) SetProcessed(processed int) {
+	obj.Processed = processed
+	obj.Update("processed", processed)
+}
+
 // SetSouceID .
 func (obj *Behaviour) SetSouceID(souceID int) {
 	obj.SouceID = souceID
@@ -118,6 +125,12 @@ func (obj *Behaviour) SetCreated(created time.Time) {
 func (obj *Behaviour) AddFeatureID(featureID int) {
 	obj.FeatureID += featureID
 	obj.Update("featureId", gorm.Expr("featureId + ?", featureID))
+}
+
+// AddProcessed .
+func (obj *Behaviour) AddProcessed(processed int) {
+	obj.Processed += processed
+	obj.Update("processed", gorm.Expr("processed + ?", processed))
 }
 
 // AddSouceID .
