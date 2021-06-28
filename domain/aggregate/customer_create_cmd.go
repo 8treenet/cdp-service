@@ -1,7 +1,6 @@
 package aggregate
 
 import (
-	"fmt"
 	"net"
 	"time"
 
@@ -152,7 +151,6 @@ func (cmd *CustomerCreateCmd) sign(customerDto vo.CustomerDTO) (*entity.Customer
 
 	if customerDto.UserKey != "" && key != nil {
 		key.SetUserID(userId)
-		fmt.Println("fuck")
 		cmd.SignRepo.SaveKey(key)
 	}
 	if customerDto.UserKey != "" && key == nil {
