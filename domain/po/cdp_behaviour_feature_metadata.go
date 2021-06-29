@@ -8,15 +8,17 @@ import (
 
 // BehaviourFeatureMetadata .
 type BehaviourFeatureMetadata struct {
-	changes   map[string]interface{}
-	ID        int       `gorm:"primaryKey;column:id"`
-	FeatureID int       `gorm:"column:featureId"` // 行为的特性ID
-	Variable  string    `gorm:"column:variable"`  // 类型的名称
-	Title     string    `gorm:"column:title"`     // 中文的标题
-	Kind      string    `gorm:"column:kind"`      // 类型
-	Dict      string    `gorm:"column:dict"`      // 关联字典的key
-	Created   time.Time `gorm:"column:created"`
-	Updated   time.Time `gorm:"column:updated"`
+	changes       map[string]interface{}
+	ID            int       `gorm:"primaryKey;column:id"`
+	FeatureID     int       `gorm:"column:featureId"`     // 行为的特性ID
+	Variable      string    `gorm:"column:variable"`      // 类型的名称
+	Title         string    `gorm:"column:title"`         // 中文的标题
+	Kind          string    `gorm:"column:kind"`          // 类型
+	Dict          string    `gorm:"column:dict"`          // 关联字典的key
+	OrderByNumber int       `gorm:"column:orderByNumber"` // ck排序键，非0排序
+	Partition     int       `gorm:"column:partition"`     // 非0分区
+	Created       time.Time `gorm:"column:created"`
+	Updated       time.Time `gorm:"column:updated"`
 }
 
 // TableName .
@@ -80,6 +82,18 @@ func (obj *BehaviourFeatureMetadata) SetDict(dict string) {
 	obj.Update("dict", dict)
 }
 
+// SetOrderByNumber .
+func (obj *BehaviourFeatureMetadata) SetOrderByNumber(orderByNumber int) {
+	obj.OrderByNumber = orderByNumber
+	obj.Update("orderByNumber", orderByNumber)
+}
+
+// SetPartition .
+func (obj *BehaviourFeatureMetadata) SetPartition(partition int) {
+	obj.Partition = partition
+	obj.Update("partition", partition)
+}
+
 // SetCreated .
 func (obj *BehaviourFeatureMetadata) SetCreated(created time.Time) {
 	obj.Created = created
@@ -96,4 +110,16 @@ func (obj *BehaviourFeatureMetadata) SetUpdated(updated time.Time) {
 func (obj *BehaviourFeatureMetadata) AddFeatureID(featureID int) {
 	obj.FeatureID += featureID
 	obj.Update("featureId", gorm.Expr("featureId + ?", featureID))
+}
+
+// AddOrderByNumber .
+func (obj *BehaviourFeatureMetadata) AddOrderByNumber(orderByNumber int) {
+	obj.OrderByNumber += orderByNumber
+	obj.Update("orderByNumber", gorm.Expr("orderByNumber + ?", orderByNumber))
+}
+
+// AddPartition .
+func (obj *BehaviourFeatureMetadata) AddPartition(partition int) {
+	obj.Partition += partition
+	obj.Update("partition", gorm.Expr("partition + ?", partition))
 }
