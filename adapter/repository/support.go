@@ -102,6 +102,7 @@ func (repo *SupportRepository) SaveFeatureEntity(entity *entity.Feature) error {
 		if metadata.ID != 0 {
 			continue
 		}
+		metadata.FeatureID = entity.ID
 
 		if _, e := createBehaviourFeatureMetadata(repo, metadata); e != nil {
 			return e

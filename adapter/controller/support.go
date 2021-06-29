@@ -3,6 +3,7 @@ package controller
 
 import (
 	"github.com/8treenet/cdp-service/domain"
+	"github.com/8treenet/cdp-service/domain/vo"
 	"github.com/8treenet/cdp-service/infra"
 	"github.com/8treenet/freedom"
 )
@@ -18,6 +19,7 @@ type SupportController struct {
 	SupportService *domain.SupportService
 	Worker         freedom.Worker
 	Request        *infra.Request
+	Common         *infra.CommonRequest
 }
 
 //Get handles the GET: /support/source route.
@@ -52,4 +54,46 @@ func (support *SupportController) GetSources() freedom.Result {
 		objects[i].Source = all[i].Source
 	}
 	return &infra.JSONResponse{Object: objects}
+}
+
+//GetFeatures handles the GET: /support/features route.
+func (support *SupportController) GetFeatures() freedom.Result {
+	list, total, e := support.SupportService.GetFeaturesByPage()
+	if e != nil {
+		return &infra.JSONResponse{Error: e}
+	}
+	page, pageSize := support.Common.GetPage()
+	pageData := infra.PageResponse{
+		List:     list,
+		Total:    total,
+		Page:     page,
+		PageSize: pageSize,
+	}
+	return &infra.JSONResponse{Object: pageData}
+}
+
+//PostFeature handles the Post: /support/feature route.
+func (support *SupportController) PostFeature() freedom.Result {
+	var dto vo.ReqFeatureDTO
+	if e := support.Request.ReadJSON(&dto, true); e != nil {
+		return &infra.JSONResponse{Error: e}
+	}
+	if e := support.SupportService.CreateFeature(dto); e != nil {
+		return &infra.JSONResponse{Error: e}
+	}
+
+	return &infra.JSONResponse{}
+}
+
+//PutFeature handles the Post: /support/feature/:int route.
+func (support *SupportController) PutFeatureBy(featureId int) freedom.Result {
+	var dto []vo.ReqFeatureMetadataDTO
+	if e := support.Request.ReadJSON(&dto, true); e != nil {
+		return &infra.JSONResponse{Error: e}
+	}
+	if e := support.SupportService.AddFeatureMetadata(featureId, dto); e != nil {
+		return &infra.JSONResponse{Error: e}
+	}
+
+	return &infra.JSONResponse{}
 }

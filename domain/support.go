@@ -41,7 +41,7 @@ func (service *SupportService) GetAllSource() ([]*po.Source, error) {
 }
 
 // CreateFeature 创建特征 .
-func (service *SupportService) CreateFeature(data vo.PostFeatureDTO) error {
+func (service *SupportService) CreateFeature(data vo.ReqFeatureDTO) error {
 	entity := service.SupportRepo.NewFeatureEntity()
 	entity.Title = data.Title
 	entity.Warehouse = data.Warehouse
@@ -63,19 +63,23 @@ func (service *SupportService) CreateFeature(data vo.PostFeatureDTO) error {
 }
 
 // AddFeatureMetadata 为特征添加元数据 .
-func (service *SupportService) AddFeatureMetadata(featureId int, data vo.PostFeatureMetadataDTO) error {
+func (service *SupportService) AddFeatureMetadata(featureId int, list []vo.ReqFeatureMetadataDTO) error {
 	entity, err := service.SupportRepo.GetFeatureEntity(featureId)
 	if err != nil {
 		return err
 	}
-	entity.AddMetadata(data.Variable, data.Title, data.Kind, data.Dict)
+
+	for _, v := range list {
+		entity.AddMetadata(v.Variable, v.Title, v.Kind, v.Dict)
+	}
+
 	return service.TX.Execute(func() error {
 		return service.SupportRepo.SaveFeatureEntity(entity)
 	})
 }
 
 // GetFeaturesByPage 获取Features
-func (service *CustomerService) GetFeaturesByPage() (result []*entity.Feature, totalPage int, e error) {
-	result, totalPage, e = service.GetFeaturesByPage()
+func (service *SupportService) GetFeaturesByPage() (result []*entity.Feature, totalPage int, e error) {
+	result, totalPage, e = service.SupportRepo.GetFeatureEntitys()
 	return
 }
