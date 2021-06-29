@@ -2,17 +2,20 @@
 package po
 
 import (
+	"gorm.io/gorm"
 	"time"
 )
 
 // BehaviourFeature .
 type BehaviourFeature struct {
-	changes   map[string]interface{}
-	ID        int       `gorm:"primaryKey;column:id"`
-	Title     string    `gorm:"column:title"`
-	Warehouse string    `gorm:"column:warehouse"` // clickhouse的表名
-	Created   time.Time `gorm:"column:created"`
-	Updated   time.Time `gorm:"column:updated"`
+	changes      map[string]interface{}
+	ID           int       `gorm:"primaryKey;column:id"`
+	Title        string    `gorm:"column:title"`
+	Warehouse    string    `gorm:"column:warehouse"`    // clickhouse的表名
+	CategoryType int       `gorm:"column:categoryType"` // 0自定义行为，1系统提供行为
+	Category     string    `gorm:"column:category"`     // 行业
+	Created      time.Time `gorm:"column:created"`
+	Updated      time.Time `gorm:"column:updated"`
 }
 
 // TableName .
@@ -58,6 +61,18 @@ func (obj *BehaviourFeature) SetWarehouse(warehouse string) {
 	obj.Update("warehouse", warehouse)
 }
 
+// SetCategoryType .
+func (obj *BehaviourFeature) SetCategoryType(categoryType int) {
+	obj.CategoryType = categoryType
+	obj.Update("categoryType", categoryType)
+}
+
+// SetCategory .
+func (obj *BehaviourFeature) SetCategory(category string) {
+	obj.Category = category
+	obj.Update("category", category)
+}
+
 // SetCreated .
 func (obj *BehaviourFeature) SetCreated(created time.Time) {
 	obj.Created = created
@@ -68,4 +83,10 @@ func (obj *BehaviourFeature) SetCreated(created time.Time) {
 func (obj *BehaviourFeature) SetUpdated(updated time.Time) {
 	obj.Updated = updated
 	obj.Update("updated", updated)
+}
+
+// AddCategoryType .
+func (obj *BehaviourFeature) AddCategoryType(categoryType int) {
+	obj.CategoryType += categoryType
+	obj.Update("categoryType", gorm.Expr("categoryType + ?", categoryType))
 }
