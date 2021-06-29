@@ -72,7 +72,7 @@ func (service *SupportService) AddFeatureMetadata(featureId int, list []vo.ReqFe
 	}
 
 	for _, v := range list {
-		entity.AddMetadata(v.Variable, v.Title, v.Kind, v.Dict, v.OrderByNumber, v.Partition)
+		entity.AddMetadata(v.Variable, v.Title, v.Kind, v.Dict, 0, 0)
 	}
 
 	return service.TX.Execute(func() error {
