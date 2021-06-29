@@ -15,10 +15,12 @@ type CustomerDTO struct {
 }
 
 type ReqFeatureMetadataDTO struct {
-	Variable string `json:"variable" validate:"required"` // 类型的名称
-	Title    string `json:"title"  validate:"required"`   // 中文的标题
-	Kind     string `json:"kind"  validate:"required"`    // 类型
-	Dict     string `json:"dict"`                         // 关联字典的key
+	Variable      string `json:"variable" validate:"required"` // 类型的名称
+	Title         string `json:"title"  validate:"required"`   // 中文的标题
+	Kind          string `json:"kind"  validate:"required"`    // 类型
+	Dict          string `json:"dict"`                         // 关联字典的key
+	OrderByNumber int    `json:"orderByNumber"`                // ck排序键，非0排序
+	Partition     int    `json:"partition"`                    // 非0分区
 }
 
 type ReqFeatureDTO struct {

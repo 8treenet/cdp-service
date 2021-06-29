@@ -19,14 +19,16 @@ func (entity *Feature) Identity() string {
 	return "1001"
 }
 
-func (entity *Feature) AddMetadata(variable, title, kind, dict string) {
+func (entity *Feature) AddMetadata(variable, title, kind, dict string, orderByNumber, partition int) {
 	entity.FeatureMetadata = append(entity.FeatureMetadata, &po.BehaviourFeatureMetadata{
-		Variable: variable,
-		Title:    title,
-		Kind:     kind,
-		Dict:     dict,
-		Created:  time.Now(),
-		Updated:  time.Now(),
+		Variable:      variable,
+		Title:         title,
+		Kind:          kind,
+		Dict:          dict,
+		OrderByNumber: orderByNumber,
+		Partition:     partition,
+		Created:       time.Now(),
+		Updated:       time.Now(),
 	})
 }
 

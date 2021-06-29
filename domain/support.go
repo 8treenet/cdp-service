@@ -48,12 +48,14 @@ func (service *SupportService) CreateFeature(data vo.ReqFeatureDTO) error {
 
 	for _, metadata := range data.Metadata {
 		entity.FeatureMetadata = append(entity.FeatureMetadata, &po.BehaviourFeatureMetadata{
-			Variable: metadata.Variable,
-			Title:    metadata.Title,
-			Kind:     metadata.Kind,
-			Dict:     metadata.Dict,
-			Created:  time.Now(),
-			Updated:  time.Now(),
+			Variable:      metadata.Variable,
+			Title:         metadata.Title,
+			Kind:          metadata.Kind,
+			Dict:          metadata.Dict,
+			OrderByNumber: metadata.OrderByNumber,
+			Partition:     metadata.Partition,
+			Created:       time.Now(),
+			Updated:       time.Now(),
 		})
 	}
 
@@ -70,7 +72,7 @@ func (service *SupportService) AddFeatureMetadata(featureId int, list []vo.ReqFe
 	}
 
 	for _, v := range list {
-		entity.AddMetadata(v.Variable, v.Title, v.Kind, v.Dict)
+		entity.AddMetadata(v.Variable, v.Title, v.Kind, v.Dict, v.OrderByNumber, v.Partition)
 	}
 
 	return service.TX.Execute(func() error {
