@@ -12,6 +12,7 @@ type CustomerDTO struct {
 	BirthdaySubstitute string                 `json:"birthday"`
 	Source             string                 `json:"source"`
 	IP                 string                 `json:"ip"`
+	RegisterDateTime   string                 `json:"registerDateTime"`
 }
 
 type ReqFeatureMetadataDTO struct {

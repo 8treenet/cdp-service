@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	behaviourChan = make(chan *po.Behaviour, 3000)
+	behaviourChan = make(chan *po.Behaviour, 5000)
 	bufferOver = make(chan bool, 1)
 
 	freedom.Prepare(func(initiator freedom.Initiator) {

@@ -33,8 +33,19 @@ func (cmd *CustomerCreateCmd) Do(customerDto vo.CustomerDTO, inBatche ...bool) (
 			customer.Customer.Birthday = &birthday
 		}
 	}
+
 	customer.Customer.Created = time.Now()
 	customer.Customer.Updated = time.Now()
+	for customerDto.RegisterDateTime != "" {
+		RegisterTime, err := time.Parse("2006-01-02 15:04:05", customerDto.RegisterDateTime)
+		if err != nil {
+			cmd.Worker().Logger().Error("CustomerCreateCmd :%v,err:%v", customerDto, err)
+			break
+		}
+		customer.Customer.Created = RegisterTime
+		break
+	}
+
 	customer.SetExtension(customerDto.Extension)
 	for len(inBatche) == 0 {
 		customer.SourceID = cmd.SupportRepository.FindSource(customerDto.Source)
