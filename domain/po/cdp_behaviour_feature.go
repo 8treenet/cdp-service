@@ -2,8 +2,9 @@
 package po
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // BehaviourFeature .
@@ -12,7 +13,7 @@ type BehaviourFeature struct {
 	ID           int       `gorm:"primaryKey;column:id"`
 	Title        string    `gorm:"column:title"`
 	Warehouse    string    `gorm:"column:warehouse"`    // clickhouse的表名
-	CategoryType int       `gorm:"column:categoryType"` // 0自定义行为，1系统提供行为
+	CategoryType int       `gorm:"column:categoryType"` // 0自定义行为，1系统提供行为，2系统提供不可扩展
 	Category     string    `gorm:"column:category"`     // 行业
 	Created      time.Time `gorm:"column:created"`
 	Updated      time.Time `gorm:"column:updated"`
