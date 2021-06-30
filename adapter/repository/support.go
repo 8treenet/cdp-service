@@ -122,6 +122,8 @@ func (repo *SupportRepository) GetFeatureEntity(featureId int) (result *entity.F
 	result = &entity.Feature{}
 	repo.InjectBaseEntity(result)
 	err = redisJSONGet(repo.Redis(), key, result)
+
+	result.ID = featureId
 	if err == nil {
 		return
 	}
