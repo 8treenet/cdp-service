@@ -4,6 +4,7 @@ import (
 	"github.com/8treenet/cdp-service/adapter/repository"
 	"github.com/8treenet/cdp-service/domain/po"
 	"github.com/8treenet/freedom"
+	"github.com/8treenet/freedom/infra/transaction"
 )
 
 func init() {
@@ -22,6 +23,8 @@ func init() {
 type CustomerManagerService struct {
 	Worker             freedom.Worker
 	CustomerRepository *repository.IntermediaryRepository
+	SupportRepo        *repository.SupportRepository
+	TX                 transaction.Transaction
 }
 
 // GetMetaData 获取客户元数据列表.
@@ -32,15 +35,28 @@ func (service *CustomerManagerService) GetMetaData() (result []*po.CustomerExten
 
 // AddMetaData 添加客户元数据列表.
 func (service *CustomerManagerService) AddMetaData(templates []po.CustomerExtensionMetadata) (e error) {
-	for _, v := range templates {
-		if v.ID != 0 {
-			continue
-		}
-		e = service.CustomerRepository.AddMetaData(v)
-		if e != nil {
-			return
-		}
+	entity, err := service.SupportRepo.GetFeatureEntityByWarehouse("user_register")
+	if err != nil {
+		return err
 	}
+
+	for _, v := range templates {
+		entity.AddMetadata(v.Variable, v.Title, v.Kind, v.Dict, 0, 0)
+	}
+
+	e = service.TX.Execute(func() error {
+		for _, v := range templates {
+			if v.ID != 0 {
+				continue
+			}
+			e = service.CustomerRepository.AddMetaData(v)
+			if e != nil {
+				return e
+			}
+		}
+		return service.SupportRepo.SaveFeatureEntity(entity)
+	})
+
 	return
 }
 

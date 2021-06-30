@@ -16,7 +16,7 @@ import (
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
 		initiator.BindRepository(func() *SupportRepository {
-			return &SupportRepository{sourceCacheKey: "cdp_support_source", featureCacheKey: "cdp_support_feature:%d"}
+			return &SupportRepository{sourceCacheKey: "cdp_support_source", featureCacheKey: "cdp_support_feature:%d", featureCacheKeyfromWarehouse: "cdp_support_feature_warehouse:%s"}
 		})
 	})
 }
@@ -24,9 +24,10 @@ func init() {
 // SupportRepository .
 type SupportRepository struct {
 	freedom.Repository
-	CommonRequest   *infra.CommonRequest
-	sourceCacheKey  string
-	featureCacheKey string
+	CommonRequest                *infra.CommonRequest
+	sourceCacheKey               string
+	featureCacheKey              string
+	featureCacheKeyfromWarehouse string
 }
 
 // CreateSouce .
@@ -96,6 +97,9 @@ func (repo *SupportRepository) SaveFeatureEntity(entity *entity.Feature) error {
 		if e := repo.Redis().Del(fmt.Sprintf(repo.featureCacheKey, entity.ID)).Err(); e != nil {
 			repo.Worker().Logger().Error(e)
 		}
+		if e := repo.Redis().Del(fmt.Sprintf(repo.featureCacheKeyfromWarehouse, entity.Warehouse)).Err(); e != nil {
+			repo.Worker().Logger().Error(e)
+		}
 	}()
 
 	for _, metadata := range entity.FeatureMetadata {
@@ -127,6 +131,33 @@ func (repo *SupportRepository) GetFeatureEntity(featureId int) (result *entity.F
 	}
 
 	list, err := findBehaviourFeatureMetadataList(repo, po.BehaviourFeatureMetadata{FeatureID: featureId})
+	if err != nil {
+		return
+	}
+	for i := 0; i < len(list); i++ {
+		result.FeatureMetadata = append(result.FeatureMetadata, &list[i])
+	}
+
+	redisJSONSet(repo.Redis(), key, result)
+	return
+}
+
+// GetFeatureEntityByWarehouse .
+func (repo *SupportRepository) GetFeatureEntityByWarehouse(warehouse string) (result *entity.Feature, err error) {
+	key := fmt.Sprintf(repo.featureCacheKeyfromWarehouse, warehouse)
+	result = &entity.Feature{}
+	result.Warehouse = warehouse
+	repo.InjectBaseEntity(result)
+	err = redisJSONGet(repo.Redis(), key, result)
+	if err == nil {
+		return
+	}
+
+	if err = findBehaviourFeature(repo, &result.BehaviourFeature); err != nil {
+		return
+	}
+
+	list, err := findBehaviourFeatureMetadataList(repo, po.BehaviourFeatureMetadata{FeatureID: result.ID})
 	if err != nil {
 		return
 	}
