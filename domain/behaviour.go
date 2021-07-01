@@ -31,10 +31,12 @@ type BehaviourService struct {
 func (service *BehaviourService) EnteringWarehouse() func() bool {
 	service.Worker.Logger().Debug("BatchProcess")
 	list, cancel := service.BehaviourRepository.FetchQueue(service.fetchCount, service.fetchTime)
+
 	if len(list) == 0 {
 		return cancel
 	}
 
+	//i<2重试一次
 	for i := 0; i < 2; i++ {
 		err := service.BehaviourRepository.EnteringWarehouse(list)
 		if err == nil {

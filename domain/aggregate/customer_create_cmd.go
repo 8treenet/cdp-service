@@ -1,6 +1,7 @@
 package aggregate
 
 import (
+	"encoding/json"
 	"net"
 	"time"
 
@@ -16,11 +17,13 @@ import (
 // CustomerCreateCmd
 type CustomerCreateCmd struct {
 	entity.Intermediary
-	CustomerRepo      *repository.CustomerRepository //客户仓库
-	SignRepo          *repository.SignRepository     //识别仓库
-	TX                transaction.Transaction        //依赖倒置事务组件
-	GEO               *infra.GEO                     //geo
-	SupportRepository *repository.SupportRepository
+	CustomerRepo        *repository.CustomerRepository //客户仓库
+	SignRepo            *repository.SignRepository     //识别仓库
+	TX                  transaction.Transaction        //依赖倒置事务组件
+	GEO                 *infra.GEO                     //geo
+	UserRegisterEntity  *entity.Feature                //注册行为实体
+	SupportRepository   *repository.SupportRepository
+	BehaviourRepository *repository.BehaviourRepository
 }
 
 // Do .
@@ -28,7 +31,7 @@ func (cmd *CustomerCreateCmd) Do(customerDto vo.CustomerDTO, inBatche ...bool) (
 	customer := cmd.CustomerRepo.CreateCustomer()
 	customer.Customer = customerDto.Customer
 	if customerDto.BirthdaySubstitute != "" {
-		birthday, err := time.Parse("2006-01-02", customerDto.BirthdaySubstitute)
+		birthday, err := time.ParseInLocation("2006-01-02", customerDto.BirthdaySubstitute, time.Local)
 		if err == nil {
 			customer.Customer.Birthday = &birthday
 		}
@@ -37,7 +40,7 @@ func (cmd *CustomerCreateCmd) Do(customerDto vo.CustomerDTO, inBatche ...bool) (
 	customer.Customer.Created = time.Now()
 	customer.Customer.Updated = time.Now()
 	for customerDto.RegisterDateTime != "" {
-		RegisterTime, err := time.Parse("2006-01-02 15:04:05", customerDto.RegisterDateTime)
+		RegisterTime, err := time.ParseInLocation("2006-01-02 15:04:05", customerDto.RegisterDateTime, time.Local)
 		if err != nil {
 			cmd.Worker().Logger().Error("CustomerCreateCmd :%v,err:%v", customerDto, err)
 			break
@@ -65,7 +68,8 @@ func (cmd *CustomerCreateCmd) Do(customerDto vo.CustomerDTO, inBatche ...bool) (
 		return
 	}
 
-	return cmd.TX.Execute(func() error {
+	exist := true
+	err := cmd.TX.Execute(func() error {
 		//获取已经存在的客户
 		existCustomer, e := cmd.sign(customerDto)
 		if e != nil {
@@ -74,8 +78,19 @@ func (cmd *CustomerCreateCmd) Do(customerDto vo.CustomerDTO, inBatche ...bool) (
 		if existCustomer != nil {
 			return nil
 		}
+		exist = false
+
 		return cmd.CustomerRepo.SaveCustomer(customer)
 	})
+	if err != nil || exist {
+		return nil
+	}
+
+	b, err := cmd.createRegisterBehaviour(customer, customerDto.IP)
+	if err == nil {
+		cmd.BehaviourRepository.AddQueue([]*po.Behaviour{b})
+	}
+	return nil
 }
 
 // BatcheDo .
@@ -188,4 +203,39 @@ func (cmd *CustomerCreateCmd) sign(customerDto vo.CustomerDTO) (*entity.Customer
 	}
 
 	return cmd.CustomerRepo.GetCustomer(userId)
+}
+
+// createRegisterBehaviour .
+func (cmd *CustomerCreateCmd) createRegisterBehaviour(customer *entity.Customer, ip string) (*po.Behaviour, error) {
+	data := map[string]interface{}{}
+	for k, v := range customer.Extension {
+		data[k] = v
+	}
+	data["userId"] = customer.UserID
+	data["name"] = customer.Name
+	data["email"] = customer.Email
+	data["phone"] = customer.Phone
+	data["gender"] = customer.Gender
+	data["birthday"] = customer.Birthday.Format("2006-01-02")
+
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	result := &po.Behaviour{
+		ID:            0,
+		WechatUnionID: customer.WechatUnionID,
+		UserKey:       customer.UserKey,
+		UserPhone:     customer.Phone,
+		TempUserID:    "",
+		UserIPAddr:    ip,
+		FeatureID:     cmd.UserRegisterEntity.ID,
+		CreateTime:    customer.Created,
+		Data:          jsonData,
+		Processed:     0,
+		SouceID:       customer.SourceID,
+		Created:       time.Now(),
+	}
+	return result, nil
 }

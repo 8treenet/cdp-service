@@ -113,7 +113,7 @@ func (entity *Feature) VerifyBehaviour(customer *Behaviour) error {
 	// 		if val.Kind() != reflect.String {
 	// 			return fmt.Errorf("错误类型 %v %s:%v", "DateTime", po.Variable, value)
 	// 		}
-	// 		if _, err := time.Parse("2006-01-02 15:04:05", fmt.Sprint(value)); err != nil {
+	// 		if _, err := time.ParseInLocation("2006-01-02 15:04:05", fmt.Sprint(value)); err != nil {
 	// 			return fmt.Errorf("错误类型 %v %s:%v", "DateTime", po.Variable, value)
 	// 		}
 
@@ -121,7 +121,7 @@ func (entity *Feature) VerifyBehaviour(customer *Behaviour) error {
 	// 		if val.Kind() != reflect.String {
 	// 			return fmt.Errorf("错误类型 %v %s:%v", "Date", po.Variable, value)
 	// 		}
-	// 		if _, err := time.Parse("2006-01-02", fmt.Sprint(value)); err != nil {
+	// 		if _, err := time.ParseInLocation("2006-01-02", fmt.Sprint(value)); err != nil {
 	// 			return fmt.Errorf("错误类型 %v %s:%v", "Date", po.Variable, value)
 	// 		}
 	// 	default:

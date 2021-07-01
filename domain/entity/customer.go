@@ -72,7 +72,7 @@ func (entity *Customer) UpdateByMap(putData map[string]interface{}) error {
 		case "email":
 			entity.SetEmail(fmt.Sprint(item))
 		case "birthday":
-			itemTimer, err := time.Parse("2006-01-02", fmt.Sprint(item))
+			itemTimer, err := time.ParseInLocation("2006-01-02", fmt.Sprint(item), time.Local)
 			if err != nil {
 				return err
 			}

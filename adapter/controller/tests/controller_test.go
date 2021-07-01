@@ -65,10 +65,11 @@ func TestCustomerController_Post(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/customers").Post()
 	var data struct {
 		po.Customer
-		Extension map[string]interface{} `json:"extension"`
-		Birthday2 string                 `json:"birthday"`
-		Source    string                 `json:"source"`
-		IP        string                 `json:"ip"`
+		Extension        map[string]interface{} `json:"extension"`
+		Birthday2        string                 `json:"birthday"`
+		Source           string                 `json:"source"`
+		IP               string                 `json:"ip"`
+		RegisterDateTime string                 `json:"registerDateTime"`
 	}
 	data.Name = "yangshu3333"
 	data.Gender = "男"
@@ -77,6 +78,7 @@ func TestCustomerController_Post(t *testing.T) {
 	data.Phone = "135135179333"
 	data.UserKey = "yangshu611113513517944333"
 	data.WechatUnionID = "10012133333"
+	data.RegisterDateTime = "2021-06-01 15:15:15"
 	//data.City = "太原"
 	//data.Region = "山西"
 	data.Source = "ali"

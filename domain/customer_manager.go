@@ -35,6 +35,7 @@ func (service *CustomerManagerService) GetMetaData() (result []*po.CustomerExten
 
 // AddMetaData 添加客户元数据列表.
 func (service *CustomerManagerService) AddMetaData(templates []po.CustomerExtensionMetadata) (e error) {
+	//获取注册行为实体
 	entity, err := service.SupportRepo.GetFeatureEntityByWarehouse("user_register")
 	if err != nil {
 		return err

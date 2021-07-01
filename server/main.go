@@ -5,7 +5,7 @@ import (
 	"time"
 
 	//Implicit initialization controller
-	"github.com/8treenet/cdp-service/adapter/controller"
+	_ "github.com/8treenet/cdp-service/adapter/controller"
 	_ "github.com/8treenet/cdp-service/adapter/repository" //Implicit initialization repository
 	_ "github.com/8treenet/cdp-service/infra"              //Implicit initialization infra
 	localMiddleware "github.com/8treenet/cdp-service/middleware"
@@ -27,7 +27,7 @@ func main() {
 	liveness(app)
 	installDatabase(app)
 	installRedis(app)
-	controller.BehaviourLoop()
+
 	app.Run(runner, *conf.Get().App)
 }
 

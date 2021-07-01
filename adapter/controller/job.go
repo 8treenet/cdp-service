@@ -7,14 +7,21 @@ import (
 	"github.com/8treenet/freedom"
 )
 
-func BehaviourLoop() {
+func init() {
+	freedom.Prepare(func(i freedom.Initiator) {
+		i.BindBooting(func(bootManager freedom.BootManager) {
+			behaviourJob()
+		})
+	})
+}
+func behaviourJob() {
 	go func() {
 		time.Sleep(1 * time.Second)
 
 		defer func() {
 			if err := recover(); err != nil {
 				freedom.Logger().Error("behaviourLoop recover:", err)
-				BehaviourLoop()
+				behaviourJob()
 			}
 		}()
 
