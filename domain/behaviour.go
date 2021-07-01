@@ -27,9 +27,9 @@ type BehaviourService struct {
 	fetchCount          int
 }
 
-// EnteringWarehouse //批量入库
-func (service *BehaviourService) EnteringWarehouse() func() bool {
-	service.Worker.Logger().Debug("BatchProcess")
+// BatchSave //批量入库
+func (service *BehaviourService) BatchSave() func() bool {
+	service.Worker.Logger().Debug("BatchSave")
 	list, cancel := service.BehaviourRepository.FetchQueue(service.fetchCount, service.fetchTime)
 
 	if len(list) == 0 {
@@ -38,7 +38,7 @@ func (service *BehaviourService) EnteringWarehouse() func() bool {
 
 	//i<2重试一次
 	for i := 0; i < 2; i++ {
-		err := service.BehaviourRepository.EnteringWarehouse(list)
+		err := service.BehaviourRepository.Save(list)
 		if err == nil {
 			break
 		}

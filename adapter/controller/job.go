@@ -10,24 +10,27 @@ import (
 func init() {
 	freedom.Prepare(func(i freedom.Initiator) {
 		i.BindBooting(func(bootManager freedom.BootManager) {
-			behaviourJob()
+			behaviourSaveJob()
+			behaviourEnteringJob()
 		})
 	})
 }
-func behaviourJob() {
+
+func behaviourSaveJob() {
+	//批量入库
 	go func() {
 		time.Sleep(1 * time.Second)
 
 		defer func() {
 			if err := recover(); err != nil {
 				freedom.Logger().Error("behaviourLoop recover:", err)
-				behaviourJob()
+				behaviourSaveJob()
 			}
 		}()
 
 		freedom.ServiceLocator().Call(func(service *domain.BehaviourService) {
 			for {
-				cancel := service.EnteringWarehouse()
+				cancel := service.BatchSave()
 				if cancel() {
 					freedom.Logger().Info("BehaviourLoop cancel")
 					break //取消
@@ -36,4 +39,8 @@ func behaviourJob() {
 
 		})
 	}()
+}
+
+func behaviourEnteringJob() {
+	//扫库插入到ck数仓
 }

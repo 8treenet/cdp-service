@@ -78,8 +78,8 @@ func (repo *BehaviourRepository) AddQueue(list []*po.Behaviour) {
 	return
 }
 
-// EnteringWarehouse
-func (repo *BehaviourRepository) EnteringWarehouse(list []*po.Behaviour) error {
+// BatchSave
+func (repo *BehaviourRepository) BatchSave(list []*po.Behaviour) error {
 	return repo.db().CreateInBatches(list, 500).Error
 }
 
