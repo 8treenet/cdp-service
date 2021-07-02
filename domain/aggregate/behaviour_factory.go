@@ -4,6 +4,7 @@ import (
 	"github.com/8treenet/cdp-service/adapter/repository"
 	"github.com/8treenet/cdp-service/domain/entity"
 	"github.com/8treenet/cdp-service/infra"
+	"github.com/8treenet/cdp-service/server/conf"
 	"github.com/8treenet/freedom"
 )
 
@@ -39,7 +40,7 @@ func (factory *BehaviourFactory) CreateBehaviourCmds() (cmds []*BehaviourCreate,
 	}
 
 	for _, featureEntity := range list {
-		behaviours, e := factory.BehaviourRepository.FetchBehaviours(featureEntity.ID)
+		behaviours, e := factory.BehaviourRepository.FetchBehaviours(featureEntity.ID, conf.Get().System.JobEnteringHouseMaxCount)
 		if len(behaviours) == 0 {
 			continue
 		}

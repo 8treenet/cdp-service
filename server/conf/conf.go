@@ -39,8 +39,9 @@ type Configuration struct {
 
 // SystemConf .
 type SystemConf struct {
-	JobEnteringHouseSleep int `toml:"job_entering_house_sleep"`
-	JobTruncateHour       int `toml:"job_truncate_hour"`
+	JobEnteringHouseSleep    int `toml:"job_entering_house_sleep"`
+	JobEnteringHouseMaxCount int `toml:"job_entering_house_max_count"`
+	JobTruncateHour          int `toml:"job_truncate_hour"`
 }
 
 // DBConf .
@@ -67,15 +68,23 @@ type RedisConf struct {
 }
 
 func newSystemConf() *SystemConf {
-	result := &SystemConf{}
-	if err := freedom.Configure(result, "app.toml"); err != nil {
+	var result *SystemConf
+	var appData struct {
+		SystemConf SystemConf `toml:"system"`
+	}
+	if err := freedom.Configure(&appData, "app.toml"); err != nil {
 		panic(err)
 	}
+	result = &appData.SystemConf
+
 	if result.JobEnteringHouseSleep == 0 {
 		result.JobEnteringHouseSleep = 8
 	}
 	if result.JobTruncateHour == 0 || result.JobTruncateHour > 23 || result.JobTruncateHour < 0 {
 		result.JobTruncateHour = 4
+	}
+	if result.JobEnteringHouseMaxCount == 0 {
+		result.JobEnteringHouseMaxCount = 1000
 	}
 	return result
 }

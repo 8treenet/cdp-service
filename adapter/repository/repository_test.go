@@ -164,14 +164,13 @@ func TestFetchBehaviours(t *testing.T) {
 	var repo *BehaviourRepository
 	//获取资源库
 	unitTest.FetchRepository(&repo)
-	list, err := repo.FetchBehaviours(1)
-	// for i := 0; i < len(list); i++ {
-	// 	list[i].SetProcessed(2)
-	// 	repo.SaveBehaviour(list[i])
-	// }
+	list, err := repo.FetchBehaviours(1, 1000)
+	for i := 0; i < len(list); i++ {
+		t.Log(list[i].ID)
+	}
 
 	t.Log(list, err)
-	t.Log(repo.TruncateBehaviour())
+	//t.Log(repo.TruncateBehaviour())
 }
 
 func TestGetFeatureEntit(t *testing.T) {

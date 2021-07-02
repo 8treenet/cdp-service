@@ -3,6 +3,8 @@
 job_entering_house_sleep = 8
 #每日4点
 job_truncate_hour = 4
+#批量插入最大条数
+job_entering_house_max_count = 1000 
 
 [other]
 listen_addr = ":8000"
