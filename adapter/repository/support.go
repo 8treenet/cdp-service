@@ -16,7 +16,12 @@ import (
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
 		initiator.BindRepository(func() *SupportRepository {
-			return &SupportRepository{sourceCacheKey: "cdp_support_source", featureCacheKey: "cdp_support_feature:%d", featureCacheKeyfromWarehouse: "cdp_support_feature_warehouse:%s"}
+			return &SupportRepository{
+				sourceCacheKey:               "cdp_support_source",
+				featureCacheKey:              "cdp_support_feature:%d",
+				featureAllCacheKey:           "cdp_support_all_feature",
+				featureCacheKeyfromWarehouse: "cdp_support_feature_warehouse:%s",
+			}
 		})
 	})
 }
@@ -28,6 +33,7 @@ type SupportRepository struct {
 	sourceCacheKey               string
 	featureCacheKey              string
 	featureCacheKeyfromWarehouse string
+	featureAllCacheKey           string
 }
 
 // CreateSouce .
@@ -80,6 +86,12 @@ func (repo *SupportRepository) NewFeatureEntity() *entity.Feature {
 
 // SaveFeatureEntity .
 func (repo *SupportRepository) SaveFeatureEntity(entity *entity.Feature) error {
+	defer func() {
+		if e := repo.Redis().Del(repo.featureAllCacheKey).Err(); e != nil {
+			repo.Worker().Logger().Error(e)
+		}
+	}()
+
 	if entity.ID == 0 {
 		if _, e := createBehaviourFeature(repo, &entity.BehaviourFeature); e != nil {
 			return e
@@ -171,8 +183,56 @@ func (repo *SupportRepository) GetFeatureEntityByWarehouse(warehouse string) (re
 	return
 }
 
+// GetAllFeatureEntity .
+func (repo *SupportRepository) GetAllFeatureEntity() (result []*entity.Feature, err error) {
+	defer func() {
+		if len(result) == 0 {
+			return
+		}
+		repo.InjectBaseEntitys(result)
+	}()
+
+	err = redisJSONGet(repo.Redis(), repo.featureAllCacheKey, &result)
+	if err == nil || err != redis.Nil {
+		return
+	}
+
+	entityList, err := findBehaviourFeatureList(repo, po.BehaviourFeature{})
+	if err != nil {
+		return
+	}
+
+	featureIds := []int{}
+	for i := 0; i < len(entityList); i++ {
+		featureIds = append(featureIds, entityList[i].ID)
+		result = append(result, &entity.Feature{BehaviourFeature: entityList[i]})
+	}
+
+	metadataList, err := findBehaviourFeatureMetadataListByWhere(repo, "featureId in (?)", []interface{}{featureIds})
+	if err != nil {
+		return
+	}
+	for i := 0; i < len(metadataList); i++ {
+		for _, entity := range result {
+			if entity.ID == metadataList[i].FeatureID {
+				entity.FeatureMetadata = append(entity.FeatureMetadata, &metadataList[i])
+				break
+			}
+		}
+	}
+	redisJSONSet(repo.Redis(), repo.featureAllCacheKey, result)
+	return
+}
+
 // GetFeatureEntitys .
 func (repo *SupportRepository) GetFeatureEntitys() (result []*entity.Feature, total int, err error) {
+	defer func() {
+		if len(result) == 0 {
+			return
+		}
+		repo.InjectBaseEntitys(result)
+	}()
+
 	page, pageSize := repo.CommonRequest.GetPage()
 
 	pager := NewDescPager("id").SetPage(page, pageSize)

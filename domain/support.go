@@ -81,7 +81,11 @@ func (service *SupportService) AddFeatureMetadata(featureId int, list []vo.ReqFe
 }
 
 // GetFeaturesByPage 获取Features
-func (service *SupportService) GetFeaturesByPage() (result []*entity.Feature, totalPage int, e error) {
-	result, totalPage, e = service.SupportRepo.GetFeatureEntitys()
+func (service *SupportService) GetFeaturesByPage() (result []interface{}, totalPage int, e error) {
+	var list []*entity.Feature
+	list, totalPage, e = service.SupportRepo.GetFeatureEntitys()
+	for _, v := range list {
+		result = append(result, v.View())
+	}
 	return
 }

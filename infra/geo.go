@@ -9,6 +9,7 @@ import (
 	"github.com/8treenet/freedom"
 	"github.com/8treenet/freedom/infra/requests"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func init() {
@@ -122,7 +123,7 @@ func (geo *GEO) insertDB(mapData map[string]*GEOInfo) {
 	for _, v := range mapData {
 		list = append(list, v)
 	}
-	if err := db.Table("cdp_ip_addr").CreateInBatches(list, 500); err != nil {
+	if err := db.Clauses(clause.Insert{Modifier: "IGNORE"}).Table("cdp_ip_addr").CreateInBatches(list, 500); err != nil {
 		freedom.Logger().Error("geo CreateInBatches error:", err)
 	}
 	return

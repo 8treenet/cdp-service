@@ -1,3 +1,9 @@
+[system]
+#每8秒执行一次
+job_entering_house_sleep = 8
+#每日4点
+job_truncate_hour = 4
+
 [other]
 listen_addr = ":8000"
 service_name = "cdp-service"
@@ -9,3 +15,4 @@ logger_path = "./log"
 logger_console = true
 # shutdown_second : Elegant lying off for the longest time
 shutdown_second = 3
+

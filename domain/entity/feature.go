@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/8treenet/cdp-service/domain/po"
@@ -32,8 +31,7 @@ func (entity *Feature) AddMetadata(variable, title, kind, dict string, orderByNu
 	})
 }
 
-// MarshalJSON .
-func (entity *Feature) MarshalJSON() ([]byte, error) {
+func (entity *Feature) View() interface{} {
 	var jsonData struct {
 		ID           int         `json:"id"`
 		Title        string      `json:"title"`
@@ -69,8 +67,7 @@ func (entity *Feature) MarshalJSON() ([]byte, error) {
 		list[i].Partition = entity.FeatureMetadata[i].Partition
 	}
 	jsonData.Metadata = list
-
-	return json.Marshal(jsonData)
+	return jsonData
 }
 
 // VerifyBehaviour 验证数据

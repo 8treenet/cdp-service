@@ -3,6 +3,7 @@ package repository
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"testing"
 	"time"
 
@@ -10,11 +11,14 @@ import (
 	"github.com/go-redis/redis"
 	"gorm.io/driver/mysql"
 
+	"github.com/8treenet/cdp-service/domain/po"
 	_ "github.com/8treenet/cdp-service/infra" //Implicit initialization infra
+	"github.com/8treenet/cdp-service/utils"
 	"gorm.io/gorm"
 )
 
 func getUnitTest() freedom.UnitTest {
+	os.Setenv(freedom.ProfileENV, os.Getenv("GOPATH")+"/src/github.com/8treenet/cdp-service/server/conf")
 	//创建单元测试工具
 	unitTest := freedom.NewUnitTest()
 	unitTest.InstallDB(func() interface{} {
@@ -86,18 +90,35 @@ func TestTemp(t *testing.T) {
 	//获取资源库
 	unitTest.FetchRepository(&repo)
 
-	uuid := fmt.Sprint(time.Now().Unix())
-	_, err := repo.CreateTempCustomer(uuid, 0)
+	uuid1, _ := utils.GenerateUUID()
+	uuid2, _ := utils.GenerateUUID()
+	sourceId := 1
+
+	list := []*po.CustomerTemporary{}
+	list = append(list, &po.CustomerTemporary{
+		UUID:     uuid1,
+		UserID:   uuid1 + "user",
+		SourceID: sourceId,
+		Created:  time.Now(),
+		Updated:  time.Now(),
+	})
+	list = append(list, &po.CustomerTemporary{
+		UUID:     uuid2,
+		UserID:   uuid2 + "user",
+		SourceID: sourceId,
+		Created:  time.Now(),
+		Updated:  time.Now(),
+	})
+	err := repo.CreateTempCustomer(list)
 	if err != nil {
 		panic(err)
 	}
 
-	entity, err := repo.GetTempCustomer(uuid)
+	ids := repo.GetExistTempCustomers([]string{uuid1, uuid2}, sourceId)
 	if err != nil {
 		panic(err)
 	}
-	str, _ := entity.Marshal()
-	t.Log(string(str))
+	t.Log(ids)
 }
 
 func TestIP(t *testing.T) {
@@ -124,7 +145,7 @@ func TestIP(t *testing.T) {
 		list555 = append(list555, list3...)
 
 		postLen := len(list555) - rand.Intn(5)
-		res, err := repo.getIP(list555[0:postLen])
+		res, err := repo.GetIP(list555[0:postLen])
 		if err != nil {
 			panic(err)
 		}
@@ -134,4 +155,31 @@ func TestIP(t *testing.T) {
 			fmt.Println("fuck3", v)
 		}
 	}
+}
+
+func TestFetchBehaviours(t *testing.T) {
+	unitTest := getUnitTest()
+	unitTest.Run()
+
+	var repo *BehaviourRepository
+	//获取资源库
+	unitTest.FetchRepository(&repo)
+	list, err := repo.FetchBehaviours(1)
+	// for i := 0; i < len(list); i++ {
+	// 	list[i].SetProcessed(2)
+	// 	repo.SaveBehaviour(list[i])
+	// }
+
+	t.Log(list, err)
+	t.Log(repo.TruncateBehaviour())
+}
+
+func TestGetFeatureEntit(t *testing.T) {
+	unitTest := getUnitTest()
+	unitTest.Run()
+
+	var repo *SupportRepository
+	unitTest.FetchRepository(&repo)
+	t.Log(repo.GetFeatureEntitys())
+	t.Log(repo.GetAllFeatureEntity())
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/8treenet/freedom"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func init() {
@@ -59,29 +60,26 @@ func (repo *CustomerRepository) CreateCustomer() *entity.Customer {
 }
 
 // CreateCustomer .
-func (repo *CustomerRepository) CreateTempCustomer(uuid string, sourceID int) (*entity.TempCustomer, error) {
-	userId, err := utils.GenerateUUID()
-	if err != nil {
-		return nil, err
-	}
-
-	result := &entity.TempCustomer{CustomerTemporary: po.CustomerTemporary{UserID: userId, UUID: uuid, SourceID: sourceID, Created: time.Now(), Updated: time.Now()}}
-	if _, err := createCustomerTemporary(repo, &result.CustomerTemporary); err != nil {
-		return nil, err
-	}
-
-	repo.InjectBaseEntity(result)
-	return result, nil
+func (repo *CustomerRepository) CreateTempCustomer(list []*po.CustomerTemporary) error {
+	return repo.db().Clauses(clause.Insert{Modifier: "IGNORE"}).CreateInBatches(list, 500).Error
 }
 
-// GetTempCustomer .
-func (repo *CustomerRepository) GetTempCustomer(uuid string) (*entity.TempCustomer, error) {
-	result := &entity.TempCustomer{CustomerTemporary: po.CustomerTemporary{UUID: uuid}}
-	repo.InjectBaseEntity(result)
-	if e := findCustomerTemporary(repo, &result.CustomerTemporary); e != nil {
-		return nil, e
+// GetExistTempCustomers .
+func (repo *CustomerRepository) GetExistTempCustomers(uuid []string, sourceID int) (list []string) {
+	err := repo.db().Model(&po.CustomerTemporary{}).Select("uuid").Where("sourceId = ?", sourceID).Where("uuid in (?)", uuid).Find(&list).Error
+	if err != nil {
+		repo.Worker().Logger().Error(err)
 	}
-	return result, nil
+	return
+}
+
+// GetTempUserIDByUUID .
+func (repo *CustomerRepository) GetTempUserIDByUUID(uuid string, sourceID int) (userId string) {
+	err := repo.db().Model(&po.CustomerTemporary{}).Select("uuid").Where("sourceId = ?", sourceID).Where("uuid = ?", uuid).Last(&userId).Error
+	if err != nil {
+		repo.Worker().Logger().Error(err)
+	}
+	return
 }
 
 func (repo *CustomerRepository) insertCustomer(customer *entity.Customer) error {

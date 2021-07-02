@@ -1,8 +1,10 @@
 package repository
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/8treenet/cdp-service/domain/entity"
 	"github.com/8treenet/cdp-service/domain/po"
 	"github.com/8treenet/cdp-service/infra"
 	"github.com/8treenet/freedom"
@@ -83,8 +85,62 @@ func (repo *BehaviourRepository) BatchSave(list []*po.Behaviour) error {
 	return repo.db().CreateInBatches(list, 500).Error
 }
 
-// getIP
-func (repo *BehaviourRepository) getIP(addr []string) (map[string]*infra.GEOInfo, error) {
+// FetchBehaviours
+func (repo *BehaviourRepository) FetchBehaviours(featureId int) ([]*entity.Behaviour, error) {
+	key := fmt.Sprintf("BehaviourRepository:FetchBehaviours:%d", featureId)
+	ok, err := repo.Redis().SetNX(key, 1, time.Minute*1).Result()
+	if err != nil || !ok {
+		return nil, err
+	}
+	defer repo.Redis().Del(key)
+
+	list, err := findBehaviourListByWhere(repo, "featureId = ? and processed = ?", []interface{}{featureId, 0})
+	if err != nil || len(list) == 0 {
+		return nil, err
+	}
+
+	var ids []int
+	reuslt := []*entity.Behaviour{}
+	for i := 0; i < len(list); i++ {
+		ids = append(ids, list[i].ID)
+		reuslt = append(reuslt, &entity.Behaviour{
+			Behaviour: list[i],
+		})
+	}
+
+	repo.InjectBaseEntitys(reuslt)
+	err = repo.db().Model(&po.Behaviour{}).Where("id in (?)", ids).Update("processed", 1).Error
+	return reuslt, err
+}
+
+// BehaviourSuccess .
+func (repo *BehaviourRepository) BehavioursSuccess(ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return repo.db().Model(&po.Behaviour{}).Where("id in (?)", ids).Update("processed", 2).Error
+}
+
+// TruncateBehaviour .
+func (repo *BehaviourRepository) TruncateBehaviour() bool {
+	var count int64
+	repo.db().Model(&po.Behaviour{}).Where("processed != 2").Count(&count)
+	if count != 0 {
+		return false
+	}
+	sql := fmt.Sprintf("TRUNCATE TABLE %s", (&po.Behaviour{}).TableName())
+	if err := repo.db().Exec(sql).Error; err != nil {
+		repo.Worker().Logger().Error(err)
+		return false
+	}
+	return true
+}
+
+// GetIP
+func (repo *BehaviourRepository) GetIP(addr []string) (map[string]*infra.GEOInfo, error) {
+	if len(addr) == 0 {
+		return make(map[string]*infra.GEOInfo), nil
+	}
 	return repo.GEO.ParseBatchIP(addr)
 }
 

@@ -17,9 +17,10 @@ func init() {
 func Get() *Configuration {
 	once.Do(func() {
 		cfg = &Configuration{
-			DB:    newDBConf(),
-			App:   newAppConf(),
-			Redis: newRedisConf(),
+			DB:     newDBConf(),
+			App:    newAppConf(),
+			Redis:  newRedisConf(),
+			System: newSystemConf(),
 		}
 	})
 	return cfg
@@ -30,9 +31,16 @@ var cfg *Configuration
 
 // Configuration .
 type Configuration struct {
-	DB    *DBConf
-	App   *freedom.Configuration
-	Redis *RedisConf
+	DB     *DBConf
+	App    *freedom.Configuration
+	Redis  *RedisConf
+	System *SystemConf
+}
+
+// SystemConf .
+type SystemConf struct {
+	JobEnteringHouseSleep int `toml:"job_entering_house_sleep"`
+	JobTruncateHour       int `toml:"job_truncate_hour"`
 }
 
 // DBConf .
@@ -56,6 +64,20 @@ type RedisConf struct {
 	IdleCheckFrequency int    `toml:"idle_check_frequency"`
 	MaxConnAge         int    `toml:"max_conn_age"`
 	PoolTimeout        int    `toml:"pool_timeout"`
+}
+
+func newSystemConf() *SystemConf {
+	result := &SystemConf{}
+	if err := freedom.Configure(result, "app.toml"); err != nil {
+		panic(err)
+	}
+	if result.JobEnteringHouseSleep == 0 {
+		result.JobEnteringHouseSleep = 8
+	}
+	if result.JobTruncateHour == 0 || result.JobTruncateHour > 23 || result.JobTruncateHour < 0 {
+		result.JobTruncateHour = 4
+	}
+	return result
 }
 
 func newAppConf() *freedom.Configuration {

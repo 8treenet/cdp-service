@@ -10,7 +10,7 @@ import (
 type Behaviour struct {
 	freedom.Entity
 	po.Behaviour
-	CustomerId int    //客户id
+	CustomerId string //客户id
 	Region     string //省
 	City       string //市
 }
