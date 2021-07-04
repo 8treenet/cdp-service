@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+
+	"github.com/8treenet/freedom"
 )
 
 type CreateTable struct {
+	logger  Logger
 	manager *Manager
 	name    string
 	engine  string
@@ -22,6 +25,10 @@ type CreateTable struct {
 	partitionType   int //1周 2月
 }
 
+func (c *CreateTable) init() {
+	c.logger = freedom.Logger()
+}
+
 func (c *CreateTable) Do() error {
 	c.addDefaultColumn()
 
@@ -31,7 +38,7 @@ func (c *CreateTable) Do() error {
 		if i == len(c.items)-1 {
 			n = ""
 		}
-		sql += fmt.Sprintf("\t%s %s%s\n", c.items[i].variable, c.items[i].kind, n)
+		sql += fmt.Sprintf("\t%s %s%s\n", c.items[i].variable, c.manager.ArrayKind(c.items[i].kind), n)
 	}
 	sql += fmt.Sprintf(") ENGINE = %s\n", c.engine)
 
@@ -57,7 +64,7 @@ func (c *CreateTable) Do() error {
 		sql += fmt.Sprintf("ORDER BY (%s)", strings.Join(orderStrs, ","))
 	}
 
-	fmt.Println(sql)
+	c.logger.Infof("CreateTable sql:%s", sql)
 	_, err := c.manager.db.Exec(sql)
 	return err
 }
@@ -90,7 +97,7 @@ func (c *CreateTable) addDefaultColumn() {
 	c.AddColumn("region", "String", 0, 0)
 	c.AddColumn("city", "String", 0, 0)
 	c.AddColumn("ip", "IPv4", 0, 0)
-	c.AddColumn("souceId", "Int16", 0, 0)
+	c.AddColumn("sourceId", "Int16", 0, 0)
 
 	defPartitionType := 0
 	defOrder := 0
@@ -101,4 +108,8 @@ func (c *CreateTable) addDefaultColumn() {
 		defOrder = 1
 	}
 	c.AddColumn("createTime", "DateTime", defOrder, defPartitionType)
+}
+
+func (c *CreateTable) SetLogger(l Logger) {
+	c.logger = l
 }

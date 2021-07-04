@@ -2,12 +2,22 @@ package clickhouse
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/8treenet/freedom"
 	_ "github.com/ClickHouse/clickhouse-go"
 	"github.com/jmoiron/sqlx"
 )
+
+type Logger interface {
+	Error(...interface{})
+	Errorf(format string, args ...interface{})
+	Info(...interface{})
+	Infof(format string, args ...interface{})
+}
 
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
@@ -60,9 +70,42 @@ func (ck *Manager) Booting(bootManager freedom.BootManager) {
 }
 
 func (ck *Manager) CreateTable(name string) *CreateTable {
-	return &CreateTable{manager: ck, name: name, engine: " MergeTree()"}
+	reuslt := &CreateTable{manager: ck, name: name, engine: " MergeTree()"}
+	reuslt.init()
+	return reuslt
 }
 
 func (ck *Manager) AlterColumn(tableName string) *AlterColumn {
-	return &AlterColumn{manager: ck, tableName: tableName}
+	reuslt := &AlterColumn{manager: ck, tableName: tableName}
+	reuslt.init()
+	return reuslt
+}
+
+func (ck *Manager) Submit(tableName string) *Submit {
+	result := &Submit{tableName: tableName, manager: ck}
+	result.init()
+	return result
+}
+
+func (ck *Manager) tx(f func(*sql.Tx) error) error {
+	tx, err := ck.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	err = f(tx)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (ck *Manager) ArrayKind(kind string) string {
+	list := strings.Split(kind, "Array")
+	if len(list) == 2 {
+		return fmt.Sprintf("%s(%s)", "Array", list[1])
+	}
+	return kind
 }

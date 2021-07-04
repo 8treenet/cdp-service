@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"os"
@@ -190,10 +191,89 @@ func TestDataTable(t *testing.T) {
 	var repo *DataRepository
 	unitTest.FetchRepository(&repo)
 
-	cmd := repo.CreateTable("fuckyou")
+	cmd := repo.NewCreateTable("testing1")
 	cmd.AddColumn("name", "String", 1, 0)
-	cmd.AddColumn("createTime", "DateTime", 2, 2)
+	cmd.AddColumn("create111Time", "DateTime", 2, 2)
 
 	err := repo.SaveTable(cmd)
 	t.Log(err)
+}
+
+func TestUserRegisterSubmit(t *testing.T) {
+	unitTest := getUnitTest()
+	unitTest.Run()
+
+	var repo *DataRepository
+	unitTest.FetchRepository(&repo)
+
+	cmd := repo.NewSubmit("user_register")
+	cmd.AddMetadata("userId", "String")
+	cmd.AddMetadata("name", "String")
+	cmd.AddMetadata("email", "String")
+	cmd.AddMetadata("phone", "String")
+	cmd.AddMetadata("gender", "String")
+	cmd.AddMetadata("birthday", "Date")
+
+	mdata := map[string]interface{}{}
+	mdata["ip"] = "113.46.163.105"
+	mdata["city"] = "北京"
+	mdata["region"] = "北京"
+	mdata["sourceId"] = 1
+	mdata["userId"] = "111223123"
+	mdata["name"] = "8treenet"
+	mdata["email"] = "4932004@qq.com"
+	mdata["phone"] = "13513513522"
+	mdata["birthday"] = "1989-01-02"
+	mdata["gender"] = "男"
+
+	cmd.AddRow(mdata)
+	e := repo.SaveSubmit(cmd)
+	t.Log(e)
+}
+
+func TestArraySubmit(t *testing.T) {
+	unitTest := getUnitTest()
+	unitTest.Run()
+
+	var repo *DataRepository
+	unitTest.FetchRepository(&repo)
+
+	cmd := repo.NewCreateTable("testing2")
+	cmd.AddColumn("strs", "ArrayString", 0, 0)
+	cmd.AddColumn("f1", "Float32", 0, 0)
+	cmd.AddColumn("i32s", "ArrayInt32", 0, 0)
+	cmd.AddColumn("ui64s", "ArrayUInt64", 0, 0)
+	cmd.AddColumn("f64s", "ArrayFloat64", 0, 0)
+	cmd.AddColumn("dts", "ArrayDateTime", 0, 0)
+
+	err := repo.SaveTable(cmd)
+	t.Log(err)
+
+	cmdSubmit := repo.NewSubmit("testing2")
+	cmdSubmit.AddMetadata("strs", "ArrayString")
+	cmdSubmit.AddMetadata("f1", "Float32")
+	cmdSubmit.AddMetadata("i32s", "ArrayInt32")
+	cmdSubmit.AddMetadata("ui64s", "ArrayUInt64")
+	cmdSubmit.AddMetadata("f64s", "ArrayFloat64")
+	cmdSubmit.AddMetadata("dts", "ArrayDateTime")
+
+	mdata := map[string]interface{}{}
+	mdata["ip"] = "113.46.163.105"
+	mdata["city"] = "北京"
+	mdata["region"] = "北京"
+	mdata["sourceId"] = 1
+
+	mdata["strs"] = []string{"1", "2", "3"}
+	mdata["f1"] = 0.57
+	mdata["i32s"] = []int{1, 2, 3}
+	mdata["ui64s"] = []int{1, 2, 3}
+	mdata["f64s"] = []float64{100.123, 223.555, 3.1415926}
+	mdata["dts"] = []string{"2021-06-30 17:34:59", "2021-06-20 17:34:59"}
+
+	jsonData, _ := json.Marshal(mdata)
+	t.Log("json data", string(jsonData))
+	json.Unmarshal(jsonData, &mdata)
+	cmdSubmit.AddRow(mdata)
+	e := repo.SaveSubmit(cmdSubmit)
+	t.Log(e)
 }

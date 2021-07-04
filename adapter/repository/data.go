@@ -38,3 +38,15 @@ func (repo *DataRepository) NewAlterColumn(tableName string) *clickhouse.AlterCo
 func (repo *DataRepository) SaveColumn(cmd *clickhouse.AlterColumn) error {
 	return cmd.Do()
 }
+
+// NewSubmit
+func (repo *DataRepository) NewSubmit(tableName string) *clickhouse.Submit {
+	result := repo.Manager.Submit(tableName)
+	result.SetLogger(repo.Worker().Logger())
+	return result
+}
+
+// SaveSubmit
+func (repo *DataRepository) SaveSubmit(submit *clickhouse.Submit) error {
+	return submit.Do()
+}
