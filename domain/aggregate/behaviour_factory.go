@@ -3,7 +3,6 @@ package aggregate
 import (
 	"github.com/8treenet/cdp-service/adapter/repository"
 	"github.com/8treenet/cdp-service/domain/entity"
-	"github.com/8treenet/cdp-service/infra"
 	"github.com/8treenet/cdp-service/server/conf"
 	"github.com/8treenet/freedom"
 )
@@ -19,7 +18,6 @@ func init() {
 // BehaviourFactory 行为工厂
 type BehaviourFactory struct {
 	Worker              freedom.Worker
-	ClickHouse          *infra.ClickHouse
 	BehaviourRepository *repository.BehaviourRepository
 	SupportRepository   *repository.SupportRepository
 	CustomerRepo        *repository.CustomerRepository

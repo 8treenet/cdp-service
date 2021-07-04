@@ -182,3 +182,18 @@ func TestGetFeatureEntit(t *testing.T) {
 	t.Log(repo.GetFeatureEntitys())
 	t.Log(repo.GetAllFeatureEntity())
 }
+
+func TestDataTable(t *testing.T) {
+	unitTest := getUnitTest()
+	unitTest.Run()
+
+	var repo *DataRepository
+	unitTest.FetchRepository(&repo)
+
+	cmd := repo.CreateTable("fuckyou")
+	cmd.AddColumn("name", "String", 1, 0)
+	cmd.AddColumn("createTime", "DateTime", 2, 2)
+
+	err := repo.SaveTable(cmd)
+	t.Log(err)
+}

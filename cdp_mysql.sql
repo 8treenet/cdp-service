@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.18)
 # Database: cdp
-# Generation Time: 2021-06-30 09:37:53 +0000
+# Generation Time: 2021-07-04 05:04:29 +0000
 # ************************************************************
 
 
@@ -67,7 +67,7 @@ LOCK TABLES `cdp_behaviour_feature` WRITE;
 
 INSERT INTO `cdp_behaviour_feature` (`id`, `title`, `warehouse`, `categoryType`, `category`, `created`, `updated`)
 VALUES
-	(1,'用户注册','user_register',2,'通用','2021-06-30 15:15:40','2021-06-30 15:16:08');
+	(1,'用户注册','user_register',2,'通用','2021-07-02 15:54:04','2021-07-02 15:54:46');
 
 /*!40000 ALTER TABLE `cdp_behaviour_feature` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -86,7 +86,7 @@ CREATE TABLE `cdp_behaviour_feature_metadata` (
   `kind` enum('String','Float32','Float64','UInt8','UInt16','UInt32','UInt64','Int8','Int16','Int32','Int64','DateTime','Date','ArrayString','ArrayFloat32','ArrayFloat64','ArrayUInt8','ArrayUInt16','ArrayUInt32','ArrayUInt64','ArrayInt8','ArrayInt16','ArrayInt32','ArrayInt64','ArrayDateTime','ArrayDate') NOT NULL DEFAULT 'Int32' COMMENT '类型',
   `dict` varchar(128) NOT NULL DEFAULT '' COMMENT '关联字典的key',
   `orderByNumber` tinyint(4) NOT NULL COMMENT 'ck排序键，非0排序',
-  `partition` tinyint(4) NOT NULL COMMENT '非0分区',
+  `partition` tinyint(4) NOT NULL COMMENT '1周分区 2月分区',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -103,8 +103,7 @@ VALUES
 	(7,1,'email','email','String','',0,0,'2021-06-30 17:34:59','2021-06-30 17:35:10'),
 	(8,1,'phone','phone','String','',0,0,'2021-06-30 17:34:59','2021-06-30 17:35:10'),
 	(9,1,'gender','gender','String','',0,0,'2021-06-30 17:34:59','2021-06-30 17:36:11'),
-	(11,1,'birthday','birthday','String','',0,0,'2021-06-30 17:34:59','2021-06-30 17:36:11'),
-	(12,1,'registerDateTime','registerDateTime','DateTime','',0,1,'2021-06-30 17:34:59','2021-06-30 17:36:11');
+	(11,1,'birthday','birthday','Date','',0,0,'2021-06-30 17:34:59','2021-07-01 18:48:48');
 
 /*!40000 ALTER TABLE `cdp_behaviour_feature_metadata` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -135,20 +134,6 @@ CREATE TABLE `cdp_customer` (
   KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='客户表';
 
-LOCK TABLES `cdp_customer` WRITE;
-/*!40000 ALTER TABLE `cdp_customer` DISABLE KEYS */;
-
-INSERT INTO `cdp_customer` (`id`, `userId`, `name`, `email`, `phone`, `gender`, `birthday`, `city`, `region`, `wechatUnionId`, `userKey`, `sourceId`, `created`, `updated`)
-VALUES
-	(1,'88c60a38d5a111eb8636804a1460b6f5','yangshu3333','4932004@qq.com','135135179333','男','1989-05-13','北京','北京市','10012133333','yangshu611113513517944333',2,'2021-06-25 18:38:53','2021-06-25 18:38:53'),
-	(2,'953d0154d5a111eb8636804a1460b6f5','yangshuList-0','4932004@qq.com','135135179390','男','1989-05-13','天津','天津市','100121333330','yangshu6111135135179443330',0,'2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(3,'953deb28d5a111eb8636804a1460b6f5','yangshuList-1','4932004@qq.com','135135179391','男','1989-05-13','郑州市','河南','100121333331','yangshu6111135135179443331',0,'2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(4,'953e42bcd5a111eb8636804a1460b6f5','yangshuList-2','4932004@qq.com','135135179392','男','1989-05-13','太原','山西','100121333332','yangshu6111135135179443332',0,'2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(5,'953e941ad5a111eb8636804a1460b6f5','yangshuList-3','4932004@qq.com','135135179393','男','1989-05-13','太原','山西','100121333333','yangshu6111135135179443333',0,'2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(6,'953ed916d5a111eb8636804a1460b6f5','yangshuList-4','4932004@qq.com','135135179394','男','1989-05-13','太原','山西','100121333334','yangshu6111135135179443334',0,'2021-06-25 18:39:14','2021-06-25 18:39:14');
-
-/*!40000 ALTER TABLE `cdp_customer` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table cdp_customer_extension
@@ -166,20 +151,6 @@ CREATE TABLE `cdp_customer_extension` (
   UNIQUE KEY `user_id` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='客户扩展数据';
 
-LOCK TABLES `cdp_customer_extension` WRITE;
-/*!40000 ALTER TABLE `cdp_customer_extension` DISABLE KEYS */;
-
-INSERT INTO `cdp_customer_extension` (`id`, `userId`, `data`, `created`, `updated`)
-VALUES
-	(1,'88c60a38d5a111eb8636804a1460b6f5','{\"addr\": \"11111\", \"star\": 50, \"level\": 20, \"score\": 100}','2021-06-25 18:38:53','2021-06-25 18:38:53'),
-	(2,'953d0154d5a111eb8636804a1460b6f5','{\"addr\": \"刺恒小区sss-0\", \"star\": 50, \"level\": 20, \"score\": 100}','2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(3,'953deb28d5a111eb8636804a1460b6f5','{\"addr\": \"刺恒小区sss-1\", \"star\": 51, \"level\": 21, \"score\": 101}','2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(4,'953e42bcd5a111eb8636804a1460b6f5','{\"addr\": \"刺恒小区sss-2\", \"star\": 52, \"level\": 22, \"score\": 102}','2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(5,'953e941ad5a111eb8636804a1460b6f5','{\"addr\": \"刺恒小区sss-3\", \"star\": 53, \"level\": 23, \"score\": 103}','2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(6,'953ed916d5a111eb8636804a1460b6f5','{\"addr\": \"刺恒小区sss-4\", \"star\": 54, \"level\": 24, \"score\": 104}','2021-06-25 18:39:14','2021-06-25 18:39:14');
-
-/*!40000 ALTER TABLE `cdp_customer_extension` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table cdp_customer_extension_metadata
@@ -202,6 +173,18 @@ CREATE TABLE `cdp_customer_extension_metadata` (
   UNIQUE KEY `variable` (`variable`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='客户元数据';
 
+LOCK TABLES `cdp_customer_extension_metadata` WRITE;
+/*!40000 ALTER TABLE `cdp_customer_extension_metadata` DISABLE KEYS */;
+
+INSERT INTO `cdp_customer_extension_metadata` (`id`, `variable`, `title`, `kind`, `dict`, `reg`, `required`, `sort`, `created`, `updated`)
+VALUES
+	(66,'score','积分','Int32','','',0,1000,'2021-06-30 17:39:35','2021-06-30 17:39:35'),
+	(67,'star','关注','UInt32','','',0,1000,'2021-06-30 17:39:35','2021-06-30 17:39:35'),
+	(68,'addr','地址','String','','',0,1000,'2021-06-30 17:39:35','2021-06-30 17:39:35'),
+	(69,'level','级别','UInt16','','',1,1000,'2021-06-30 17:39:35','2021-06-30 17:39:35');
+
+/*!40000 ALTER TABLE `cdp_customer_extension_metadata` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table cdp_customer_key
@@ -220,20 +203,6 @@ CREATE TABLE `cdp_customer_key` (
   UNIQUE KEY `key` (`userKey`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='自定义key用户客户表';
 
-LOCK TABLES `cdp_customer_key` WRITE;
-/*!40000 ALTER TABLE `cdp_customer_key` DISABLE KEYS */;
-
-INSERT INTO `cdp_customer_key` (`id`, `userId`, `userKey`, `created`, `updated`)
-VALUES
-	(1,'88c60a38d5a111eb8636804a1460b6f5','yangshu611113513517944333','2021-06-25 18:38:53','2021-06-25 18:38:53'),
-	(2,'953d0154d5a111eb8636804a1460b6f5','yangshu6111135135179443330','2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(3,'953deb28d5a111eb8636804a1460b6f5','yangshu6111135135179443331','2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(4,'953e42bcd5a111eb8636804a1460b6f5','yangshu6111135135179443332','2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(5,'953e941ad5a111eb8636804a1460b6f5','yangshu6111135135179443333','2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(6,'953ed916d5a111eb8636804a1460b6f5','yangshu6111135135179443334','2021-06-25 18:39:14','2021-06-25 18:39:14');
-
-/*!40000 ALTER TABLE `cdp_customer_key` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table cdp_customer_phone
@@ -252,20 +221,6 @@ CREATE TABLE `cdp_customer_phone` (
   UNIQUE KEY `userId` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='电话客户表';
 
-LOCK TABLES `cdp_customer_phone` WRITE;
-/*!40000 ALTER TABLE `cdp_customer_phone` DISABLE KEYS */;
-
-INSERT INTO `cdp_customer_phone` (`id`, `userId`, `phone`, `created`, `updated`)
-VALUES
-	(1,'88c60a38d5a111eb8636804a1460b6f5','135135179333','2021-06-25 18:38:53','2021-06-25 18:38:53'),
-	(2,'953d0154d5a111eb8636804a1460b6f5','135135179390','2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(3,'953deb28d5a111eb8636804a1460b6f5','135135179391','2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(4,'953e42bcd5a111eb8636804a1460b6f5','135135179392','2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(5,'953e941ad5a111eb8636804a1460b6f5','135135179393','2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(6,'953ed916d5a111eb8636804a1460b6f5','135135179394','2021-06-25 18:39:14','2021-06-25 18:39:14');
-
-/*!40000 ALTER TABLE `cdp_customer_phone` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table cdp_customer_temporary
@@ -281,8 +236,8 @@ CREATE TABLE `cdp_customer_temporary` (
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uuid` (`uuid`),
-  UNIQUE KEY `userId` (`userId`)
+  UNIQUE KEY `userId` (`userId`),
+  UNIQUE KEY `uuid` (`uuid`,`sourceId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='临时用户表';
 
 LOCK TABLES `cdp_customer_temporary` WRITE;
@@ -290,7 +245,8 @@ LOCK TABLES `cdp_customer_temporary` WRITE;
 
 INSERT INTO `cdp_customer_temporary` (`id`, `uuid`, `userId`, `sourceId`, `created`, `updated`)
 VALUES
-	(4,'1624608330','1c0537eed58c11ebb60a804a1460b6f5',0,'2021-06-25 16:05:31','2021-06-25 16:05:31');
+	(13,'6d01db8adaef11ebb0df804a1460b6f5','6d01db8adaef11ebb0df804a1460b6f5user',1,'2021-07-02 12:39:03','2021-07-02 12:39:03'),
+	(14,'6d01de3cdaef11ebb0df804a1460b6f5','6d01de3cdaef11ebb0df804a1460b6f5user',1,'2021-07-02 12:39:03','2021-07-02 12:39:03');
 
 /*!40000 ALTER TABLE `cdp_customer_temporary` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -312,20 +268,6 @@ CREATE TABLE `cdp_customer_wechat` (
   UNIQUE KEY `userid` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信客户表';
 
-LOCK TABLES `cdp_customer_wechat` WRITE;
-/*!40000 ALTER TABLE `cdp_customer_wechat` DISABLE KEYS */;
-
-INSERT INTO `cdp_customer_wechat` (`id`, `userId`, `unionId`, `created`, `updated`)
-VALUES
-	(1,'88c60a38d5a111eb8636804a1460b6f5','10012133333','2021-06-25 18:38:53','2021-06-25 18:38:53'),
-	(2,'953d0154d5a111eb8636804a1460b6f5','100121333330','2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(3,'953deb28d5a111eb8636804a1460b6f5','100121333331','2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(4,'953e42bcd5a111eb8636804a1460b6f5','100121333332','2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(5,'953e941ad5a111eb8636804a1460b6f5','100121333333','2021-06-25 18:39:14','2021-06-25 18:39:14'),
-	(6,'953ed916d5a111eb8636804a1460b6f5','100121333334','2021-06-25 18:39:14','2021-06-25 18:39:14');
-
-/*!40000 ALTER TABLE `cdp_customer_wechat` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table cdp_ip_addr
@@ -532,8 +474,7 @@ VALUES
 	(1430,'119.7.146.94','中国','北京市','朝阳','2021-06-24 15:27:35','2021-06-24 15:27:35'),
 	(1431,'223.20.180.200','中国','北京市','北京','2021-06-25 18:33:00','2021-06-25 18:33:00'),
 	(1432,'125.38.82.23','中国','天津市','天津','2021-06-25 18:35:10','2021-06-25 18:35:10'),
-	(1433,'1.192.119.149','中国','河南','郑州市','2021-06-25 18:35:10','2021-06-25 18:35:10'),
-	(1434,'','','','','2021-06-25 18:35:10','2021-06-25 18:35:10');
+	(1433,'1.192.119.149','中国','河南','郑州市','2021-06-25 18:35:10','2021-06-25 18:35:10');
 
 /*!40000 ALTER TABLE `cdp_ip_addr` ENABLE KEYS */;
 UNLOCK TABLES;

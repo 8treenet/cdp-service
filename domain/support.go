@@ -25,9 +25,10 @@ func init() {
 
 // SupportService 支撑服务 .
 type SupportService struct {
-	Worker      freedom.Worker
-	SupportRepo *repository.SupportRepository
-	TX          transaction.Transaction
+	Worker         freedom.Worker
+	SupportRepo    *repository.SupportRepository
+	TX             transaction.Transaction
+	DataRepository *repository.DataRepository
 }
 
 // 创建渠道 .
@@ -60,7 +61,15 @@ func (service *SupportService) CreateFeature(data vo.ReqFeatureDTO) error {
 	}
 
 	return service.TX.Execute(func() error {
-		return service.SupportRepo.SaveFeatureEntity(entity)
+		if err := service.SupportRepo.SaveFeatureEntity(entity); err != nil {
+			return err
+		}
+
+		cmd := service.DataRepository.CreateTable(entity.Warehouse)
+		for _, v := range entity.FeatureMetadata {
+			cmd.AddColumn(v.Variable, v.Kind, v.OrderByNumber, v.Partition)
+		}
+		return cmd.Do()
 	})
 }
 
