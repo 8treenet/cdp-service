@@ -1,10 +1,8 @@
-package clickhouse
+package cattle
 
 import (
 	"context"
 	"database/sql"
-	"fmt"
-	"strings"
 	"time"
 
 	"github.com/8treenet/freedom"
@@ -100,12 +98,4 @@ func (ck *Manager) tx(f func(*sql.Tx) error) error {
 	}
 
 	return tx.Commit()
-}
-
-func (ck *Manager) ArrayKind(kind string) string {
-	list := strings.Split(kind, "Array")
-	if len(list) == 2 {
-		return fmt.Sprintf("%s(%s)", "Array", list[1])
-	}
-	return kind
 }

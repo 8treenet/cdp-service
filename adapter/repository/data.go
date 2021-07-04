@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/8treenet/cdp-service/infra/clickhouse"
+	"github.com/8treenet/cdp-service/infra/cattle"
 	"github.com/8treenet/freedom"
 )
 
@@ -16,37 +16,37 @@ func init() {
 // DataRepository .
 type DataRepository struct {
 	freedom.Repository
-	Manager *clickhouse.Manager
+	Manager *cattle.Manager
 }
 
 // NewCreateTable
-func (repo *DataRepository) NewCreateTable(name string) *clickhouse.CreateTable {
+func (repo *DataRepository) NewCreateTable(name string) *cattle.CreateTable {
 	return repo.Manager.CreateTable(name)
 }
 
 // SaveTable
-func (repo *DataRepository) SaveTable(cmd *clickhouse.CreateTable) error {
+func (repo *DataRepository) SaveTable(cmd *cattle.CreateTable) error {
 	return cmd.Do()
 }
 
 // NewAlterColumn
-func (repo *DataRepository) NewAlterColumn(tableName string) *clickhouse.AlterColumn {
+func (repo *DataRepository) NewAlterColumn(tableName string) *cattle.AlterColumn {
 	return repo.Manager.AlterColumn(tableName)
 }
 
 // SaveColumn
-func (repo *DataRepository) SaveColumn(cmd *clickhouse.AlterColumn) error {
+func (repo *DataRepository) SaveColumn(cmd *cattle.AlterColumn) error {
 	return cmd.Do()
 }
 
 // NewSubmit
-func (repo *DataRepository) NewSubmit(tableName string) *clickhouse.Submit {
+func (repo *DataRepository) NewSubmit(tableName string) *cattle.Submit {
 	result := repo.Manager.Submit(tableName)
 	result.SetLogger(repo.Worker().Logger())
 	return result
 }
 
 // SaveSubmit
-func (repo *DataRepository) SaveSubmit(submit *clickhouse.Submit) error {
+func (repo *DataRepository) SaveSubmit(submit *cattle.Submit) error {
 	return submit.Do()
 }

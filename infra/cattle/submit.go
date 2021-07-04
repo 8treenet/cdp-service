@@ -1,4 +1,4 @@
-package clickhouse
+package cattle
 
 import (
 	"database/sql"
@@ -32,11 +32,11 @@ func (submit *Submit) init() {
 	submit.metadata = make(map[string]string)
 	submit.rows = make([]map[string]interface{}, 0)
 
-	submit.metadata["city"] = "String"
-	submit.metadata["region"] = "String"
-	submit.metadata["sourceId"] = "Int16"
-	submit.metadata["ip"] = "IPv4"
-	submit.metadata["createTime"] = "DateTime"
+	submit.metadata[ColumnCity] = ColumnTypeString
+	submit.metadata[ColumnRegion] = ColumnTypeString
+	submit.metadata[ColumnSourceId] = ColumnTypeInt16
+	submit.metadata[ColumnIP] = ColumnIP
+	submit.metadata[ColumnCreateTime] = ColumnTypeDateTime
 }
 
 func (submit *Submit) SetLogger(l Logger) {
@@ -84,28 +84,28 @@ func (submit *Submit) parse(data map[string]interface{}, columnName string) (int
 	datav, ok := data[columnName]
 	kind := submit.metadata[columnName]
 	switch kind {
-	case "String":
+	case ColumnTypeString:
 		if !ok {
 			return "", nil
 		}
 		return datav, nil
-	case "ArrayString":
+	case ColumnTypeArrayString:
 		if !ok {
 			return clickhouse.Array([]string{}), nil
 		}
 		return datav, nil
 
-	case "Float32", "Float64":
+	case ColumnTypeFloat32, ColumnTypeFloat64:
 		if !ok {
 			return 0.0, nil
 		}
 		return datav, nil
-	case "ArrayFloat32", "ArrayFloat64":
+	case ColumnTypeArrayFloat32, ColumnTypeArrayFloat64:
 		if !ok {
 			return []float32{}, nil
 		}
 		return datav, nil
-	case "UInt8", "UInt16", "UInt32", "UInt64", "Int8", "Int16", "Int32", "Int64":
+	case ColumnTypeUInt8, ColumnTypeUInt16, ColumnTypeUInt32, ColumnTypeUInt64, ColumnTypeInt8, ColumnTypeInt16, ColumnTypeInt32, ColumnTypeInt64:
 		if !ok {
 			return 0, nil
 		}
@@ -115,7 +115,7 @@ func (submit *Submit) parse(data map[string]interface{}, columnName string) (int
 		}
 		return i, nil
 
-	case "ArrayUInt8", "ArrayUInt16", "ArrayUInt32", "ArrayUInt64", "ArrayInt8", "ArrayInt16", "ArrayInt32", "ArrayInt64":
+	case ColumnTypeArrayUInt8, ColumnTypeArrayUInt16, ColumnTypeArrayUInt32, ColumnTypeArrayUInt64, ColumnTypeArrayInt8, ColumnTypeArrayInt16, ColumnTypeArrayInt32, ColumnTypeArrayInt64:
 		if !ok {
 			return clickhouse.Array([]int{}), nil
 		}
@@ -132,53 +132,27 @@ func (submit *Submit) parse(data map[string]interface{}, columnName string) (int
 		}
 		return newDatav, nil
 
-	case "Date":
+	case ColumnTypeDate:
 		if !ok {
 			return time.Now(), nil
 		}
 		return time.ParseInLocation("2006-01-02", fmt.Sprint(datav), time.Local)
-	case "ArrayDate":
+	case ColumnTypeArrayDate:
 		if !ok {
 			return []time.Time{time.Now()}, nil
 		}
-		// datetimes, cok := datav.([]string)
-		// if !cok {
-		// 	return nil, fmt.Errorf("ArrayDate error")
-		// }
-		// var newDatav []time.Time
-		// for _, v := range datetimes {
-		// 	datev, err := time.ParseInLocation("2006-01-02", fmt.Sprint(v), time.Local)
-		// 	if err != nil {
-		// 		return nil, err
-		// 	}
-		// 	newDatav = append(newDatav, datev)
-		// }
-		//return newDatav, nil
 		return datav, nil
-	case "DateTime":
+	case ColumnTypeDateTime:
 		if !ok {
 			return time.Now(), nil
 		}
 		return time.ParseInLocation("2006-01-02 15:04:05", fmt.Sprint(datav), time.Local)
-	case "ArrayDateTime":
+	case ColumnTypeArrayDateTime:
 		if !ok {
 			return []time.Time{time.Now()}, nil
 		}
-		// datetimes, cok := datav.([]string)
-		// if !cok {
-		// 	return nil, fmt.Errorf("ArrayDateTime error")
-		// }
-		// var newDatav []time.Time
-		// for _, v := range datetimes {
-		// 	datetimev, err := time.ParseInLocation("2006-01-02 15:04:05", fmt.Sprint(v), time.Local)
-		// 	if err != nil {
-		// 		return nil, err
-		// 	}
-		// 	newDatav = append(newDatav, datetimev)
-		// }
-		// return newDatav, nil
 		return datav, nil
-	case "IPv4":
+	case ColumnTypeIP:
 		if !ok {
 			return "0.0.0.0", nil
 		}

@@ -1,4 +1,4 @@
-package clickhouse
+package cattle
 
 import (
 	"fmt"
@@ -19,7 +19,7 @@ func (ac *AlterColumn) init() {
 }
 
 func (ac *AlterColumn) Do() error {
-	sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s %s", ac.tableName, ac.variable, ac.manager.ArrayKind(ac.kind))
+	sql := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s %s", ac.tableName, ac.variable, ArrayKind(ac.kind))
 	ac.logger.Infof("AlterColumn sql:%s", sql)
 	_, err := ac.manager.db.Exec(sql)
 	return err

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/8treenet/cdp-service/domain/po"
+	"github.com/8treenet/cdp-service/infra/cattle"
 	"github.com/8treenet/cdp-service/utils"
 	"github.com/8treenet/freedom"
 )
@@ -41,7 +42,7 @@ func (entity *Intermediary) VerifyCustomer(customer *Customer, isNew bool) error
 
 		val := reflect.ValueOf(value)
 		switch po.Kind {
-		case "String":
+		case cattle.ColumnTypeString:
 			if val.Kind() != reflect.String {
 				return fmt.Errorf("错误类型 %v %s:%v", "String", po.Variable, value)
 			}
@@ -52,11 +53,11 @@ func (entity *Intermediary) VerifyCustomer(customer *Customer, isNew bool) error
 			if ok := regexp.MustCompile(po.Reg).MatchString(value.(string)); !ok {
 				return fmt.Errorf("正则匹配失败 %v %s:%v", po.Reg, po.Variable, value)
 			}
-		case "Float32", "Float64":
+		case cattle.ColumnTypeFloat32, cattle.ColumnTypeFloat64:
 			if val.Kind() != reflect.Float32 && val.Kind() != reflect.Float64 {
 				return fmt.Errorf("错误类型 %v %s:%v", "Float", po.Variable, value)
 			}
-		case "DateTime":
+		case cattle.ColumnTypeDateTime:
 			if val.Kind() != reflect.String {
 				return fmt.Errorf("错误类型 %v %s:%v", "DateTime", po.Variable, value)
 			}
@@ -64,7 +65,7 @@ func (entity *Intermediary) VerifyCustomer(customer *Customer, isNew bool) error
 				return fmt.Errorf("错误类型 %v %s:%v", "DateTime", po.Variable, value)
 			}
 
-		case "Date":
+		case cattle.ColumnTypeDate:
 			if val.Kind() != reflect.String {
 				return fmt.Errorf("错误类型 %v %s:%v", "Date", po.Variable, value)
 			}

@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.18)
 # Database: cdp
-# Generation Time: 2021-07-04 05:04:29 +0000
+# Generation Time: 2021-07-04 08:54:58 +0000
 # ************************************************************
 
 
@@ -98,7 +98,7 @@ LOCK TABLES `cdp_behaviour_feature_metadata` WRITE;
 
 INSERT INTO `cdp_behaviour_feature_metadata` (`id`, `featureId`, `variable`, `title`, `kind`, `dict`, `orderByNumber`, `partition`, `created`, `updated`)
 VALUES
-	(5,1,'userId','userId','Int64','',1,0,'2021-06-30 17:32:47','2021-06-30 17:32:47'),
+	(5,1,'userId','userId','String','',1,0,'2021-06-30 17:32:47','2021-07-04 15:29:53'),
 	(6,1,'name','name','String','',0,0,'2021-06-30 17:34:59','2021-06-30 17:35:10'),
 	(7,1,'email','email','String','',0,0,'2021-06-30 17:34:59','2021-06-30 17:35:10'),
 	(8,1,'phone','phone','String','',0,0,'2021-06-30 17:34:59','2021-06-30 17:35:10'),

@@ -1,4 +1,4 @@
-package clickhouse
+package cattle
 
 import (
 	"fmt"
@@ -38,7 +38,7 @@ func (c *CreateTable) Do() error {
 		if i == len(c.items)-1 {
 			n = ""
 		}
-		sql += fmt.Sprintf("\t%s %s%s\n", c.items[i].variable, c.manager.ArrayKind(c.items[i].kind), n)
+		sql += fmt.Sprintf("\t%s %s%s\n", c.items[i].variable, ArrayKind(c.items[i].kind), n)
 	}
 	sql += fmt.Sprintf(") ENGINE = %s\n", c.engine)
 
@@ -94,10 +94,10 @@ func (c *CreateTable) AddColumn(variable, kind string, order, partitionType int)
 }
 
 func (c *CreateTable) addDefaultColumn() {
-	c.AddColumn("region", "String", 0, 0)
-	c.AddColumn("city", "String", 0, 0)
-	c.AddColumn("ip", "IPv4", 0, 0)
-	c.AddColumn("sourceId", "Int16", 0, 0)
+	c.AddColumn(ColumnRegion, ColumnTypeString, 0, 0)
+	c.AddColumn(ColumnCity, ColumnTypeString, 0, 0)
+	c.AddColumn(ColumnIP, ColumnTypeIP, 0, 0)
+	c.AddColumn(ColumnSourceId, ColumnTypeInt16, 0, 0)
 
 	defPartitionType := 0
 	defOrder := 0
@@ -107,7 +107,7 @@ func (c *CreateTable) addDefaultColumn() {
 	if len(c.order) == 0 {
 		defOrder = 1
 	}
-	c.AddColumn("createTime", "DateTime", defOrder, defPartitionType)
+	c.AddColumn(ColumnCreateTime, ColumnTypeDateTime, defOrder, defPartitionType)
 }
 
 func (c *CreateTable) SetLogger(l Logger) {
