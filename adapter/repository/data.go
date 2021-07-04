@@ -19,12 +19,22 @@ type DataRepository struct {
 	Manager *clickhouse.Manager
 }
 
-// CreateTable max:最大数量, duration:等待时间.
-func (repo *DataRepository) CreateTable(name string) *clickhouse.CreateTable {
+// NewCreateTable
+func (repo *DataRepository) NewCreateTable(name string) *clickhouse.CreateTable {
 	return repo.Manager.CreateTable(name)
 }
 
 // SaveTable
 func (repo *DataRepository) SaveTable(cmd *clickhouse.CreateTable) error {
+	return cmd.Do()
+}
+
+// NewAlterColumn
+func (repo *DataRepository) NewAlterColumn(tableName string) *clickhouse.AlterColumn {
+	return repo.Manager.AlterColumn(tableName)
+}
+
+// SaveColumn
+func (repo *DataRepository) SaveColumn(cmd *clickhouse.AlterColumn) error {
 	return cmd.Do()
 }

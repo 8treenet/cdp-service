@@ -43,10 +43,10 @@ func TestSupportController_GetFeatures(t *testing.T) {
 }
 
 func TestSupportController_PutFeatureBy(t *testing.T) {
-	req := requests.NewHTTPRequest(domain + "/support/feature/2").Put()
+	req := requests.NewHTTPRequest(domain + "/support/feature/6").Put()
 	var metadata []vo.ReqFeatureMetadataDTO
-	metadata = append(metadata, vo.ReqFeatureMetadataDTO{Variable: "createTime", Title: "注册时间", Kind: "DateTime", Partition: 1})
-	metadata = append(metadata, vo.ReqFeatureMetadataDTO{Variable: "ip", Title: "ip地址", Kind: "String", OrderByNumber: 1})
+	metadata = append(metadata, vo.ReqFeatureMetadataDTO{Variable: "createTimeClone", Title: "注册时间", Kind: "DateTime", Partition: 1})
+	metadata = append(metadata, vo.ReqFeatureMetadataDTO{Variable: "ipClone", Title: "ip地址", Kind: "String", OrderByNumber: 1})
 
 	str, _ := req.SetJSONBody(metadata).ToString()
 	t.Log(str)

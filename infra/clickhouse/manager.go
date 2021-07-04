@@ -62,3 +62,7 @@ func (ck *Manager) Booting(bootManager freedom.BootManager) {
 func (ck *Manager) CreateTable(name string) *CreateTable {
 	return &CreateTable{manager: ck, name: name, engine: " MergeTree()"}
 }
+
+func (ck *Manager) AlterColumn(tableName string) *AlterColumn {
+	return &AlterColumn{manager: ck, tableName: tableName}
+}

@@ -65,7 +65,7 @@ func (service *SupportService) CreateFeature(data vo.ReqFeatureDTO) error {
 			return err
 		}
 
-		cmd := service.DataRepository.CreateTable(entity.Warehouse)
+		cmd := service.DataRepository.NewCreateTable(entity.Warehouse)
 		for _, v := range entity.FeatureMetadata {
 			cmd.AddColumn(v.Variable, v.Kind, v.OrderByNumber, v.Partition)
 		}
@@ -81,6 +81,13 @@ func (service *SupportService) AddFeatureMetadata(featureId int, list []vo.ReqFe
 	}
 
 	for _, v := range list {
+		cmd := service.DataRepository.NewAlterColumn(entity.Warehouse)
+		cmd.AddColumn(v.Variable, v.Kind)
+		if err := service.DataRepository.SaveColumn(cmd); err != nil {
+			service.Worker.Logger().Error(err)
+			continue
+		}
+
 		entity.AddMetadata(v.Variable, v.Title, v.Kind, v.Dict, 0, 0)
 	}
 
