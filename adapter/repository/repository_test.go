@@ -262,6 +262,7 @@ func TestArraySubmit(t *testing.T) {
 	mdata["city"] = "北京"
 	mdata["region"] = "北京"
 	mdata["sourceId"] = 1
+	mdata["userId"] = "fuckuser"
 
 	mdata["strs"] = []string{"1", "2", "3"}
 	mdata["f1"] = 0.57
@@ -273,6 +274,7 @@ func TestArraySubmit(t *testing.T) {
 	jsonData, _ := json.Marshal(mdata)
 	t.Log("json data", string(jsonData))
 	json.Unmarshal(jsonData, &mdata)
+	mdata["createTime"] = time.Now()
 	cmdSubmit.AddRow(mdata)
 	e := repo.SaveSubmit(cmdSubmit)
 	t.Log(e)

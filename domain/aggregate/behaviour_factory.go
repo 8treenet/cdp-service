@@ -21,13 +21,7 @@ type BehaviourFactory struct {
 	BehaviourRepository *repository.BehaviourRepository
 	SupportRepository   *repository.SupportRepository
 	CustomerRepo        *repository.CustomerRepository
-	// Intermediary        *repository.IntermediaryRepository
-	// SignRepo            *repository.SignRepository
-	// SupportRepository   *repository.SupportRepository
-	// TX                  transaction.Transaction //依赖倒置事务组件
-	// Worker              freedom.Worker          //运行时，一个请求绑定一个运行时
-	// GEO                 *infra.GEO              //geo
-	// BehaviourRepository *repository.BehaviourRepository
+	DataRepository      *repository.DataRepository
 }
 
 // CreateBehaviourCmd
@@ -52,6 +46,7 @@ func (factory *BehaviourFactory) CreateBehaviourCmds() (cmds []*BehaviourCreate,
 
 		factory.setUserId(behaviours)
 		cmds = append(cmds, &BehaviourCreate{
+			DataRepository:      factory.DataRepository,
 			BehaviourRepository: factory.BehaviourRepository,
 			Feature:             *featureEntity,
 			behaviours:          behaviours,
@@ -143,26 +138,26 @@ func (factory *BehaviourFactory) setUserId(behaviours []*entity.Behaviour) {
 	for _, v := range behaviours {
 		customerId, ok := userKeyMap[v.UserKey]
 		if ok {
-			v.CustomerId = customerId
+			v.UserId = customerId
 			continue
 		}
 
 		customerId, ok = wechatUnionMap[v.WechatUnionID]
 		if ok {
-			v.CustomerId = customerId
+			v.UserId = customerId
 			continue
 		}
 
 		customerId, ok = wechatUnionMap[v.UserPhone]
 		if ok {
-			v.CustomerId = customerId
+			v.UserId = customerId
 			continue
 		}
 		if v.TempUserID == "" {
 			continue
 		}
 
-		v.CustomerId = factory.CustomerRepo.GetTempUserIDByUUID(v.TempUserID, v.SouceID)
+		v.UserId = factory.CustomerRepo.GetTempUserIDByUUID(v.TempUserID, v.SouceID)
 	}
 	return
 }

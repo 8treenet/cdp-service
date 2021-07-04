@@ -11,6 +11,7 @@ const (
 	ColumnIP         = "ip"
 	ColumnSourceId   = "sourceId"
 	ColumnCreateTime = "createTime"
+	ColumnUserId     = "userId"
 )
 
 const (

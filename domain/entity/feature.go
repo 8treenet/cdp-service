@@ -70,7 +70,11 @@ func (entity *Feature) View() interface{} {
 	return jsonData
 }
 
-// ToDocuments 验证数据
-func (entity *Feature) ToDocuments() {
-
+// ToColumns 返回列和类型
+func (entity *Feature) ToColumns() (result map[string]string) {
+	result = make(map[string]string)
+	for _, v := range entity.FeatureMetadata {
+		result[v.Variable] = v.Kind
+	}
+	return result
 }

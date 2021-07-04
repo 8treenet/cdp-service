@@ -37,6 +37,7 @@ func (submit *Submit) init() {
 	submit.metadata[ColumnSourceId] = ColumnTypeInt16
 	submit.metadata[ColumnIP] = ColumnTypeIP
 	submit.metadata[ColumnCreateTime] = ColumnTypeDateTime
+	submit.metadata[ColumnUserId] = ColumnTypeString
 }
 
 func (submit *Submit) SetLogger(l Logger) *Submit {
@@ -137,7 +138,7 @@ func (submit *Submit) parse(data map[string]interface{}, columnName string) (int
 		if !ok {
 			return time.Now(), nil
 		}
-		return time.ParseInLocation("2006-01-02", fmt.Sprint(datav), time.Local)
+		return datav, nil
 	case ColumnTypeArrayDate:
 		if !ok {
 			return []time.Time{time.Now()}, nil
@@ -147,7 +148,7 @@ func (submit *Submit) parse(data map[string]interface{}, columnName string) (int
 		if !ok {
 			return time.Now(), nil
 		}
-		return time.ParseInLocation("2006-01-02 15:04:05", fmt.Sprint(datav), time.Local)
+		return datav, nil
 	case ColumnTypeArrayDateTime:
 		if !ok {
 			return []time.Time{time.Now()}, nil

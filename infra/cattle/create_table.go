@@ -98,6 +98,7 @@ func (c *CreateTable) addDefaultColumn() {
 	c.AddColumn(ColumnCity, ColumnTypeString, 0, 0)
 	c.AddColumn(ColumnIP, ColumnTypeIP, 0, 0)
 	c.AddColumn(ColumnSourceId, ColumnTypeInt16, 0, 0)
+	c.AddColumn(ColumnUserId, ColumnTypeString, 0, 0)
 
 	defPartitionType := 0
 	defOrder := 0
