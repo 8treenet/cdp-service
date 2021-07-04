@@ -110,6 +110,7 @@ func (c *CreateTable) addDefaultColumn() {
 	c.AddColumn(ColumnCreateTime, ColumnTypeDateTime, defOrder, defPartitionType)
 }
 
-func (c *CreateTable) SetLogger(l Logger) {
+func (c *CreateTable) SetLogger(l Logger) *CreateTable {
 	c.logger = l
+	return c
 }

@@ -39,8 +39,9 @@ func (submit *Submit) init() {
 	submit.metadata[ColumnCreateTime] = ColumnTypeDateTime
 }
 
-func (submit *Submit) SetLogger(l Logger) {
+func (submit *Submit) SetLogger(l Logger) *Submit {
 	submit.logger = l
+	return submit
 }
 
 func (submit *Submit) Do() error {

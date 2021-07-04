@@ -30,6 +30,7 @@ func (ac *AlterColumn) AddColumn(variable, kind string) {
 	ac.kind = kind
 }
 
-func (ac *AlterColumn) SetLogger(l Logger) {
+func (ac *AlterColumn) SetLogger(l Logger) *AlterColumn {
 	ac.logger = l
+	return ac
 }
