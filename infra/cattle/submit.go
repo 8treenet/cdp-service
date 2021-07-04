@@ -35,7 +35,7 @@ func (submit *Submit) init() {
 	submit.metadata[ColumnCity] = ColumnTypeString
 	submit.metadata[ColumnRegion] = ColumnTypeString
 	submit.metadata[ColumnSourceId] = ColumnTypeInt16
-	submit.metadata[ColumnIP] = ColumnIP
+	submit.metadata[ColumnIP] = ColumnTypeIP
 	submit.metadata[ColumnCreateTime] = ColumnTypeDateTime
 }
 
