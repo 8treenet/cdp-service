@@ -123,7 +123,7 @@ func (geo *GEO) insertDB(mapData map[string]*GEOInfo) {
 	for _, v := range mapData {
 		list = append(list, v)
 	}
-	if err := db.Clauses(clause.Insert{Modifier: "IGNORE"}).Table("cdp_ip_addr").CreateInBatches(list, 500); err != nil {
+	if err := db.Clauses(clause.Insert{Modifier: "IGNORE"}).Table("cdp_ip_addr").CreateInBatches(list, 500).Error; err != nil {
 		freedom.Logger().Error("geo CreateInBatches error:", err)
 	}
 	return
