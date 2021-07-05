@@ -2,9 +2,10 @@
 package po
 
 import (
+	"time"
+
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
-	"time"
 )
 
 // Behaviour .
@@ -20,7 +21,7 @@ type Behaviour struct {
 	CreateTime    time.Time      `gorm:"column:createTime"`    // 行为的时间
 	Data          datatypes.JSON `gorm:"column:data"`          // 数据
 	Processed     int            `gorm:"column:processed"`     // 非0已处理
-	SouceID       int            `gorm:"column:souceId"`       // 来源
+	SourceID      int            `gorm:"column:sourceId"`      // 来源
 	Created       time.Time      `gorm:"column:created"`
 }
 
@@ -109,10 +110,10 @@ func (obj *Behaviour) SetProcessed(processed int) {
 	obj.Update("processed", processed)
 }
 
-// SetSouceID .
-func (obj *Behaviour) SetSouceID(souceID int) {
-	obj.SouceID = souceID
-	obj.Update("souceId", souceID)
+// SetSourceID .
+func (obj *Behaviour) SetSourceID(souceID int) {
+	obj.SourceID = souceID
+	obj.Update("sourceId", souceID)
 }
 
 // SetCreated .
@@ -133,8 +134,8 @@ func (obj *Behaviour) AddProcessed(processed int) {
 	obj.Update("processed", gorm.Expr("processed + ?", processed))
 }
 
-// AddSouceID .
-func (obj *Behaviour) AddSouceID(souceID int) {
-	obj.SouceID += souceID
-	obj.Update("souceId", gorm.Expr("souceId + ?", souceID))
+// AddSourceID .
+func (obj *Behaviour) AddSourceID(souceID int) {
+	obj.SourceID += souceID
+	obj.Update("sourceId", gorm.Expr("sourceId + ?", souceID))
 }

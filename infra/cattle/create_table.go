@@ -22,7 +22,7 @@ type CreateTable struct {
 		num      int
 	}
 	partitionColumn string
-	partitionType   int //1周 2月
+	partitionType   int //1周 2月 只有时间可分区
 }
 
 func (c *CreateTable) init() {

@@ -86,9 +86,9 @@ func TestCustomerController_Post(t *testing.T) {
 
 	data.Extension = make(map[string]interface{})
 	data.Extension["score"] = 100
-	data.Extension["star"] = 50
+	//data.Extension["star"] = 50
 	data.Extension["level"] = 20
-	data.Extension["addr"] = "11111"
+	//data.Extension["addr"] = "11111"
 
 	str, resp := req.SetJSONBody(data).ToString()
 	t.Log(str, resp)

@@ -9,7 +9,7 @@ import (
 )
 
 // Behaviour 客户行为
-// 默认ck表字段，customerId, ip，省、市, SouceID
+// 默认ck表字段，customerId, ip，省、市, SourceID
 type Behaviour struct {
 	freedom.Entity
 	po.Behaviour
@@ -25,7 +25,7 @@ func (entity *Behaviour) ToColumns() (result map[string]interface{}, e error) {
 	result[cattle.ColumnCity] = entity.City
 	result[cattle.ColumnRegion] = entity.Region
 	result[cattle.ColumnIP] = entity.UserIPAddr
-	result[cattle.ColumnSourceId] = entity.SouceID
+	result[cattle.ColumnSourceId] = entity.SourceID
 	result[cattle.ColumnUserId] = entity.UserId
 	result[cattle.ColumnCreateTime] = entity.CreateTime
 

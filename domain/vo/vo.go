@@ -29,3 +29,15 @@ type ReqFeatureDTO struct {
 	Warehouse string                  `json:"warehouse" validate:"required"` // clickhouse的表名
 	Metadata  []ReqFeatureMetadataDTO `json:"metadata"`
 }
+
+type ReqBehaviourDTO struct {
+	WechatUnionID string                 `json:"wechatUnionID"`
+	UserKey       string                 `json:"userKey"`
+	UserPhone     string                 `json:"userPhone"`
+	TempUserID    string                 `json:"tempUserID"`
+	IPAddr        string                 `json:"ipAddr"`
+	FeatureID     int                    `json:"featureID"`
+	CreateTime    string                 `json:"createTime"`
+	Data          map[string]interface{} `json:"data"`
+	Source        string                 `json:"source"`
+}

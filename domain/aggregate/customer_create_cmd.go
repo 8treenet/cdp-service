@@ -51,7 +51,7 @@ func (cmd *CustomerCreateCmd) Do(customerDto vo.CustomerDTO, inBatche ...bool) (
 
 	customer.SetExtension(customerDto.Extension)
 	for len(inBatche) == 0 {
-		customer.SourceID = cmd.SupportRepository.FindSource(customerDto.Source)
+		customer.SourceID = cmd.SupportRepository.FindSourceID(customerDto.Source)
 		if customerDto.IP == "" || net.ParseIP(customerDto.IP) == nil || customerDto.City != "" || customerDto.Region != "" {
 			break
 		}
@@ -99,7 +99,7 @@ func (cmd *CustomerCreateCmd) BatcheDo(customerDtos []vo.CustomerDTO) (e error) 
 	var ipAddrs []string
 
 	for i := 0; i < len(customerDtos); i++ {
-		customerDtos[i].SourceID = cmd.SupportRepository.FindSource(customerDtos[i].Source)
+		customerDtos[i].SourceID = cmd.SupportRepository.FindSourceID(customerDtos[i].Source)
 		if customerDtos[i].IP == "" || utils.InSlice(ipAddrs, customerDtos[i].IP) {
 			continue
 		}
@@ -234,7 +234,7 @@ func (cmd *CustomerCreateCmd) createRegisterBehaviour(customer *entity.Customer,
 		CreateTime:    customer.Created,
 		Data:          jsonData,
 		Processed:     0,
-		SouceID:       customer.SourceID,
+		SourceID:      customer.SourceID,
 		Created:       time.Now(),
 	}
 	return result, nil

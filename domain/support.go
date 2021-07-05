@@ -33,7 +33,7 @@ type SupportService struct {
 
 // 创建渠道 .
 func (service *SupportService) CreateSource(source string) error {
-	return service.SupportRepo.CreateSouce(source)
+	return service.SupportRepo.CreateSource(source)
 }
 
 // GetAllSource .

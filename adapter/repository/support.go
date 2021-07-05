@@ -36,13 +36,13 @@ type SupportRepository struct {
 	featureAllCacheKey           string
 }
 
-// CreateSouce .
-func (repo *SupportRepository) CreateSouce(source string) error {
+// CreateSource .
+func (repo *SupportRepository) CreateSource(source string) error {
 	_, e := createSource(repo, &po.Source{Source: source, Created: time.Now(), Updated: time.Now()})
 	return e
 }
 
-func (repo *SupportRepository) FindSource(source string) int {
+func (repo *SupportRepository) FindSourceID(source string) int {
 	if source == "" {
 		return 0
 	}

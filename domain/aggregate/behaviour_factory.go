@@ -157,7 +157,7 @@ func (factory *BehaviourFactory) setUserId(behaviours []*entity.Behaviour) {
 			continue
 		}
 
-		v.UserId = factory.CustomerRepo.GetTempUserIDByUUID(v.TempUserID, v.SouceID)
+		v.UserId = factory.CustomerRepo.GetTempUserIDByUUID(v.TempUserID, v.SourceID)
 	}
 	return
 }

@@ -37,7 +37,7 @@ CREATE TABLE `cdp_behaviour` (
   `createTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '行为的时间',
   `data` json NOT NULL COMMENT '数据',
   `processed` tinyint(4) NOT NULL DEFAULT '0' COMMENT '非0已处理',
-  `souceId` smallint(6) NOT NULL COMMENT '来源',
+  `sourceId` smallint(6) NOT NULL COMMENT '来源',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `featureId` (`featureId`,`processed`)

@@ -1,11 +1,13 @@
 package domain
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/8treenet/cdp-service/adapter/repository"
 	"github.com/8treenet/cdp-service/domain/aggregate"
 	"github.com/8treenet/cdp-service/domain/po"
+	"github.com/8treenet/cdp-service/domain/vo"
 	"github.com/8treenet/cdp-service/utils"
 	"github.com/8treenet/freedom"
 )
@@ -26,10 +28,44 @@ func init() {
 type BehaviourService struct {
 	Worker              freedom.Worker
 	BehaviourRepository *repository.BehaviourRepository
+	SupportRepository   *repository.SupportRepository
 	CustomerRepository  *repository.CustomerRepository
 	BehaviourFactory    *aggregate.BehaviourFactory
 	fetchTime           time.Duration
 	fetchCount          int
+}
+
+// CreateBehaviour
+func (service *BehaviourService) CreateBehaviour(req vo.ReqBehaviourDTO) error {
+	jsonData, err := json.Marshal(req.Data)
+	if err != nil {
+		return err
+	}
+	fentity, err := service.SupportRepository.GetFeatureEntity(req.FeatureID)
+	if err != nil {
+		return err
+	}
+
+	sourceId := service.SupportRepository.FindSourceID(req.Source)
+	createTime, err := time.ParseInLocation("2006-01-02 15:04:05", req.CreateTime, time.Local)
+	if err != nil {
+		return err
+	}
+
+	obj := &po.Behaviour{
+		WechatUnionID: req.WechatUnionID,
+		UserKey:       req.UserKey,
+		UserPhone:     req.UserPhone,
+		TempUserID:    req.TempUserID,
+		UserIPAddr:    req.IPAddr,
+		FeatureID:     fentity.ID,
+		CreateTime:    createTime,
+		Data:          jsonData,
+		SourceID:      sourceId,
+		Created:       time.Now(),
+	}
+	service.BehaviourRepository.AddQueue([]*po.Behaviour{obj})
+	return nil
 }
 
 // BatchSave 批量入库
@@ -103,15 +139,15 @@ func (service *BehaviourService) batchTempCustomer(list []*po.Behaviour) error {
 			continue
 		}
 
-		_, ok := tempCustomerMap[behaviour.SouceID]
+		_, ok := tempCustomerMap[behaviour.SourceID]
 		if !ok {
-			tempCustomerMap[behaviour.SouceID] = append(tempCustomerMap[behaviour.SouceID], behaviour.TempUserID)
+			tempCustomerMap[behaviour.SourceID] = append(tempCustomerMap[behaviour.SourceID], behaviour.TempUserID)
 			continue
 		}
-		if utils.InSlice(tempCustomerMap[behaviour.SouceID], behaviour.TempUserID) {
+		if utils.InSlice(tempCustomerMap[behaviour.SourceID], behaviour.TempUserID) {
 			continue
 		}
-		tempCustomerMap[behaviour.SouceID] = append(tempCustomerMap[behaviour.SouceID], behaviour.TempUserID)
+		tempCustomerMap[behaviour.SourceID] = append(tempCustomerMap[behaviour.SourceID], behaviour.TempUserID)
 	}
 
 	for sourceId, ids := range tempCustomerMap {
