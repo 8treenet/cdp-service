@@ -2,7 +2,7 @@ module github.com/8treenet/cdp-service
 
 go 1.13
 
-replace github.com/8treenet/freedom => /Volumes/uhome/ysmac/go/src/github.com/8treenet/freedom
+//replace github.com/8treenet/freedom => /Users/ysmac/go/src/github.com/8treenet/freedom
 
 require (
 	github.com/8treenet/freedom v1.8.10
