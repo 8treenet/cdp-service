@@ -65,7 +65,7 @@ func (c *CreateTable) Do() error {
 	}
 
 	c.logger.Infof("CreateTable sql:%s", sql)
-	_, err := c.manager.db.Exec(sql)
+	_, err := c.manager.sqlDB.Exec(sql)
 	return err
 }
 

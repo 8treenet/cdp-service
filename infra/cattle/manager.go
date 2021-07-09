@@ -1,13 +1,12 @@
 package cattle
 
 import (
-	"context"
 	"database/sql"
-	"time"
 
 	"github.com/8treenet/freedom"
 	_ "github.com/ClickHouse/clickhouse-go"
-	"github.com/jmoiron/sqlx"
+	ormClickhouse "gorm.io/driver/clickhouse"
+	"gorm.io/gorm"
 )
 
 type Logger interface {
@@ -32,8 +31,9 @@ func init() {
 // Manager
 type Manager struct {
 	freedom.Infra
-	dsn string
-	db  *sqlx.DB
+	dsn   string
+	db    *gorm.DB
+	sqlDB *sql.DB
 }
 
 // visitConfig .
@@ -51,20 +51,17 @@ func (ck *Manager) visitConfig() {
 // Booting .
 func (ck *Manager) Booting(bootManager freedom.BootManager) {
 	ck.visitConfig()
-	connect, err := sqlx.Open("clickhouse", ck.dsn)
-	if err != nil {
-		freedom.Logger().Fatalf("ClickHouse dsn:%s, err:%v", ck.dsn, err)
+	var e error
+	ck.db, e = gorm.Open(ormClickhouse.Open(ck.dsn))
+	if e != nil {
+		freedom.Logger().Fatalf("ClickHouse gorm.Open dsn:%s, err:%v", ck.dsn, e.Error())
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-
-	if e := connect.PingContext(ctx); e != nil {
-		freedom.Logger().Fatalf("ClickHouse ping dsn:%s, err:%v", ck.dsn, e.Error())
+	ck.sqlDB, e = ck.db.DB()
+	if e != nil {
+		freedom.Logger().Fatalf("ClickHouse gorm.DB dsn:%s, err:%v", ck.dsn, e.Error())
 	}
 
 	freedom.Logger().Debug("ClickHouse connect success dsn:", ck.dsn)
-	ck.db = connect
 }
 
 func (ck *Manager) CreateTable(name string) *CreateTable {
@@ -86,7 +83,7 @@ func (ck *Manager) Submit(tableName string) *Submit {
 }
 
 func (ck *Manager) tx(f func(*sql.Tx) error) error {
-	tx, err := ck.db.Begin()
+	tx, err := ck.sqlDB.Begin()
 	if err != nil {
 		return err
 	}

@@ -128,6 +128,8 @@ github.com/gorilla/websocket v1.4.1 h1:q7AeDBpnBk8AogcD4DSag/Ukw/KV+YhzLj2bP5HvK
 github.com/gorilla/websocket v1.4.1/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/hashicorp/go-uuid v1.0.2/go.mod h1:6SBZvOh/SIDV7/2o3Jml5SYk/TvGqwFJ/bN7x4byOro=
 github.com/hashicorp/go-version v1.2.0/go.mod h1:fltr4n8CU8Ke44wwGCBoEymUuxUHl09ZGVZPK5anwXA=
+github.com/hashicorp/go-version v1.3.0 h1:McDWVJIU/y+u1BRV06dPaLfLCaT7fUTJLp5r04x7iNw=
+github.com/hashicorp/go-version v1.3.0/go.mod h1:fltr4n8CU8Ke44wwGCBoEymUuxUHl09ZGVZPK5anwXA=
 github.com/hashicorp/hcl v1.0.0/go.mod h1:E5yfLk+7swimpb2L/Alb/PJmXilQ/rhwaUYs4T20WEQ=
 github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpOxQnU=
 github.com/imkira/go-interpol v1.1.0 h1:KIiKr0VSG2CUW1hl1jpiyuzuJeKUUpC8iM1AIE7N1Vk=
@@ -556,6 +558,8 @@ gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b h1:h8qDotaEPuJATrMmW04NCwg7v
 gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 gorm.io/datatypes v1.0.1 h1:6npnXbBtjpSb7FFVA2dG/llyTN8tvZfbUqs+WyLrYgQ=
 gorm.io/datatypes v1.0.1/go.mod h1:HEHoUU3/PO5ZXfAJcVWl11+zWlE16+O0X2DgJEb4Ixs=
+gorm.io/driver/clickhouse v0.2.1 h1:+EffdPis0tag7c/GuHRUsfM2kagBqzFJ5wcWPsGLgzE=
+gorm.io/driver/clickhouse v0.2.1/go.mod h1:y3VRi2Y7Wl7xl5gb+h2oCaYq9EFbwdc1sVn69lQghi8=
 gorm.io/driver/mysql v1.0.5/go.mod h1:N1OIhHAIhx5SunkMGqWbGFVeh4yTNWKmMo1GOAsohLI=
 gorm.io/driver/mysql v1.0.6/go.mod h1:KdrTanmfLPPyAOeYGyG+UpDys7/7eeWT1zCq+oekYnU=
 gorm.io/driver/mysql v1.1.0 h1:3PgFPJlFq5Xt/0WRiRjxIVaXjeHY+2TQ5feXgpSpEC4=
