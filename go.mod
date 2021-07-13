@@ -8,7 +8,9 @@ require (
 	github.com/8treenet/freedom v1.8.10
 	github.com/ClickHouse/clickhouse-go v1.4.5
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/go-xorm/builder v0.3.4
 	github.com/iris-contrib/go.uuid v2.0.0+incompatible
+	github.com/jmoiron/sqlx v1.3.4 // indirect
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/kataras/golog v0.1.2
 	github.com/kataras/iris/v12 v12.1.8
