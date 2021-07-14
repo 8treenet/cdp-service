@@ -12,22 +12,21 @@ import (
 )
 
 /*
-<from>user<from>
-<join>
-	<from leftColumn = "haha" column = "haha">order</from>
-	<from leftColumn = "haha" column = "haha">addr</from>
-</join>
-<condition>
-<or>
-<where from="table" column = "haha" compare = "gte"> 20 </where>
-	<and>
-		<where from="table" column = "haha" compare = "gte"> 20 </where>
-	</and>
-</or>
-</condition>
-<single column = "haha">
-
-<single/>
+<root>
+	<from>order</from>
+	<join>
+		<from leftColumn = "userId" column = "userId">user</from>
+		<from leftColumn = "userId" column = "userId">addr</from>
+	</join>
+	<condition>
+		<and>
+			<where from="user" column = "age" compare = "gte">20</where>
+			<where from="order" column = "price" compare = "gte">500</where>
+			<where from="addr" column = "city" compare = "eq">北京</where>
+		</and>
+	</condition>
+	<single column = "price">sum</single>
+</root>
 */
 
 func TestDSL(t *testing.T) {
@@ -115,6 +114,7 @@ func TestCondition(t *testing.T) {
 }
 
 func TestJoinCondition(t *testing.T) {
+	//北京地区 年龄大于=20 订单大于500 的总销售额
 	data := []byte(`<root>
 	<from>order</from>
 	<join>
@@ -146,9 +146,17 @@ func TestJoinCondition(t *testing.T) {
 	}
 	if isPeople {
 		subSelect := dsl.From(builder.Select(ColumnUserId)).Where(cond).GroupBy(ColumnUserId)
-		selectBuilder = selectBuilder.From(subSelect)
+		join, err := dsl.Join(subSelect)
+		if err != nil {
+			panic(err)
+		}
+		selectBuilder = selectBuilder.From(join, "people")
 	} else {
-		selectBuilder = dsl.From(selectBuilder).Where(cond)
+		join, err := dsl.Join(dsl.From(selectBuilder))
+		if err != nil {
+			panic(err)
+		}
+		selectBuilder = join.Where(cond)
 	}
 	fmt.Println(selectBuilder.ToBoundSQL())
 }
