@@ -62,3 +62,15 @@ func SliceUp(target interface{}, result interface{}, capacity int) error {
 	resultValue.Elem().Set(newValue)
 	return nil
 }
+
+func ToInterfaces(value interface{}) ([]interface{}, error) {
+	result := []interface{}{}
+	rvalue := reflect.ValueOf(value)
+	if rvalue.Kind() != reflect.Slice {
+		return result, errors.New("not slice")
+	}
+	for index := 0; index < rvalue.Len(); index++ {
+		result = append(result, rvalue.Index(index).Interface())
+	}
+	return result, nil
+}

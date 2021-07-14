@@ -11,17 +11,21 @@ import (
 )
 
 const (
-	labelAnd            = "and"
-	labelOr             = "or"
-	labelWhere          = "where"
-	labelCondition      = "condition"
-	labelFrom           = "from"
-	labelJoin           = "join"
-	labelSingle         = "single"
+	labelRoot       = "root"
+	labelAnd        = "and"
+	labelOr         = "or"
+	labelWhere      = "where"
+	labelCondition  = "condition"
+	labelFrom       = "from"
+	labelJoin       = "join"
+	labelSingle     = "single"
+	labeDenominator = "denominator"
+
 	attributeColumn     = "column"
 	attributeLeftColumn = "leftColumn"
 	attributeCompare    = "compare"
 	attributeFrom       = "from"
+	attributeMethod     = "method"
 
 	singleSumValue    = "sum"
 	singleAvgValue    = "avg"
@@ -29,6 +33,8 @@ const (
 	singleMinValue    = "min"
 	singleCountValue  = "count"
 	singlePeopleValue = "people"
+
+	methodDate = "date"
 )
 
 //compare eq相等 neq不相等 gt大于 gte大于等于 lt小于  lte小于等于 between范围
@@ -81,7 +87,7 @@ func (dsl *DSL) Condition(conditionNode *node) (builder.Cond, error) {
 }
 
 func (dsl *DSL) FindCondition() (result *node) {
-	walk([]*node{dsl.node}, func(n *node) bool {
+	walk(dsl.node, func(n *node, parent *node) bool {
 		if n.XMLName.Local == labelCondition {
 			result = n
 			return false
@@ -92,20 +98,38 @@ func (dsl *DSL) FindCondition() (result *node) {
 }
 
 func (dsl *DSL) FindFrom() (result *node) {
-	for _, v := range dsl.node.Nodes {
-		if v.XMLName.Local == labelFrom {
-			return v
+	walk(dsl.node, func(n *node, parent *node) bool {
+		if parent.XMLName.Local != labelRoot {
+			return true //继续
 		}
-	}
+		if n.XMLName.Local == labelFrom {
+			result = n
+			return false
+		}
+		return true
+	})
+	return
+}
+
+func (dsl *DSL) FindDenominator() (result *node) {
+	walk(dsl.node, func(n *node, parent *node) bool {
+		if n.XMLName.Local == labeDenominator {
+			result = n
+			return false
+		}
+		return true
+	})
 	return
 }
 
 func (dsl *DSL) FindJoin() (result *node) {
-	for _, v := range dsl.node.Nodes {
-		if v.XMLName.Local == labelJoin {
-			return v
+	walk(dsl.node, func(n *node, parent *node) bool {
+		if n.XMLName.Local == labelJoin {
+			result = n
+			return false
 		}
-	}
+		return true
+	})
 	return
 }
 
@@ -217,8 +241,9 @@ func (dsl *DSL) where(nd *node) (cond builder.Cond, err error) {
 	var (
 		column  string
 		compare string
-		value   string
+		value   interface{}
 		from    string
+		method  string
 	)
 
 	//后续可以在这里做元数据检查
@@ -240,9 +265,16 @@ func (dsl *DSL) where(nd *node) (cond builder.Cond, err error) {
 		err = errors.New("from 不存在")
 		return
 	}
+	method = nd.GetAttribute(attributeMethod)
 	column = from + "." + column
-
 	value = string(nd.Content)
+
+	switch method {
+	case methodDate:
+		column = fmt.Sprintf("date(%s)", column)
+		value = builder.Expr(fmt.Sprintf("date(%s)", value))
+		// value = fmt.Sprintf("date(%s)", value)
+	}
 	switch compare {
 	case "eq":
 		cond = builder.Eq{column: value}
@@ -256,8 +288,15 @@ func (dsl *DSL) where(nd *node) (cond builder.Cond, err error) {
 		cond = builder.Lt{column: value}
 	case "lte":
 		cond = builder.Lte{column: value}
+	case "in":
+		list, e := utils.ToInterfaces(strings.Split(value.(string), ","))
+		if e != nil {
+			err = fmt.Errorf("in error %w", e)
+			return
+		}
+		cond = builder.In(column, list...)
 	case "between":
-		list := strings.Split(value, ",")
+		list := strings.Split(value.(string), ",")
 		if len(list) != 2 {
 			err = errors.New("between错误")
 			return
@@ -298,10 +337,16 @@ func (dsl *DSL) join(tableName string, joinFrom *node) (table, cond string, err 
 	return
 }
 
-func walk(nodes []*node, f func(*node) bool) {
-	for _, n := range nodes {
-		if f(n) {
-			walk(n.Nodes, f)
+func walk(in *node, f func(*node, *node) bool) {
+	for _, n := range in.Nodes {
+		next := f(n, in)
+		if !next {
+			break
 		}
+
+		if len(n.Nodes) == 0 {
+			continue
+		}
+		walk(n, f)
 	}
 }
