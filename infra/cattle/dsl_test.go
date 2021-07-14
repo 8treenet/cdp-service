@@ -24,8 +24,10 @@ import (
 		<where from="table" column = "haha" compare = "gte"> 20 </where>
 	</and>
 </or>
-
 </condition>
+<single column = "haha">
+
+<single/>
 */
 
 func TestDSL(t *testing.T) {
@@ -109,7 +111,7 @@ func TestCondition(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	t.Log(builder.ToBoundSQL(cond))
+	fmt.Println(builder.ToBoundSQL(cond))
 }
 
 func TestJoinCondition(t *testing.T) {
@@ -126,14 +128,9 @@ func TestJoinCondition(t *testing.T) {
 			<where from="addr" column = "city" compare = "eq">北京</where>
 		</and>
 	</condition>
+	<single column = "price">sum</single>
 	</root>`)
 	dsl, err := newDSL(data)
-	if err != nil {
-		panic(err)
-	}
-
-	from := dsl.From(builder.Select("sum(order.price)"))
-	builder, err := dsl.Join(from)
 	if err != nil {
 		panic(err)
 	}
@@ -141,9 +138,19 @@ func TestJoinCondition(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	builder.Where(cond)
-	fmt.Println("北京地区 大于20岁 购买500元以上的 总销售额")
-	fmt.Println(builder.ToBoundSQL())
+
+	var isPeople bool
+	selectBuilder, err := dsl.SingleSelect(&isPeople)
+	if err != nil {
+		panic(err)
+	}
+	if isPeople {
+		subSelect := dsl.From(builder.Select(ColumnUserId)).Where(cond).GroupBy(ColumnUserId)
+		selectBuilder = selectBuilder.From(subSelect)
+	} else {
+		selectBuilder = dsl.From(selectBuilder).Where(cond)
+	}
+	fmt.Println(selectBuilder.ToBoundSQL())
 }
 
 func TestJoin(t *testing.T) {

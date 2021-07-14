@@ -17,10 +17,18 @@ const (
 	labelCondition      = "condition"
 	labelFrom           = "from"
 	labelJoin           = "join"
+	labelSingle         = "single"
 	attributeColumn     = "column"
 	attributeLeftColumn = "leftColumn"
 	attributeCompare    = "compare"
 	attributeFrom       = "from"
+
+	singleSumValue    = "sum"
+	singleAvgValue    = "avg"
+	singleMaxValue    = "max"
+	singleMinValue    = "min"
+	singleCountValue  = "count"
+	singlePeopleValue = "people"
 )
 
 //compare eq相等 neq不相等 gt大于 gte大于等于 lt小于  lte小于等于 between范围
@@ -29,6 +37,19 @@ type node struct {
 	Attributes []xml.Attr `xml:",any,attr"`
 	Content    []byte     `xml:",innerxml"`
 	Nodes      []*node    `xml:",any"`
+}
+
+func (n *node) GetAttribute(name string) string {
+	for i := 0; i < len(n.Attributes); i++ {
+		if n.Attributes[i].Name.Local == name {
+			return n.Attributes[i].Value
+		}
+	}
+	return ""
+}
+
+func (n *node) GetContent() string {
+	return string(n.Content)
 }
 
 func newDSL(data []byte) (*DSL, error) {
@@ -92,6 +113,48 @@ func (dsl *DSL) From(selectBuilder *builder.Builder) *builder.Builder {
 	return selectBuilder.From(string(dsl.FindFrom().Content))
 }
 
+func (dsl *DSL) SingleSelect(isPeople *bool) (*builder.Builder, error) {
+	*isPeople = false
+	fromNode := dsl.FindFrom()
+	if fromNode == nil {
+		return nil, errors.New("from标签错误")
+	}
+
+	singleNode := dsl.FindSingle()
+	if singleNode == nil {
+		return nil, errors.New("single标签错误")
+	}
+
+	table := fromNode.GetContent()
+	single := singleNode.GetContent()
+
+	column := singleNode.GetAttribute(attributeColumn)
+	switch single {
+	case singlePeopleValue:
+		*isPeople = true
+		return builder.Select("count(*)"), nil
+	case singleCountValue:
+		return builder.Select("count(*)"), nil
+	case singleSumValue:
+		return builder.Select(fmt.Sprintf("sum(%s.%s)", table, column)), nil
+	case singleAvgValue:
+		return builder.Select(fmt.Sprintf("avg(%s.%s)", table, column)), nil
+	case singleMaxValue:
+		return builder.Select(fmt.Sprintf("max(%s.%s)", table, column)), nil
+	case singleMinValue:
+		return builder.Select(fmt.Sprintf("min(%s.%s)", table, column)), nil
+	}
+	return nil, errors.New("SingleSelect未知错误")
+}
+
+func (dsl *DSL) FindSingle() (result *node) {
+	for _, v := range dsl.node.Nodes {
+		if v.XMLName.Local == labelSingle {
+			return v
+		}
+	}
+	return
+}
 func (dsl *DSL) Join(fromBuilder *builder.Builder) (result *builder.Builder, err error) {
 	result = fromBuilder
 	joinNode := dsl.FindJoin()
@@ -150,7 +213,7 @@ func (dsl *DSL) logicWhere(andNode *node, label string) (builder.Cond, error) {
 	return cond, nil
 }
 
-func (dsl *DSL) where(orNode *node) (cond builder.Cond, err error) {
+func (dsl *DSL) where(nd *node) (cond builder.Cond, err error) {
 	var (
 		column  string
 		compare string
@@ -160,27 +223,26 @@ func (dsl *DSL) where(orNode *node) (cond builder.Cond, err error) {
 
 	//后续可以在这里做元数据检查
 	attributes := map[string]string{}
-	for i := 0; i < len(orNode.Attributes); i++ {
-		name := orNode.Attributes[i].Name.Local
-		attributes[name] = orNode.Attributes[i].Value
+	for i := 0; i < len(nd.Attributes); i++ {
+		name := nd.Attributes[i].Name.Local
+		attributes[name] = nd.Attributes[i].Value
 	}
-	var ok bool
-	if column, ok = attributes[attributeColumn]; !ok {
+	if column = nd.GetAttribute(attributeColumn); column == "" {
 		err = errors.New("attributeColumn 不存在")
 		return
 	}
 
-	if compare, ok = attributes[attributeCompare]; !ok {
+	if compare = nd.GetAttribute(attributeCompare); compare == "" {
 		err = errors.New("attributecompare 不存在")
 		return
 	}
-	if from, ok = attributes[attributeFrom]; !ok {
+	if from = nd.GetAttribute(attributeFrom); from == "" {
 		err = errors.New("from 不存在")
 		return
 	}
 	column = from + "." + column
 
-	value = string(orNode.Content)
+	value = string(nd.Content)
 	switch compare {
 	case "eq":
 		cond = builder.Eq{column: value}
@@ -209,10 +271,9 @@ func (dsl *DSL) join(tableName string, joinFrom *node) (table, cond string, err 
 	var (
 		column     string
 		leftColumn string
-		ok         bool
 	)
 
-	table = string(joinFrom.Content)
+	table = joinFrom.GetContent()
 	if joinFrom.XMLName.Local != labelFrom {
 		err = errors.New("错误的join标签 :" + joinFrom.XMLName.Local)
 		return
@@ -224,12 +285,12 @@ func (dsl *DSL) join(tableName string, joinFrom *node) (table, cond string, err 
 		attributes[name] = joinFrom.Attributes[i].Value
 	}
 
-	if column, ok = attributes[attributeColumn]; !ok {
+	if column = joinFrom.GetAttribute(attributeColumn); column == "" {
 		err = errors.New("attributeColumn 不存在")
 		return
 	}
 
-	if leftColumn, ok = attributes[attributeLeftColumn]; !ok {
+	if leftColumn = joinFrom.GetAttribute(attributeLeftColumn); leftColumn == "" {
 		err = errors.New("attributeLeftColumn 不存在")
 		return
 	}
