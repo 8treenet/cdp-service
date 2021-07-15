@@ -91,7 +91,7 @@ func TestCondition(t *testing.T) {
 	fmt.Println(builder.ToBoundSQL(cond))
 }
 
-func TestJoinCondition(t *testing.T) {
+func TestSingleSum(t *testing.T) {
 	//北京地区 年龄大于=20 订单大于500 的总销售额
 	data := []byte(`<root>
 	<from>order</from>
@@ -106,40 +106,20 @@ func TestJoinCondition(t *testing.T) {
 			<where from="addr" column = "city" compare = "eq">北京</where>
 		</and>
 	</condition>
-	<single column = "price">sum</single>
+	<singleOut column = "price">sum</singleOut>
 	</root>`)
 	dsl, err := newDSL(data)
 	if err != nil {
 		panic(err)
 	}
-	cond, err := dsl.Condition(dsl.FindCondition())
+	selectBuilder, err := ExplainSingleAnalysis(dsl)
 	if err != nil {
 		panic(err)
-	}
-
-	var isPeople bool
-	selectBuilder, err := dsl.SingleSelect(&isPeople)
-	if err != nil {
-		panic(err)
-	}
-	if isPeople {
-		subSelect := dsl.From(builder.Select(ColumnUserId)).Where(cond).GroupBy(ColumnUserId)
-		join, err := dsl.Join(subSelect)
-		if err != nil {
-			panic(err)
-		}
-		selectBuilder = selectBuilder.From(join, "people")
-	} else {
-		join, err := dsl.Join(dsl.From(selectBuilder))
-		if err != nil {
-			panic(err)
-		}
-		selectBuilder = join.Where(cond)
 	}
 	fmt.Println(selectBuilder.ToBoundSQL())
 }
 
-func TestLiucunCondition(t *testing.T) {
+func TestSingleOrderCondition(t *testing.T) {
 	//北京和天津地区 年龄大于=20 的次日下单用户数
 	data := []byte(`<root>
 	<from>user</from>
@@ -154,35 +134,16 @@ func TestLiucunCondition(t *testing.T) {
 			<where from="addr" column = "city" compare = "in">北京,天津</where>
 		</and>
 	</condition>
-	<single>people</single>
+	<singleOut>people</singleOut>
 	</root>`)
 	dsl, err := newDSL(data)
 	if err != nil {
 		panic(err)
 	}
-	cond, err := dsl.Condition(dsl.FindCondition())
-	if err != nil {
-		panic(err)
-	}
 
-	var isPeople bool
-	selectBuilder, err := dsl.SingleSelect(&isPeople)
+	selectBuilder, err := ExplainSingleAnalysis(dsl)
 	if err != nil {
 		panic(err)
-	}
-	if isPeople {
-		subSelect := dsl.From(builder.Select(ColumnUserId)).Where(cond).GroupBy(ColumnUserId)
-		join, err := dsl.Join(subSelect)
-		if err != nil {
-			panic(err)
-		}
-		selectBuilder = selectBuilder.From(join, "people")
-	} else {
-		join, err := dsl.Join(dsl.From(selectBuilder))
-		if err != nil {
-			panic(err)
-		}
-		selectBuilder = join.Where(cond)
 	}
 	fmt.Println(selectBuilder.ToBoundSQL())
 }
@@ -197,4 +158,79 @@ func TestDenominator(t *testing.T) {
 		panic(err)
 	}
 	t.Log(dsl.FindDenominator().GetContent())
+}
+
+func TestMultipleSum(t *testing.T) {
+	//北京地区 年龄大于=20 订单大于500 的总销售额 小时/分布
+	data := []byte(`<root>
+	<from>order</from>
+	<join>
+		<from leftColumn = "userId" column = "userId">user</from>
+		<from leftColumn = "userId" column = "userId">addr</from>
+	</join>
+	<condition>
+		<and>
+			<where from="user" column = "age" compare = "gte">20</where>
+			<where from="order" column = "price" compare = "gte">500</where>
+			<where from="addr" column = "city" compare = "eq">北京</where>
+		</and>
+	</condition>
+	<multipleOut group = "hour" column = "price">sum</multipleOut>
+	</root>`)
+	dsl, err := newDSL(data)
+	if err != nil {
+		panic(err)
+	}
+	selectBuilder, err := ExplainMultipleAnalysis(dsl)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(selectBuilder.ToBoundSQL())
+}
+
+func TestMultipleOrderCondition(t *testing.T) {
+	//北京和天津地区 年龄大于=20 的次日下单商品分布 天/分布
+	data := []byte(`<root>
+	<from>order</from>
+	<join>
+		<from leftColumn = "userId" column = "userId">user</from>
+		<from leftColumn = "userId" column = "userId">addr</from>
+	</join>
+	<condition>
+		<and>
+			<where from="user" column = "age" compare = "gte">20</where>
+			<where from="order" column = "created" compare = "gt" method = "date">user.created</where>
+			<where from="addr" column = "city" compare = "in">北京,天津</where>
+		</and>
+	</condition>
+	<multipleOut group = "productId">count</multipleOut>
+	</root>`)
+	dsl, err := newDSL(data)
+	if err != nil {
+		panic(err)
+	}
+
+	selectBuilder, err := ExplainMultipleAnalysis(dsl)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(selectBuilder.ToBoundSQL())
+}
+
+func TestRegisterCondition(t *testing.T) {
+	//注册用户数 渠道/分布
+	data := []byte(`<root>
+	<from>user_register</from>
+	<multipleOut group = "source">count</multipleOut>
+	</root>`)
+	dsl, err := newDSL(data)
+	if err != nil {
+		panic(err)
+	}
+
+	selectBuilder, err := ExplainMultipleAnalysis(dsl)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(selectBuilder.ToBoundSQL())
 }

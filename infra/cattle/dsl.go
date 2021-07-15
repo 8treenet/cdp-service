@@ -11,30 +11,40 @@ import (
 )
 
 const (
-	labelRoot       = "root"
-	labelAnd        = "and"
-	labelOr         = "or"
-	labelWhere      = "where"
-	labelCondition  = "condition"
-	labelFrom       = "from"
-	labelJoin       = "join"
-	labelSingle     = "single"
-	labeDenominator = "denominator"
+	labelRoot        = "root"
+	labelAnd         = "and"
+	labelOr          = "or"
+	labelWhere       = "where"
+	labelCondition   = "condition"
+	labelFrom        = "from"
+	labelJoin        = "join"
+	labelSingleOut   = "singleOut"
+	labelMultipleOut = "multipleOut"
+	labeDenominator  = "denominator"
 
 	attributeColumn     = "column"
 	attributeLeftColumn = "leftColumn"
 	attributeCompare    = "compare"
 	attributeFrom       = "from"
 	attributeMethod     = "method"
+	attributeGroup      = "group"
 
-	singleSumValue    = "sum"
-	singleAvgValue    = "avg"
-	singleMaxValue    = "max"
-	singleMinValue    = "min"
-	singleCountValue  = "count"
-	singlePeopleValue = "people"
+	outTypeSumValue    = "sum"
+	outTypeAvgValue    = "avg"
+	outTypeMaxValue    = "max"
+	outTypeMinValue    = "min"
+	outTypeCountValue  = "count"
+	outTypePeopleValue = "people"
 
 	methodDate = "date"
+
+	AliasPeoples = "peoples"
+
+	groupMin   = "minute"
+	groupHour  = "hour"
+	groupDay   = "day"
+	groupWeek  = "week"
+	groupMonth = "month"
 )
 
 //compare eq相等 neq不相等 gt大于 gte大于等于 lt小于  lte小于等于 between范围
@@ -137,48 +147,58 @@ func (dsl *DSL) From(selectBuilder *builder.Builder) *builder.Builder {
 	return selectBuilder.From(string(dsl.FindFrom().Content))
 }
 
-func (dsl *DSL) SingleSelect(isPeople *bool) (*builder.Builder, error) {
+func (dsl *DSL) SingleOut(isPeople *bool) (*builder.Builder, error) {
 	*isPeople = false
 	fromNode := dsl.FindFrom()
 	if fromNode == nil {
 		return nil, errors.New("from标签错误")
 	}
 
-	singleNode := dsl.FindSingle()
+	singleNode := dsl.FindSingleOut()
 	if singleNode == nil {
 		return nil, errors.New("single标签错误")
 	}
 
 	table := fromNode.GetContent()
-	single := singleNode.GetContent()
+	out := singleNode.GetContent()
 
 	column := singleNode.GetAttribute(attributeColumn)
-	switch single {
-	case singlePeopleValue:
+	switch out {
+	case outTypePeopleValue:
 		*isPeople = true
-		return builder.Select("count(*)"), nil
-	case singleCountValue:
-		return builder.Select("count(*)"), nil
-	case singleSumValue:
-		return builder.Select(fmt.Sprintf("sum(%s.%s)", table, column)), nil
-	case singleAvgValue:
-		return builder.Select(fmt.Sprintf("avg(%s.%s)", table, column)), nil
-	case singleMaxValue:
-		return builder.Select(fmt.Sprintf("max(%s.%s)", table, column)), nil
-	case singleMinValue:
-		return builder.Select(fmt.Sprintf("min(%s.%s)", table, column)), nil
+		return builder.Select(fmt.Sprintf("count(*) as %s", AliasPeoples)), nil
+	case outTypeCountValue:
+		return builder.Select("count(*) as count"), nil
+	case outTypeSumValue:
+		return builder.Select(fmt.Sprintf("sum(%s.%s) as sum", table, column)), nil
+	case outTypeAvgValue:
+		return builder.Select(fmt.Sprintf("avg(%s.%s) as avg", table, column)), nil
+	case outTypeMaxValue:
+		return builder.Select(fmt.Sprintf("max(%s.%s) as max", table, column)), nil
+	case outTypeMinValue:
+		return builder.Select(fmt.Sprintf("min(%s.%s) as min", table, column)), nil
 	}
-	return nil, errors.New("SingleSelect未知错误")
+	return nil, errors.New("singleOut未知错误")
 }
 
-func (dsl *DSL) FindSingle() (result *node) {
+func (dsl *DSL) FindSingleOut() (result *node) {
 	for _, v := range dsl.node.Nodes {
-		if v.XMLName.Local == labelSingle {
+		if v.XMLName.Local == labelSingleOut {
 			return v
 		}
 	}
 	return
 }
+
+func (dsl *DSL) FindMultipleOut() (result *node) {
+	for _, v := range dsl.node.Nodes {
+		if v.XMLName.Local == labelMultipleOut {
+			return v
+		}
+	}
+	return
+}
+
 func (dsl *DSL) Join(fromBuilder *builder.Builder) (result *builder.Builder, err error) {
 	result = fromBuilder
 	joinNode := dsl.FindJoin()
@@ -194,6 +214,74 @@ func (dsl *DSL) Join(fromBuilder *builder.Builder) (result *builder.Builder, err
 
 		result = result.LeftJoin(table, cond)
 	}
+	return
+}
+
+func (dsl *DSL) MultipleOut() (result *builder.Builder, e error) {
+	fromNode := dsl.FindFrom()
+	if fromNode == nil {
+		return nil, errors.New("from标签错误")
+	}
+
+	multipleNode := dsl.FindMultipleOut()
+	if multipleNode == nil {
+		return nil, errors.New("multiple标签错误")
+	}
+
+	table := fromNode.GetContent()
+	out := multipleNode.GetContent()
+	column := multipleNode.GetAttribute(attributeColumn)
+	group := multipleNode.GetAttribute(attributeGroup)
+	var groupExpl []string
+	switch group {
+	case groupMin:
+		selectAlias := fmt.Sprintf("toStartOfMinute(%s.%s) as %s", table, ColumnCreateTime, ColumnCreateTime)
+		groupByExpl := fmt.Sprintf("toStartOfMinute(%s.%s)", table, ColumnCreateTime)
+		groupExpl = append(groupExpl, selectAlias, groupByExpl)
+	case groupHour:
+		selectAlias := fmt.Sprintf("toStartOfHour(%s.%s) as %s", table, ColumnCreateTime, ColumnCreateTime)
+		groupByExpl := fmt.Sprintf("toStartOfHour(%s.%s)", table, ColumnCreateTime)
+		groupExpl = append(groupExpl, selectAlias, groupByExpl)
+	case groupDay:
+		selectAlias := fmt.Sprintf("toStartOfDay(%s.%s) as %s", table, ColumnCreateTime, ColumnCreateTime)
+		groupByExpl := fmt.Sprintf("toStartOfDay(%s.%s)", table, ColumnCreateTime)
+		groupExpl = append(groupExpl, selectAlias, groupByExpl)
+	case groupWeek:
+		selectAlias := fmt.Sprintf("toStartOfWeek(%s.%s) as %s", table, ColumnCreateTime, ColumnCreateTime)
+		groupByExpl := fmt.Sprintf("toStartOfWeek(%s.%s)", table, ColumnCreateTime)
+		groupExpl = append(groupExpl, selectAlias, groupByExpl)
+	case groupMonth:
+		selectAlias := fmt.Sprintf("toStartOfMonth(%s.%s) as %s", table, ColumnCreateTime, ColumnCreateTime)
+		groupByExpl := fmt.Sprintf("toStartOfMonth(%s.%s)", table, ColumnCreateTime)
+		groupExpl = append(groupExpl, selectAlias, groupByExpl)
+	default:
+		selectAlias := fmt.Sprintf("%s.%s as %s", table, group, group)
+		groupByExpl := fmt.Sprintf("%s.%s", table, group)
+		groupExpl = append(groupExpl, selectAlias, groupByExpl)
+	}
+
+	switch out {
+	case outTypePeopleValue:
+		result = builder.Select(fmt.Sprintf("count(*) as %s, %s", AliasPeoples, groupExpl[0]))
+	case outTypeCountValue:
+		result = builder.Select(fmt.Sprintf("count(*) as count, %s", groupExpl[0]))
+	case outTypeSumValue:
+		result = builder.Select(fmt.Sprintf("sum(%s.%s) as sum, %s", table, column, groupExpl[0]))
+	case outTypeAvgValue:
+		result = builder.Select(fmt.Sprintf("avg(%s.%s) as avg, %s", table, column, groupExpl[0]))
+	case outTypeMaxValue:
+		result = builder.Select(fmt.Sprintf("max(%s.%s) as max, %s", table, column, groupExpl[0]))
+	case outTypeMinValue:
+		result = builder.Select(fmt.Sprintf("min(%s.%s) as min, %s", table, column, groupExpl[0]))
+	default:
+		e = errors.New("multipleOut未知错误")
+		return
+	}
+	if out == outTypePeopleValue {
+		result = result.GroupBy(fmt.Sprintf("%s.%s,%s", table, ColumnUserId, groupExpl[1]))
+		return
+	}
+	result = result.GroupBy(groupExpl[1])
 	return
 }
 
