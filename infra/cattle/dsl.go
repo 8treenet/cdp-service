@@ -312,7 +312,7 @@ func (dsl *DSL) PersonasOut() (result *builder.Builder, e error) {
 	if fromNode == nil {
 		return nil, errors.New("from标签错误")
 	}
-	tableUser := fmt.Sprintf("%s.%s", fromNode.GetContent(), ColumnUserId)
+	tableUser := fmt.Sprintf("%s.%s as %s", fromNode.GetContent(), ColumnUserId, ColumnUserId)
 	result = builder.Select(tableUser)
 
 	personasNode := dsl.FindPersonasNode()
