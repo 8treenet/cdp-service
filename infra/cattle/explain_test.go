@@ -241,17 +241,18 @@ func TestRegisterCondition(t *testing.T) {
 }
 
 func TestExplainPersonasAnalysis(t *testing.T) {
-	//用户画像描述 北京或天津地区 3天内 均单消费50以上
+	//用户画像描述 购买1001分类或1002分类的商品  3天内 均单消费50以上
 	data := []byte(`<root>
 	<from>order</from>
 	<join>
 		<from leftColumn = "userId" column = "userId">user</from>
-		<from leftColumn = "userId" column = "userId">addr</from>
+		<from leftColumn = "goods_category_id" column = "category_id">goods</from>
 	</join>
 	<condition>
 		<and>
 			<where from="user" column = "age" compare = "gte">20</where>
 			<where from="addr" column = "city" compare = "in">北京,天津</where>
+			<where from="goods" column = "category_id" compare = "in">1001,1002</where>
 		</and>
 	</condition>
 	<personas day="3">
