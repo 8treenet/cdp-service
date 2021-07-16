@@ -269,8 +269,8 @@ func (dsl *DSL) MultipleOut() (result *builder.Builder, e error) {
 		groupByExpl := fmt.Sprintf("toStartOfDay(%s.%s)", table, ColumnCreateTime)
 		groupExpl = append(groupExpl, selectAlias, groupByExpl)
 	case groupWeek:
-		selectAlias := fmt.Sprintf("toStartOfWeek(%s.%s) as %s", table, ColumnCreateTime, ColumnCreateTime)
-		groupByExpl := fmt.Sprintf("toStartOfWeek(%s.%s)", table, ColumnCreateTime)
+		selectAlias := fmt.Sprintf("toMonday(%s.%s) as %s", table, ColumnCreateTime, ColumnCreateTime)
+		groupByExpl := fmt.Sprintf("toMonday(%s.%s)", table, ColumnCreateTime)
 		groupExpl = append(groupExpl, selectAlias, groupByExpl)
 	case groupMonth:
 		selectAlias := fmt.Sprintf("toStartOfMonth(%s.%s) as %s", table, ColumnCreateTime, ColumnCreateTime)

@@ -23,5 +23,5 @@ CREATE TABLE IF NOT EXISTS cdp.whole_flow (
 	`createTime` DateTime,
 	`sourceId` Int16
 ) ENGINE = MergeTree()
-PARTITION BY toYYYYMM(createTime)
+PARTITION BY toMonday(createTime)
 ORDER BY (userId,createTime);
