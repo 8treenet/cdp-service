@@ -11,23 +11,27 @@ import (
 )
 
 const (
-	labelRoot        = "root"
-	labelAnd         = "and"
-	labelOr          = "or"
-	labelWhere       = "where"
-	labelCondition   = "condition"
-	labelFrom        = "from"
-	labelJoin        = "join"
-	labelSingleOut   = "singleOut"
-	labelMultipleOut = "multipleOut"
-	labeDenominator  = "denominator"
+	labelRoot       = "root"
+	labelAnd        = "and"
+	labelOr         = "or"
+	labelWhere      = "where"
+	labelCondition  = "condition"
+	labelFrom       = "from"
+	labelJoin       = "join"
+	labelSingle     = "singleOut"
+	labelMultiple   = "multipleOut"
+	labeDenominator = "denominator"
+	labePersonas    = "personas"
+	labePersonasOut = "personasOut"
 
-	attributeColumn     = "column"
-	attributeLeftColumn = "leftColumn"
-	attributeCompare    = "compare"
-	attributeFrom       = "from"
-	attributeMethod     = "method"
-	attributeGroup      = "group"
+	attributeColumn      = "column"
+	attributeLeftColumn  = "leftColumn"
+	attributeCompare     = "compare"
+	attributeFrom        = "from"
+	attributeMethod      = "method"
+	attributeGroup       = "group"
+	attributeAggregation = "aggregation"
+	attributeDay         = "day"
 
 	outTypeSumValue    = "sum"
 	outTypeAvgValue    = "avg"
@@ -68,6 +72,15 @@ func (n *node) GetContent() string {
 	return string(n.Content)
 }
 
+func (n *node) FindSubNode(name string) *node {
+	for i := 0; i < len(n.Nodes); i++ {
+		if n.Nodes[i].XMLName.Local == name {
+			return n.Nodes[i]
+		}
+	}
+	return nil
+}
+
 func newDSL(data []byte) (*DSL, error) {
 	var obj node
 	err := xml.Unmarshal(data, &obj)
@@ -96,7 +109,7 @@ func (dsl *DSL) Condition(conditionNode *node) (builder.Cond, error) {
 	return dsl.logicWhere(conditionNode.Nodes[0], conditionNode.Nodes[0].XMLName.Local)
 }
 
-func (dsl *DSL) FindCondition() (result *node) {
+func (dsl *DSL) FindConditionNode() (result *node) {
 	walk(dsl.node, func(n *node, parent *node) bool {
 		if n.XMLName.Local == labelCondition {
 			result = n
@@ -107,7 +120,7 @@ func (dsl *DSL) FindCondition() (result *node) {
 	return
 }
 
-func (dsl *DSL) FindFrom() (result *node) {
+func (dsl *DSL) FindFromNode() (result *node) {
 	walk(dsl.node, func(n *node, parent *node) bool {
 		if parent.XMLName.Local != labelRoot {
 			return true //继续
@@ -121,7 +134,7 @@ func (dsl *DSL) FindFrom() (result *node) {
 	return
 }
 
-func (dsl *DSL) FindDenominator() (result *node) {
+func (dsl *DSL) FindDenominatorNode() (result *node) {
 	walk(dsl.node, func(n *node, parent *node) bool {
 		if n.XMLName.Local == labeDenominator {
 			result = n
@@ -132,7 +145,7 @@ func (dsl *DSL) FindDenominator() (result *node) {
 	return
 }
 
-func (dsl *DSL) FindJoin() (result *node) {
+func (dsl *DSL) FindJoinNode() (result *node) {
 	walk(dsl.node, func(n *node, parent *node) bool {
 		if n.XMLName.Local == labelJoin {
 			result = n
@@ -143,18 +156,45 @@ func (dsl *DSL) FindJoin() (result *node) {
 	return
 }
 
+func (dsl *DSL) FindSingleNode() (result *node) {
+	for _, v := range dsl.node.Nodes {
+		if v.XMLName.Local == labelSingle {
+			return v
+		}
+	}
+	return
+}
+
+func (dsl *DSL) FindMultipleNode() (result *node) {
+	for _, v := range dsl.node.Nodes {
+		if v.XMLName.Local == labelMultiple {
+			return v
+		}
+	}
+	return
+}
+
+func (dsl *DSL) FindPersonasNode() (result *node) {
+	for _, v := range dsl.node.Nodes {
+		if v.XMLName.Local == labePersonas {
+			return v
+		}
+	}
+	return
+}
+
 func (dsl *DSL) From(selectBuilder *builder.Builder) *builder.Builder {
-	return selectBuilder.From(string(dsl.FindFrom().Content))
+	return selectBuilder.From(string(dsl.FindFromNode().Content))
 }
 
 func (dsl *DSL) SingleOut(isPeople *bool) (*builder.Builder, error) {
 	*isPeople = false
-	fromNode := dsl.FindFrom()
+	fromNode := dsl.FindFromNode()
 	if fromNode == nil {
 		return nil, errors.New("from标签错误")
 	}
 
-	singleNode := dsl.FindSingleOut()
+	singleNode := dsl.FindSingleNode()
 	if singleNode == nil {
 		return nil, errors.New("single标签错误")
 	}
@@ -181,27 +221,9 @@ func (dsl *DSL) SingleOut(isPeople *bool) (*builder.Builder, error) {
 	return nil, errors.New("singleOut未知错误")
 }
 
-func (dsl *DSL) FindSingleOut() (result *node) {
-	for _, v := range dsl.node.Nodes {
-		if v.XMLName.Local == labelSingleOut {
-			return v
-		}
-	}
-	return
-}
-
-func (dsl *DSL) FindMultipleOut() (result *node) {
-	for _, v := range dsl.node.Nodes {
-		if v.XMLName.Local == labelMultipleOut {
-			return v
-		}
-	}
-	return
-}
-
 func (dsl *DSL) Join(fromBuilder *builder.Builder) (result *builder.Builder, err error) {
 	result = fromBuilder
-	joinNode := dsl.FindJoin()
+	joinNode := dsl.FindJoinNode()
 	if joinNode == nil {
 		return
 	}
@@ -218,12 +240,12 @@ func (dsl *DSL) Join(fromBuilder *builder.Builder) (result *builder.Builder, err
 }
 
 func (dsl *DSL) MultipleOut() (result *builder.Builder, e error) {
-	fromNode := dsl.FindFrom()
+	fromNode := dsl.FindFromNode()
 	if fromNode == nil {
 		return nil, errors.New("from标签错误")
 	}
 
-	multipleNode := dsl.FindMultipleOut()
+	multipleNode := dsl.FindMultipleNode()
 	if multipleNode == nil {
 		return nil, errors.New("multiple标签错误")
 	}
@@ -282,6 +304,91 @@ func (dsl *DSL) MultipleOut() (result *builder.Builder, e error) {
 		return
 	}
 	result = result.GroupBy(groupExpl[1])
+	return
+}
+
+func (dsl *DSL) PersonasOut() (result *builder.Builder, e error) {
+	fromNode := dsl.FindFromNode()
+	if fromNode == nil {
+		return nil, errors.New("from标签错误")
+	}
+	tableUser := fmt.Sprintf("%s.%s", fromNode.GetContent(), ColumnUserId)
+	result = builder.Select(tableUser)
+
+	personasNode := dsl.FindPersonasNode()
+	if personasNode == nil {
+		return nil, errors.New("Personas标签错误")
+	}
+	personasOut := personasNode.FindSubNode(labePersonasOut)
+	if personasOut == nil {
+		return nil, errors.New("Personas标签错误")
+	}
+
+	aggregation := personasOut.GetAttribute(attributeAggregation)
+	column := fromNode.GetContent() + "." + personasOut.GetAttribute(attributeColumn)
+	compare := personasOut.GetAttribute(attributeCompare)
+	value := personasOut.GetContent()
+
+	having, e := dsl.personasHaving(aggregation, column, compare, value)
+	if e != nil {
+		return
+	}
+
+	result = result.GroupBy(tableUser).Having(having)
+	return
+}
+
+func (dsl *DSL) personasHaving(aggregation, tablecolumn, compare, value string) (result string, err error) {
+	switch aggregation {
+	case outTypeCountValue:
+		tablecolumn = "count(*)"
+	case outTypeSumValue:
+		tablecolumn = fmt.Sprintf("sum(%s)", tablecolumn)
+	case outTypeAvgValue:
+		tablecolumn = fmt.Sprintf("avg(%s)", tablecolumn)
+	case outTypeMaxValue:
+		tablecolumn = fmt.Sprintf("max(%s)", tablecolumn)
+	case outTypeMinValue:
+		tablecolumn = fmt.Sprintf("min(%s)", tablecolumn)
+	default:
+		err = errors.New("aggregation error")
+		return
+	}
+
+	writerSql := NewWriter()
+	switch compare {
+	case "eq":
+		err = builder.Eq{tablecolumn: value}.WriteTo(writerSql)
+	case "neq":
+		err = builder.Neq{tablecolumn: value}.WriteTo(writerSql)
+	case "gt":
+		err = builder.Gt{tablecolumn: value}.WriteTo(writerSql)
+	case "gte":
+		err = builder.Gte{tablecolumn: value}.WriteTo(writerSql)
+	case "lt":
+		err = builder.Lt{tablecolumn: value}.WriteTo(writerSql)
+	case "lte":
+		err = builder.Lte{tablecolumn: value}.WriteTo(writerSql)
+	case "in":
+		list, e := utils.ToInterfaces(strings.Split(value, ","))
+		if e != nil {
+			err = fmt.Errorf("in error %w", e)
+			return
+		}
+		err = builder.In(tablecolumn, list...).WriteTo(writerSql)
+	case "between":
+		list := strings.Split(value, ",")
+		if len(list) != 2 {
+			err = errors.New("between错误")
+			return
+		}
+		err = builder.Between{Col: tablecolumn, LessVal: list[0], MoreVal: list[1]}.WriteTo(writerSql)
+	}
+	if err != nil {
+		return
+	}
+
+	result, err = builder.ConvertToBoundSQL(writerSql.writer.String(), writerSql.args)
 	return
 }
 

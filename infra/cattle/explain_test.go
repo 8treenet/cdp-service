@@ -64,6 +64,11 @@ func TestBuilder(t *testing.T) {
 	t.Log(source, source.Source123, err)
 }
 
+func TestBuilder1(t *testing.T) {
+	w := NewWriter()
+	builder.Gte{"sb": 1}.WriteTo(w)
+	t.Log(builder.ConvertToBoundSQL(w.writer.String(), w.args))
+}
 func TestCondition(t *testing.T) {
 	data := []byte(`<root> 
 	<condition>
@@ -84,7 +89,7 @@ func TestCondition(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	cond, err := dsl.Condition(dsl.FindCondition())
+	cond, err := dsl.Condition(dsl.FindConditionNode())
 	if err != nil {
 		panic(err)
 	}
@@ -112,7 +117,7 @@ func TestSingleSum(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	selectBuilder, err := ExplainSingleAnalysis(dsl)
+	selectBuilder, err := ExplainSingleAnalysis(dsl, time.Now().AddDate(0, 0, -2), time.Now())
 	if err != nil {
 		panic(err)
 	}
@@ -141,7 +146,7 @@ func TestSingleOrderCondition(t *testing.T) {
 		panic(err)
 	}
 
-	selectBuilder, err := ExplainSingleAnalysis(dsl)
+	selectBuilder, err := ExplainSingleAnalysis(dsl, time.Now().AddDate(0, 0, -2), time.Now())
 	if err != nil {
 		panic(err)
 	}
@@ -157,7 +162,7 @@ func TestDenominator(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	t.Log(dsl.FindDenominator().GetContent())
+	t.Log(dsl.FindDenominatorNode().GetContent())
 }
 
 func TestMultipleSum(t *testing.T) {
@@ -181,7 +186,7 @@ func TestMultipleSum(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	selectBuilder, err := ExplainMultipleAnalysis(dsl)
+	selectBuilder, err := ExplainMultipleAnalysis(dsl, time.Now().AddDate(0, 0, -2), time.Now())
 	if err != nil {
 		panic(err)
 	}
@@ -210,7 +215,7 @@ func TestMultipleOrderCondition(t *testing.T) {
 		panic(err)
 	}
 
-	selectBuilder, err := ExplainMultipleAnalysis(dsl)
+	selectBuilder, err := ExplainMultipleAnalysis(dsl, time.Now().AddDate(0, 0, -2), time.Now())
 	if err != nil {
 		panic(err)
 	}
@@ -228,7 +233,37 @@ func TestRegisterCondition(t *testing.T) {
 		panic(err)
 	}
 
-	selectBuilder, err := ExplainMultipleAnalysis(dsl)
+	selectBuilder, err := ExplainMultipleAnalysis(dsl, time.Now().AddDate(0, 0, -2), time.Now())
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(selectBuilder.ToBoundSQL())
+}
+
+func TestExplainPersonasAnalysis(t *testing.T) {
+	//用户画像描述 北京或天津地区 3天内 均单消费50以上
+	data := []byte(`<root>
+	<from>order</from>
+	<join>
+		<from leftColumn = "userId" column = "userId">user</from>
+		<from leftColumn = "userId" column = "userId">addr</from>
+	</join>
+	<condition>
+		<and>
+			<where from="user" column = "age" compare = "gte">20</where>
+			<where from="addr" column = "city" compare = "in">北京,天津</where>
+		</and>
+	</condition>
+	<personas day="3">
+		<personasOut aggregation = "avg" column = "price" compare = "gte">50</personasOut>
+	</personas>
+	</root>`)
+	dsl, err := newDSL(data)
+	if err != nil {
+		panic(err)
+	}
+
+	selectBuilder, err := ExplainPersonasAnalysis(dsl, []string{"1111", "22222", "33333"})
 	if err != nil {
 		panic(err)
 	}
