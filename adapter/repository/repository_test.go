@@ -178,7 +178,7 @@ func TestGetFeatureEntit(t *testing.T) {
 	unitTest := getUnitTest()
 	unitTest.Run()
 
-	var repo *SupportRepository
+	var repo *FeatureRepository
 	unitTest.FetchRepository(&repo)
 	t.Log(repo.GetFeatureEntitys())
 	t.Log(repo.GetAllFeatureEntity())

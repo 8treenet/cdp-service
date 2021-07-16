@@ -25,10 +25,11 @@ func init() {
 
 // SupportService 支撑服务 .
 type SupportService struct {
-	Worker         freedom.Worker
-	SupportRepo    *repository.SupportRepository
-	TX             transaction.Transaction
-	DataRepository *repository.DataRepository
+	Worker            freedom.Worker
+	SupportRepo       *repository.SupportRepository
+	FeatureRepository *repository.FeatureRepository
+	TX                transaction.Transaction
+	DataRepository    *repository.DataRepository
 }
 
 // 创建渠道 .
@@ -43,7 +44,7 @@ func (service *SupportService) GetAllSource() ([]*po.Source, error) {
 
 // CreateFeature 创建特征 .
 func (service *SupportService) CreateFeature(data vo.ReqFeatureDTO) error {
-	entity := service.SupportRepo.NewFeatureEntity()
+	entity := service.FeatureRepository.NewFeatureEntity()
 	entity.Title = data.Title
 	entity.Warehouse = data.Warehouse
 
@@ -61,7 +62,7 @@ func (service *SupportService) CreateFeature(data vo.ReqFeatureDTO) error {
 	}
 
 	return service.TX.Execute(func() error {
-		if err := service.SupportRepo.SaveFeatureEntity(entity); err != nil {
+		if err := service.FeatureRepository.SaveFeatureEntity(entity); err != nil {
 			return err
 		}
 
@@ -75,7 +76,7 @@ func (service *SupportService) CreateFeature(data vo.ReqFeatureDTO) error {
 
 // AddFeatureMetadata 为特征添加元数据 .
 func (service *SupportService) AddFeatureMetadata(featureId int, list []vo.ReqFeatureMetadataDTO) error {
-	entity, err := service.SupportRepo.GetFeatureEntity(featureId)
+	entity, err := service.FeatureRepository.GetFeatureEntity(featureId)
 	if err != nil {
 		return err
 	}
@@ -92,14 +93,14 @@ func (service *SupportService) AddFeatureMetadata(featureId int, list []vo.ReqFe
 	}
 
 	return service.TX.Execute(func() error {
-		return service.SupportRepo.SaveFeatureEntity(entity)
+		return service.FeatureRepository.SaveFeatureEntity(entity)
 	})
 }
 
 // GetFeaturesByPage 获取Features
 func (service *SupportService) GetFeaturesByPage() (result []interface{}, totalPage int, e error) {
 	var list []*entity.Feature
-	list, totalPage, e = service.SupportRepo.GetFeatureEntitys()
+	list, totalPage, e = service.FeatureRepository.GetFeatureEntitys()
 	for _, v := range list {
 		result = append(result, v.View())
 	}

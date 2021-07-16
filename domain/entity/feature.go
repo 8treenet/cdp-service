@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/8treenet/cdp-service/domain/po"
@@ -15,7 +16,7 @@ type Feature struct {
 }
 
 func (entity *Feature) Identity() string {
-	return "1001"
+	return fmt.Sprint(entity.ID)
 }
 
 func (entity *Feature) AddMetadata(variable, title, kind, dict string, orderByNumber, partition int) {

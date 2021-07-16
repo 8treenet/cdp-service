@@ -23,7 +23,7 @@ func init() {
 type CustomerManagerService struct {
 	Worker             freedom.Worker
 	CustomerRepository *repository.IntermediaryRepository
-	SupportRepo        *repository.SupportRepository
+	FeatureRepository  *repository.FeatureRepository
 	TX                 transaction.Transaction
 	DataRepository     *repository.DataRepository
 }
@@ -37,7 +37,7 @@ func (service *CustomerManagerService) GetMetaData() (result []*po.CustomerExten
 // AddMetaData 添加客户元数据列表.
 func (service *CustomerManagerService) AddMetaData(templates []po.CustomerExtensionMetadata) (e error) {
 	//获取注册行为实体
-	entity, err := service.SupportRepo.GetFeatureEntityByWarehouse("user_register")
+	entity, err := service.FeatureRepository.GetFeatureEntityByWarehouse("user_register")
 	if err != nil {
 		return err
 	}
@@ -63,7 +63,7 @@ func (service *CustomerManagerService) AddMetaData(templates []po.CustomerExtens
 				return e
 			}
 		}
-		return service.SupportRepo.SaveFeatureEntity(entity)
+		return service.FeatureRepository.SaveFeatureEntity(entity)
 	})
 
 	return

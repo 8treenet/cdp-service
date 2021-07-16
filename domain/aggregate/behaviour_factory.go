@@ -19,14 +19,14 @@ func init() {
 type BehaviourFactory struct {
 	Worker              freedom.Worker
 	BehaviourRepository *repository.BehaviourRepository
-	SupportRepository   *repository.SupportRepository
+	FeatureRepository   *repository.FeatureRepository
 	CustomerRepo        *repository.CustomerRepository
 	DataRepository      *repository.DataRepository
 }
 
 // CreateBehaviourCmd
 func (factory *BehaviourFactory) CreateBehaviourCmds() (cmds []*BehaviourCreate, e error) {
-	list, e := factory.SupportRepository.GetAllFeatureEntity()
+	list, e := factory.FeatureRepository.GetAllFeatureEntity()
 	if e != nil {
 		return
 	}

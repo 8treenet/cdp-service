@@ -21,6 +21,7 @@ type IntermediaryFactory struct {
 	Intermediary        *repository.IntermediaryRepository
 	SignRepo            *repository.SignRepository
 	SupportRepository   *repository.SupportRepository
+	FeatureRepository   *repository.FeatureRepository
 	TX                  transaction.Transaction //依赖倒置事务组件
 	Worker              freedom.Worker          //运行时，一个请求绑定一个运行时
 	GEO                 *infra.GEO              //geo
@@ -34,7 +35,7 @@ func (factory *IntermediaryFactory) CreateCustomerNewCmd() (cmd *CustomerCreateC
 		return nil, err
 	}
 
-	userRegisterEntity, err := factory.SupportRepository.GetFeatureEntityByWarehouse("user_register")
+	userRegisterEntity, err := factory.FeatureRepository.GetFeatureEntityByWarehouse("user_register")
 	if err != nil {
 		return nil, err
 	}

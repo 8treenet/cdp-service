@@ -29,6 +29,7 @@ type BehaviourService struct {
 	Worker              freedom.Worker
 	BehaviourRepository *repository.BehaviourRepository
 	SupportRepository   *repository.SupportRepository
+	FeatureRepository   *repository.FeatureRepository
 	CustomerRepository  *repository.CustomerRepository
 	BehaviourFactory    *aggregate.BehaviourFactory
 	fetchTime           time.Duration
@@ -41,7 +42,7 @@ func (service *BehaviourService) CreateBehaviour(req vo.ReqBehaviourDTO) error {
 	if err != nil {
 		return err
 	}
-	fentity, err := service.SupportRepository.GetFeatureEntity(req.FeatureID)
+	fentity, err := service.FeatureRepository.GetFeatureEntity(req.FeatureID)
 	if err != nil {
 		return err
 	}
