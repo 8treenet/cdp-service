@@ -2,21 +2,21 @@
 package po
 
 import (
-	"time"
-
 	"gorm.io/gorm"
+	"time"
 )
 
 // BehaviourFeature .
 type BehaviourFeature struct {
-	changes      map[string]interface{}
-	ID           int       `gorm:"primaryKey;column:id"`
-	Title        string    `gorm:"column:title"`
-	Warehouse    string    `gorm:"column:warehouse"`    // clickhouse的表名
-	CategoryType int       `gorm:"column:categoryType"` // 0自定义行为，1系统提供行为，2系统提供不可扩展
-	Category     string    `gorm:"column:category"`     // 行业
-	Created      time.Time `gorm:"column:created"`
-	Updated      time.Time `gorm:"column:updated"`
+	changes       map[string]interface{}
+	ID            int       `gorm:"primaryKey;column:id"`
+	Title         string    `gorm:"column:title"`
+	Warehouse     string    `gorm:"column:warehouse"`     // clickhouse的表名
+	CategoryType  int       `gorm:"column:categoryType"`  // 0自定义行为，1系统提供行为，2系统提供行为(不可追加)
+	Category      string    `gorm:"column:category"`      // 行业
+	SkipWarehouse int       `gorm:"column:skipWarehouse"` // 非0 该特性的行为无需代码同步到ck
+	Created       time.Time `gorm:"column:created"`
+	Updated       time.Time `gorm:"column:updated"`
 }
 
 // TableName .
@@ -74,6 +74,12 @@ func (obj *BehaviourFeature) SetCategory(category string) {
 	obj.Update("category", category)
 }
 
+// SetSkipWarehouse .
+func (obj *BehaviourFeature) SetSkipWarehouse(skipWarehouse int) {
+	obj.SkipWarehouse = skipWarehouse
+	obj.Update("skipWarehouse", skipWarehouse)
+}
+
 // SetCreated .
 func (obj *BehaviourFeature) SetCreated(created time.Time) {
 	obj.Created = created
@@ -90,4 +96,10 @@ func (obj *BehaviourFeature) SetUpdated(updated time.Time) {
 func (obj *BehaviourFeature) AddCategoryType(categoryType int) {
 	obj.CategoryType += categoryType
 	obj.Update("categoryType", gorm.Expr("categoryType + ?", categoryType))
+}
+
+// AddSkipWarehouse .
+func (obj *BehaviourFeature) AddSkipWarehouse(skipWarehouse int) {
+	obj.SkipWarehouse += skipWarehouse
+	obj.Update("skipWarehouse", gorm.Expr("skipWarehouse + ?", skipWarehouse))
 }

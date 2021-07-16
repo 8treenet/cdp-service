@@ -32,6 +32,9 @@ func (factory *BehaviourFactory) CreateBehaviourCmds() (cmds []*BehaviourCreate,
 	}
 
 	for _, featureEntity := range list {
+		if featureEntity.SkipWarehouse != 0 {
+			continue
+		}
 		behaviours, e := factory.BehaviourRepository.FetchBehaviours(featureEntity.ID, conf.Get().System.JobEnteringHouseMaxCount)
 		if len(behaviours) == 0 {
 			continue

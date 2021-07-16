@@ -15,7 +15,7 @@ PARTITION BY toYYYYMM(createTime)
 ORDER BY (userId,createTime);
 
 CREATE TABLE IF NOT EXISTS cdp.whole_flow (
-	`feature` String,
+	`featureId` UInt16,
 	`userId` String,
 	`region` String,
 	`city` String,

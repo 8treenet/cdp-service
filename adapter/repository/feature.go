@@ -157,7 +157,7 @@ func (repo *FeatureRepository) GetAllFeatureEntity() (result []*entity.Feature, 
 		return
 	}
 
-	entityList, err := findBehaviourFeatureListByWhere(repo, "warehouse not in(?)", []interface{}{"whole_flow"})
+	entityList, err := findBehaviourFeatureList(repo, po.BehaviourFeature{})
 	if err != nil {
 		return
 	}
@@ -194,9 +194,9 @@ func (repo *FeatureRepository) GetFeatureEntitys() (result []*entity.Feature, to
 	}()
 
 	page, pageSize := repo.CommonRequest.GetPage()
-
 	pager := NewDescPager("id").SetPage(page, pageSize)
-	entityList, err := findBehaviourFeatureListByWhere(repo, "warehouse not in(?)", []interface{}{"whole_flow"}, pager)
+
+	entityList, err := findBehaviourFeatureList(repo, po.BehaviourFeature{}, pager)
 	if err != nil {
 		return
 	}

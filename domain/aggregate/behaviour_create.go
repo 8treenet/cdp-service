@@ -3,6 +3,12 @@ package aggregate
 import (
 	"github.com/8treenet/cdp-service/adapter/repository"
 	"github.com/8treenet/cdp-service/domain/entity"
+	"github.com/8treenet/cdp-service/infra/cattle"
+)
+
+const (
+	wholeFlowTableName         = "whole_flow"
+	wholeFlowMetadataFeatureId = "featureId"
 )
 
 // BehaviourCreate
@@ -17,15 +23,12 @@ type BehaviourCreate struct {
 // Do .
 func (cmd *BehaviourCreate) Do() (e error) {
 	successIds := []int{}
-	submit := cmd.DataRepository.NewSubmit(cmd.Warehouse)         //行为提交
-	wholeFlowSubmit := cmd.DataRepository.NewSubmit("whole_flow") //全站流量提交
-	wholeFlowSubmit.AddMetadata("feature", "String")
+	submit := cmd.DataRepository.NewSubmit(cmd.Warehouse)               //行为提交
+	wholeFlowSubmit := cmd.DataRepository.NewSubmit(wholeFlowTableName) //全站流量提交
+	wholeFlowSubmit.AddMetadata(wholeFlowMetadataFeatureId, cattle.ColumnTypeUInt16)
 
 	for k, v := range cmd.ToColumns() {
 		submit.AddMetadata(k, v)
-	}
-	for k, v := range cmd.WholeFlow.ToColumns() {
-		wholeFlowSubmit.AddMetadata(k, v)
 	}
 
 	for _, behaviour := range cmd.behaviours {
@@ -35,7 +38,7 @@ func (cmd *BehaviourCreate) Do() (e error) {
 		}
 		submit.AddRow(dataMap)
 
-		dataMap["feature"] = cmd.Warehouse
+		dataMap[wholeFlowMetadataFeatureId] = cmd.ID //只需要知道哪个行为的全站流量
 		wholeFlowSubmit.AddRow(dataMap)
 		successIds = append(successIds, behaviour.ID)
 	}
