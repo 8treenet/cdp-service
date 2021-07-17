@@ -251,7 +251,7 @@ func TestRegisterCondition(t *testing.T) {
 }
 
 func TestExplainPersonasAnalysis(t *testing.T) {
-	//用户画像描述 购买1001分类或1002分类的商品  3天内 均单消费50以上
+	//用户画像描述 北京和天津购买1001分类或1002分类的商品  3天内 均单消费50以上
 	data := []byte(`<root>
 	<from>order</from>
 	<join>

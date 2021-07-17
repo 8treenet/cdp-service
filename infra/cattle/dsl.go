@@ -361,17 +361,17 @@ func (dsl *DSL) personasHaving(aggregation, tablecolumn, compare, value string) 
 	writerSql := NewWriter()
 	switch compare {
 	case "eq":
-		err = builder.Eq{tablecolumn: value}.WriteTo(writerSql)
+		err = builder.Eq{tablecolumn: toNumber(value)}.WriteTo(writerSql)
 	case "neq":
-		err = builder.Neq{tablecolumn: value}.WriteTo(writerSql)
+		err = builder.Neq{tablecolumn: toNumber(value)}.WriteTo(writerSql)
 	case "gt":
-		err = builder.Gt{tablecolumn: value}.WriteTo(writerSql)
+		err = builder.Gt{tablecolumn: toNumber(value)}.WriteTo(writerSql)
 	case "gte":
-		err = builder.Gte{tablecolumn: value}.WriteTo(writerSql)
+		err = builder.Gte{tablecolumn: toNumber(value)}.WriteTo(writerSql)
 	case "lt":
-		err = builder.Lt{tablecolumn: value}.WriteTo(writerSql)
+		err = builder.Lt{tablecolumn: toNumber(value)}.WriteTo(writerSql)
 	case "lte":
-		err = builder.Lte{tablecolumn: value}.WriteTo(writerSql)
+		err = builder.Lte{tablecolumn: toNumber(value)}.WriteTo(writerSql)
 	case "in":
 		list, e := utils.ToInterfaces(strings.Split(value, ","))
 		if e != nil {
@@ -385,7 +385,7 @@ func (dsl *DSL) personasHaving(aggregation, tablecolumn, compare, value string) 
 			err = errors.New("between错误")
 			return
 		}
-		err = builder.Between{Col: tablecolumn, LessVal: list[0], MoreVal: list[1]}.WriteTo(writerSql)
+		err = builder.Between{Col: tablecolumn, LessVal: toNumber(list[0]), MoreVal: toNumber(list[1])}.WriteTo(writerSql)
 	default:
 		err = fmt.Errorf("未识别Having参数 :%s", compare)
 	}
