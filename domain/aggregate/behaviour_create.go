@@ -50,6 +50,7 @@ func (cmd *BehaviourCreate) Do() (e error) {
 
 	defer func() {
 		if e != nil {
+			cmd.BehaviourRepository.BehavioursError(successIds)
 			return
 		}
 		err := cmd.DataRepository.SaveSubmit(wholeFlowSubmit)

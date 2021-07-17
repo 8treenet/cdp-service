@@ -121,6 +121,14 @@ func (repo *BehaviourRepository) BehavioursSuccess(ids []int) error {
 	return repo.db().Model(&po.Behaviour{}).Where("id in (?)", ids).Update("processed", 2).Error
 }
 
+// BehaviourSuccess .
+func (repo *BehaviourRepository) BehavioursError(ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return repo.db().Model(&po.Behaviour{}).Where("id in (?)", ids).Update("processed", 3).Error
+}
+
 // TruncateBehaviour .
 func (repo *BehaviourRepository) TruncateBehaviour() bool {
 	var count int64
