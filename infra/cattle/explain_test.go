@@ -226,14 +226,14 @@ func TestRegisterCondition(t *testing.T) {
 	//注册用户数 渠道/分布
 	data := []byte(`<root>
 	<from>user_register</from>
-	<multipleOut group = "source">count</multipleOut>
+	<multipleOut group = "sourceId">count</multipleOut>
 	</root>`)
 	dsl, err := newDSL(data)
 	if err != nil {
 		panic(err)
 	}
 
-	selectBuilder, err := ExplainMultipleAnalysis(dsl, time.Now().AddDate(0, 0, -2), time.Now())
+	selectBuilder, err := ExplainMultipleAnalysis(dsl, time.Now().AddDate(0, 0, -500), time.Now().AddDate(0, 0, 100))
 	if err != nil {
 		panic(err)
 	}

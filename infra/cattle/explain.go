@@ -11,7 +11,11 @@ import (
 )
 
 func ExplainSingleAnalysis(dsl *DSL, beginTime, endTime time.Time) (*builder.Builder, error) {
-	where := builder.And(builder.Between{Col: ColumnCreateTime, LessVal: utils.DateTimeFormat(beginTime), MoreVal: utils.DateTimeFormat(endTime)})
+	from := dsl.FindFromNode()
+	if from == nil {
+		return nil, errors.New("未找到from标签")
+	}
+	where := builder.And(builder.Between{Col: from.GetContent() + "." + ColumnCreateTime, LessVal: utils.DateTimeFormat(beginTime), MoreVal: utils.DateTimeFormat(endTime)})
 	if dsl.FindConditionNode() != nil {
 		cond, err := dsl.Condition(dsl.FindConditionNode())
 		if err != nil {
@@ -47,7 +51,12 @@ func ExplainSingleAnalysis(dsl *DSL, beginTime, endTime time.Time) (*builder.Bui
 }
 
 func ExplainMultipleAnalysis(dsl *DSL, beginTime, endTime time.Time) (*builder.Builder, error) {
-	where := builder.And(builder.Between{Col: ColumnCreateTime, LessVal: utils.DateTimeFormat(beginTime), MoreVal: utils.DateTimeFormat(endTime)})
+	from := dsl.FindFromNode()
+	if from == nil {
+		return nil, errors.New("未找到from标签")
+	}
+
+	where := builder.And(builder.Between{Col: from.GetContent() + "." + ColumnCreateTime, LessVal: utils.DateTimeFormat(beginTime), MoreVal: utils.DateTimeFormat(endTime)})
 	if dsl.FindConditionNode() != nil {
 		cond, err := dsl.Condition(dsl.FindConditionNode())
 		if err != nil {
@@ -68,14 +77,15 @@ func ExplainMultipleAnalysis(dsl *DSL, beginTime, endTime time.Time) (*builder.B
 }
 
 func ExplainPersonasAnalysis(dsl *DSL, userIds []string, beginTimes ...time.Time) (*builder.Builder, error) {
-	list, err := utils.ToInterfaces(userIds)
-	if err != nil {
-		return nil, err
-	}
 	from := dsl.FindFromNode()
 	if from == nil {
 		return nil, errors.New("未找到from标签")
 	}
+	list, err := utils.ToInterfaces(userIds)
+	if err != nil {
+		return nil, err
+	}
+
 	where := builder.And(builder.In(fmt.Sprintf("%s.%s", from.GetContent(), ColumnUserId), list...))
 	if dsl.FindConditionNode() != nil {
 		cond, err := dsl.Condition(dsl.FindConditionNode())
@@ -102,7 +112,7 @@ func ExplainPersonasAnalysis(dsl *DSL, userIds []string, beginTimes ...time.Time
 	if len(beginTimes) > 0 {
 		beginTime = &beginTimes[0]
 	}
-	where = where.And(builder.Gte{ColumnCreateTime: utils.DateTimeFormat(*beginTime)})
+	where = where.And(builder.Gte{from.GetContent() + "." + ColumnCreateTime: utils.DateTimeFormat(*beginTime)})
 	return join.Where(where), nil
 }
 

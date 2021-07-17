@@ -303,7 +303,9 @@ func (dsl *DSL) MultipleOut() (result *builder.Builder, e error) {
 		result = result.GroupBy(fmt.Sprintf("%s.%s,%s", table, ColumnUserId, groupExpl[1]))
 		return
 	}
+
 	result = result.GroupBy(groupExpl[1])
+	result = result.OrderBy(groupExpl[1])
 	return
 }
 
