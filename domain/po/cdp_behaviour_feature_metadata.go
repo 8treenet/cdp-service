@@ -2,8 +2,9 @@
 package po
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // BehaviourFeatureMetadata .
@@ -16,7 +17,6 @@ type BehaviourFeatureMetadata struct {
 	Kind          string    `gorm:"column:kind"`          // 类型
 	Dict          string    `gorm:"column:dict"`          // 关联字典的key
 	OrderByNumber int       `gorm:"column:orderByNumber"` // ck排序键，非0排序
-	Partition     int       `gorm:"column:partition"`     // 非0分区
 	Created       time.Time `gorm:"column:created"`
 	Updated       time.Time `gorm:"column:updated"`
 }
@@ -88,12 +88,6 @@ func (obj *BehaviourFeatureMetadata) SetOrderByNumber(orderByNumber int) {
 	obj.Update("orderByNumber", orderByNumber)
 }
 
-// SetPartition .
-func (obj *BehaviourFeatureMetadata) SetPartition(partition int) {
-	obj.Partition = partition
-	obj.Update("partition", partition)
-}
-
 // SetCreated .
 func (obj *BehaviourFeatureMetadata) SetCreated(created time.Time) {
 	obj.Created = created
@@ -116,10 +110,4 @@ func (obj *BehaviourFeatureMetadata) AddFeatureID(featureID int) {
 func (obj *BehaviourFeatureMetadata) AddOrderByNumber(orderByNumber int) {
 	obj.OrderByNumber += orderByNumber
 	obj.Update("orderByNumber", gorm.Expr("orderByNumber + ?", orderByNumber))
-}
-
-// AddPartition .
-func (obj *BehaviourFeatureMetadata) AddPartition(partition int) {
-	obj.Partition += partition
-	obj.Update("partition", gorm.Expr("partition + ?", partition))
 }

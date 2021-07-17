@@ -21,8 +21,6 @@ type CreateTable struct {
 		variable string
 		num      int
 	}
-	partitionColumn string
-	partitionType   int //1周 2月 只有时间可分区
 }
 
 func (c *CreateTable) init() {
@@ -41,15 +39,7 @@ func (c *CreateTable) Do() error {
 		sql += fmt.Sprintf("\t%s %s%s\n", c.items[i].variable, ArrayKind(c.items[i].kind), n)
 	}
 	sql += fmt.Sprintf(") ENGINE = %s\n", c.engine)
-
-	for c.partitionType != 0 {
-		if c.partitionType == 2 {
-			sql += fmt.Sprintf("PARTITION BY toYYYYMM(%s)\n", c.partitionColumn)
-			break
-		}
-		sql += fmt.Sprintf("PARTITION BY toMonday(%s)\n", c.partitionColumn)
-		break
-	}
+	sql += fmt.Sprintf("PARTITION BY toYYYYMM(%s)\n", ColumnCreateTime)
 
 	sort.Slice(c.order, func(i, j int) bool {
 		return c.order[i].num < c.order[j].num
@@ -69,7 +59,7 @@ func (c *CreateTable) Do() error {
 	return err
 }
 
-func (c *CreateTable) AddColumn(variable, kind string, order, partitionType int) {
+func (c *CreateTable) AddColumn(variable, kind string, order int) {
 	c.items = append(c.items, struct {
 		variable string
 		kind     string
@@ -81,34 +71,20 @@ func (c *CreateTable) AddColumn(variable, kind string, order, partitionType int)
 			num      int
 		}{variable: variable, num: order})
 	}
-
-	if c.partitionColumn != "" || partitionType == 0 {
-		return
-	}
-
-	if partitionType > 2 && partitionType < 0 {
-		panic("partitionType error")
-	}
-	c.partitionColumn = variable
-	c.partitionType = partitionType
 }
 
 func (c *CreateTable) addDefaultColumn() {
-	c.AddColumn(ColumnRegion, ColumnTypeString, 0, 0)
-	c.AddColumn(ColumnCity, ColumnTypeString, 0, 0)
-	c.AddColumn(ColumnIP, ColumnTypeIP, 0, 0)
-	c.AddColumn(ColumnSourceId, ColumnTypeInt16, 0, 0)
-	c.AddColumn(ColumnUserId, ColumnTypeString, 0, 0)
+	c.AddColumn(ColumnRegion, ColumnTypeString, 0)
+	c.AddColumn(ColumnCity, ColumnTypeString, 0)
+	c.AddColumn(ColumnIP, ColumnTypeIP, 0)
+	c.AddColumn(ColumnSourceId, ColumnTypeInt16, 0)
+	c.AddColumn(ColumnUserId, ColumnTypeString, 0)
 
-	defPartitionType := 0
 	defOrder := 0
-	if c.partitionColumn == "" {
-		defPartitionType = 2
-	}
 	if len(c.order) == 0 {
 		defOrder = 1
 	}
-	c.AddColumn(ColumnCreateTime, ColumnTypeDateTime, defOrder, defPartitionType)
+	c.AddColumn(ColumnCreateTime, ColumnTypeDateTime, defOrder)
 }
 
 func (c *CreateTable) SetLogger(l Logger) *CreateTable {

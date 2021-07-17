@@ -19,14 +19,13 @@ func (entity *Feature) Identity() string {
 	return fmt.Sprint(entity.ID)
 }
 
-func (entity *Feature) AddMetadata(variable, title, kind, dict string, orderByNumber, partition int) {
+func (entity *Feature) AddMetadata(variable, title, kind, dict string, orderByNumber int) {
 	entity.FeatureMetadata = append(entity.FeatureMetadata, &po.BehaviourFeatureMetadata{
 		Variable:      variable,
 		Title:         title,
 		Kind:          kind,
 		Dict:          dict,
 		OrderByNumber: orderByNumber,
-		Partition:     partition,
 		Created:       time.Now(),
 		Updated:       time.Now(),
 	})
@@ -65,7 +64,6 @@ func (entity *Feature) View() interface{} {
 		list[i].Kind = entity.FeatureMetadata[i].Kind
 		list[i].Dict = entity.FeatureMetadata[i].Dict
 		list[i].OrderByNumber = entity.FeatureMetadata[i].OrderByNumber
-		list[i].Partition = entity.FeatureMetadata[i].Partition
 	}
 	jsonData.Metadata = list
 	return jsonData

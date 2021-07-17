@@ -192,8 +192,8 @@ func TestDataTable(t *testing.T) {
 	unitTest.FetchRepository(&repo)
 
 	cmd := repo.NewCreateTable("testing1")
-	cmd.AddColumn("name", "String", 1, 0)
-	cmd.AddColumn("create111Time", "DateTime", 2, 2)
+	cmd.AddColumn("name", "String", 1)
+	cmd.AddColumn("create111Time", "DateTime", 2)
 
 	err := repo.SaveTable(cmd)
 	t.Log(err)
@@ -239,12 +239,12 @@ func TestArraySubmit(t *testing.T) {
 	unitTest.FetchRepository(&repo)
 
 	cmd := repo.NewCreateTable("testing2")
-	cmd.AddColumn("strs", "ArrayString", 0, 0)
-	cmd.AddColumn("f1", "Float32", 0, 0)
-	cmd.AddColumn("i32s", "ArrayInt32", 0, 0)
-	cmd.AddColumn("ui64s", "ArrayUInt64", 0, 0)
-	cmd.AddColumn("f64s", "ArrayFloat64", 0, 0)
-	cmd.AddColumn("dts", "ArrayDateTime", 0, 0)
+	cmd.AddColumn("strs", "ArrayString", 0)
+	cmd.AddColumn("f1", "Float32", 0)
+	cmd.AddColumn("i32s", "ArrayInt32", 0)
+	cmd.AddColumn("ui64s", "ArrayUInt64", 0)
+	cmd.AddColumn("f64s", "ArrayFloat64", 0)
+	cmd.AddColumn("dts", "ArrayDateTime", 0)
 
 	err := repo.SaveTable(cmd)
 	t.Log(err)

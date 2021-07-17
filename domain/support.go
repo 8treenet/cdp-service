@@ -55,7 +55,6 @@ func (service *SupportService) CreateFeature(data vo.ReqFeatureDTO) error {
 			Kind:          metadata.Kind,
 			Dict:          metadata.Dict,
 			OrderByNumber: metadata.OrderByNumber,
-			Partition:     metadata.Partition,
 			Created:       time.Now(),
 			Updated:       time.Now(),
 		})
@@ -68,7 +67,7 @@ func (service *SupportService) CreateFeature(data vo.ReqFeatureDTO) error {
 
 		cmd := service.DataRepository.NewCreateTable(entity.Warehouse)
 		for _, v := range entity.FeatureMetadata {
-			cmd.AddColumn(v.Variable, v.Kind, v.OrderByNumber, v.Partition)
+			cmd.AddColumn(v.Variable, v.Kind, v.OrderByNumber)
 		}
 		return cmd.Do()
 	})
@@ -89,7 +88,7 @@ func (service *SupportService) AddFeatureMetadata(featureId int, list []vo.ReqFe
 			continue
 		}
 
-		entity.AddMetadata(v.Variable, v.Title, v.Kind, v.Dict, 0, 0)
+		entity.AddMetadata(v.Variable, v.Title, v.Kind, v.Dict, 0)
 	}
 
 	return service.TX.Execute(func() error {

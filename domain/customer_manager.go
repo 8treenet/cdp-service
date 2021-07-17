@@ -50,7 +50,7 @@ func (service *CustomerManagerService) AddMetaData(templates []po.CustomerExtens
 			continue
 		}
 
-		entity.AddMetadata(v.Variable, v.Title, v.Kind, v.Dict, 0, 0)
+		entity.AddMetadata(v.Variable, v.Title, v.Kind, v.Dict, 0)
 	}
 
 	e = service.TX.Execute(func() error {
