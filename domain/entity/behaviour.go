@@ -43,3 +43,13 @@ func (entity *Behaviour) ToColumns() (result map[string]interface{}, e error) {
 	}
 	return
 }
+
+// AsyncFinish 同步完成
+func (entity *Behaviour) SyncSuccess() {
+	entity.SetProcessed(2)
+}
+
+// AsyncFinish 同步失败
+func (entity *Behaviour) SyncError() {
+	entity.SetProcessed(3)
+}

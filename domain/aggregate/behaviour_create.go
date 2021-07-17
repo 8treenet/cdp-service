@@ -22,7 +22,6 @@ type BehaviourCreate struct {
 
 // Do .
 func (cmd *BehaviourCreate) Do() (e error) {
-	successIds := []int{}
 	submit := cmd.DataRepository.NewSubmit(cmd.Warehouse)               //行为提交
 	wholeFlowSubmit := cmd.DataRepository.NewSubmit(wholeFlowTableName) //全站流量提交
 	wholeFlowSubmit.AddMetadata(wholeFlowMetadataFeatureId, cattle.ColumnTypeUInt16)
@@ -40,15 +39,13 @@ func (cmd *BehaviourCreate) Do() (e error) {
 
 		dataMap[wholeFlowMetadataFeatureId] = cmd.ID //只需要知道哪个行为的全站流量
 		wholeFlowSubmit.AddRow(behaviour.ID, dataMap)
-		successIds = append(successIds, behaviour.ID)
+		behaviour.SyncSuccess()
 	}
 
 	defer func() {
 		if e != nil {
-			cmd.BehaviourRepository.BehavioursError(successIds) //错误后重置
 			return
 		}
-		cmd.BehaviourRepository.BehavioursSuccess(successIds) //成功后重置
 		err := cmd.DataRepository.SaveSubmit(wholeFlowSubmit)
 		if err != nil {
 			cmd.Worker().Logger().Error("全站流量提交失败 error:", err)
@@ -56,5 +53,14 @@ func (cmd *BehaviourCreate) Do() (e error) {
 	}()
 
 	e = cmd.DataRepository.SaveSubmit(submit)
+	if e == nil {
+		e = cmd.BehaviourRepository.BehavioursFinish(cmd.behaviours)
+		return
+	}
+
+	for _, v := range cmd.behaviours {
+		v.SyncError()
+	}
+	e = cmd.BehaviourRepository.BehavioursFinish(cmd.behaviours)
 	return
 }

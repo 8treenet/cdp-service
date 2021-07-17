@@ -113,20 +113,18 @@ func (repo *BehaviourRepository) FetchBehaviours(featureId int, processed, max i
 	return reuslt, err
 }
 
-// BehaviourSuccess .
-func (repo *BehaviourRepository) BehavioursSuccess(ids []int) error {
-	if len(ids) == 0 {
-		return nil
+func (repo *BehaviourRepository) BehavioursFinish(behaviours []*entity.Behaviour) error {
+	m := map[int][]int{}
+	for _, v := range behaviours {
+		m[v.Processed] = append(m[v.Processed], v.ID)
 	}
-	return repo.db().Model(&po.Behaviour{}).Where("id in (?)", ids).Update("processed", 2).Error
-}
-
-// BehaviourSuccess .
-func (repo *BehaviourRepository) BehavioursError(ids []int) error {
-	if len(ids) == 0 {
-		return nil
+	for processed, v := range m {
+		e := repo.db().Model(&po.Behaviour{}).Where("id in (?)", v).Update("processed", processed).Error
+		if e != nil {
+			return e
+		}
 	}
-	return repo.db().Model(&po.Behaviour{}).Where("id in (?)", ids).Update("processed", 3).Error
+	return nil
 }
 
 // TruncateBehaviour .
