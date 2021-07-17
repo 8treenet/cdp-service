@@ -2,6 +2,7 @@ package cattle
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -59,4 +60,28 @@ func ArrayKind(kind string) string {
 		return fmt.Sprintf("%s(%s)", "Array", list[1])
 	}
 	return kind
+}
+
+func toNumber(value interface{}) (result interface{}) {
+	result = value
+	str := fmt.Sprint(value)
+
+	if strings.Contains(str, ".") {
+		fvalue, err := strconv.ParseFloat(str, 64)
+		if err == nil {
+			result = fvalue
+			return
+		}
+	}
+
+	if iv, err := strconv.ParseInt(str, 10, 64); err == nil {
+		result = iv
+		return
+	}
+
+	if uiv, err := strconv.ParseUint(str, 10, 64); err == nil {
+		result = uiv
+		return
+	}
+	return
 }
