@@ -288,7 +288,7 @@ func TestArrayCondition(t *testing.T) {
 		<and>
 			<where from="testing2" column = "i32s" compare = "in">1,2</where>
 			<where from="testing2" column = "sourceId" compare = "in">1,2,3,4</where>
-			<where from="testing2" column = "f1" compare = "gte">0.3</where>
+			<where from="testing2" column = "f1" compare = "between">0.5,0.6</where>
 		</and>
 	</condition>
 	<singleOut>people</singleOut>
