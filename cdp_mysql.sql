@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.18)
 # Database: cdp
-# Generation Time: 2021-07-04 08:54:58 +0000
+# Generation Time: 2021-07-17 07:37:50 +0000
 # ************************************************************
 
 
@@ -56,6 +56,7 @@ CREATE TABLE `cdp_behaviour_feature` (
   `warehouse` varchar(50) NOT NULL DEFAULT '' COMMENT 'clickhouse的表名',
   `categoryType` tinyint(6) NOT NULL COMMENT '0自定义行为，1系统提供行为，2系统提供行为(不可追加)',
   `category` varchar(64) NOT NULL DEFAULT '' COMMENT '行业',
+  `skipWarehouse` tinyint(4) NOT NULL DEFAULT '0' COMMENT '非0 该特性的行为无需代码同步到ck',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -65,9 +66,10 @@ CREATE TABLE `cdp_behaviour_feature` (
 LOCK TABLES `cdp_behaviour_feature` WRITE;
 /*!40000 ALTER TABLE `cdp_behaviour_feature` DISABLE KEYS */;
 
-INSERT INTO `cdp_behaviour_feature` (`id`, `title`, `warehouse`, `categoryType`, `category`, `created`, `updated`)
+INSERT INTO `cdp_behaviour_feature` (`id`, `title`, `warehouse`, `categoryType`, `category`, `skipWarehouse`, `created`, `updated`)
 VALUES
-	(1,'用户注册','user_register',2,'通用','2021-07-02 15:54:04','2021-07-02 15:54:46');
+	(1,'用户注册','user_register',2,'通用',0,'2021-07-02 15:54:04','2021-07-02 15:54:46'),
+	(2,'全站流量','whole_flow',2,'通用',1,'2021-07-16 17:31:18','2021-07-16 18:39:03');
 
 /*!40000 ALTER TABLE `cdp_behaviour_feature` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -86,7 +88,6 @@ CREATE TABLE `cdp_behaviour_feature_metadata` (
   `kind` enum('String','Float32','Float64','UInt8','UInt16','UInt32','UInt64','Int8','Int16','Int32','Int64','DateTime','Date','ArrayString','ArrayFloat32','ArrayFloat64','ArrayUInt8','ArrayUInt16','ArrayUInt32','ArrayUInt64','ArrayInt8','ArrayInt16','ArrayInt32','ArrayInt64','ArrayDateTime','ArrayDate') NOT NULL DEFAULT 'Int32' COMMENT '类型',
   `dict` varchar(128) NOT NULL DEFAULT '' COMMENT '关联字典的key',
   `orderByNumber` tinyint(4) NOT NULL COMMENT 'ck排序键，非0排序',
-  `partition` tinyint(4) NOT NULL COMMENT '1周分区 2月分区',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -96,14 +97,14 @@ CREATE TABLE `cdp_behaviour_feature_metadata` (
 LOCK TABLES `cdp_behaviour_feature_metadata` WRITE;
 /*!40000 ALTER TABLE `cdp_behaviour_feature_metadata` DISABLE KEYS */;
 
-INSERT INTO `cdp_behaviour_feature_metadata` (`id`, `featureId`, `variable`, `title`, `kind`, `dict`, `orderByNumber`, `partition`, `created`, `updated`)
+INSERT INTO `cdp_behaviour_feature_metadata` (`id`, `featureId`, `variable`, `title`, `kind`, `dict`, `orderByNumber`, `created`, `updated`)
 VALUES
-	(5,1,'userId','userId','String','',1,0,'2021-06-30 17:32:47','2021-07-04 15:29:53'),
-	(6,1,'name','name','String','',0,0,'2021-06-30 17:34:59','2021-06-30 17:35:10'),
-	(7,1,'email','email','String','',0,0,'2021-06-30 17:34:59','2021-06-30 17:35:10'),
-	(8,1,'phone','phone','String','',0,0,'2021-06-30 17:34:59','2021-06-30 17:35:10'),
-	(9,1,'gender','gender','String','',0,0,'2021-06-30 17:34:59','2021-06-30 17:36:11'),
-	(11,1,'birthday','birthday','Date','',0,0,'2021-06-30 17:34:59','2021-07-01 18:48:48');
+	(6,1,'name','name','String','',0,'2021-06-30 17:34:59','2021-06-30 17:35:10'),
+	(7,1,'email','email','String','',0,'2021-06-30 17:34:59','2021-06-30 17:35:10'),
+	(8,1,'phone','phone','String','',0,'2021-06-30 17:34:59','2021-06-30 17:35:10'),
+	(9,1,'gender','gender','String','',0,'2021-06-30 17:34:59','2021-06-30 17:36:11'),
+	(11,1,'birthday','birthday','Date','',0,'2021-06-30 17:34:59','2021-07-01 18:48:48'),
+	(12,2,'featureId','行为来源','UInt16','',0,'2021-07-16 17:41:37','2021-07-16 18:52:56');
 
 /*!40000 ALTER TABLE `cdp_behaviour_feature_metadata` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -173,18 +174,6 @@ CREATE TABLE `cdp_customer_extension_metadata` (
   UNIQUE KEY `variable` (`variable`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='客户元数据';
 
-LOCK TABLES `cdp_customer_extension_metadata` WRITE;
-/*!40000 ALTER TABLE `cdp_customer_extension_metadata` DISABLE KEYS */;
-
-INSERT INTO `cdp_customer_extension_metadata` (`id`, `variable`, `title`, `kind`, `dict`, `reg`, `required`, `sort`, `created`, `updated`)
-VALUES
-	(66,'score','积分','Int32','','',0,1000,'2021-06-30 17:39:35','2021-06-30 17:39:35'),
-	(67,'star','关注','UInt32','','',0,1000,'2021-06-30 17:39:35','2021-06-30 17:39:35'),
-	(68,'addr','地址','String','','',0,1000,'2021-06-30 17:39:35','2021-06-30 17:39:35'),
-	(69,'level','级别','UInt16','','',1,1000,'2021-06-30 17:39:35','2021-06-30 17:39:35');
-
-/*!40000 ALTER TABLE `cdp_customer_extension_metadata` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table cdp_customer_key
@@ -240,16 +229,6 @@ CREATE TABLE `cdp_customer_temporary` (
   UNIQUE KEY `uuid` (`uuid`,`sourceId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='临时用户表';
 
-LOCK TABLES `cdp_customer_temporary` WRITE;
-/*!40000 ALTER TABLE `cdp_customer_temporary` DISABLE KEYS */;
-
-INSERT INTO `cdp_customer_temporary` (`id`, `uuid`, `userId`, `sourceId`, `created`, `updated`)
-VALUES
-	(13,'6d01db8adaef11ebb0df804a1460b6f5','6d01db8adaef11ebb0df804a1460b6f5user',1,'2021-07-02 12:39:03','2021-07-02 12:39:03'),
-	(14,'6d01de3cdaef11ebb0df804a1460b6f5','6d01de3cdaef11ebb0df804a1460b6f5user',1,'2021-07-02 12:39:03','2021-07-02 12:39:03');
-
-/*!40000 ALTER TABLE `cdp_customer_temporary` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table cdp_customer_wechat
