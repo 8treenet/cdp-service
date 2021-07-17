@@ -165,7 +165,7 @@ func TestFetchBehaviours(t *testing.T) {
 	var repo *BehaviourRepository
 	//获取资源库
 	unitTest.FetchRepository(&repo)
-	list, err := repo.FetchBehaviours(1, 1000)
+	list, err := repo.FetchBehaviours(1, 0, 1000)
 	for i := 0; i < len(list); i++ {
 		t.Log(list[i].ID)
 	}

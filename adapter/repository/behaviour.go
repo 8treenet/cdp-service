@@ -86,7 +86,7 @@ func (repo *BehaviourRepository) BatchSave(list []*po.Behaviour) error {
 }
 
 // FetchBehaviours
-func (repo *BehaviourRepository) FetchBehaviours(featureId int, max int) ([]*entity.Behaviour, error) {
+func (repo *BehaviourRepository) FetchBehaviours(featureId int, processed, max int) ([]*entity.Behaviour, error) {
 	key := fmt.Sprintf("BehaviourRepository:FetchBehaviours:%d", featureId)
 	ok, err := repo.Redis().SetNX(key, 1, time.Minute*1).Result()
 	if err != nil || !ok {
@@ -94,7 +94,7 @@ func (repo *BehaviourRepository) FetchBehaviours(featureId int, max int) ([]*ent
 	}
 	defer repo.Redis().Del(key)
 
-	list, err := findBehaviourListByWhere(repo, "featureId = ? and processed = ?", []interface{}{featureId, 0}, NewAscLimit("id").SetLength(max))
+	list, err := findBehaviourListByWhere(repo, "featureId = ? and processed = ?", []interface{}{featureId, processed}, NewAscLimit("id").SetLength(max))
 	if err != nil || len(list) == 0 {
 		return nil, err
 	}

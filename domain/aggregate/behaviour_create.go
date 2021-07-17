@@ -43,21 +43,18 @@ func (cmd *BehaviourCreate) Do() (e error) {
 		successIds = append(successIds, behaviour.ID)
 	}
 
-	e = cmd.BehaviourRepository.BehavioursSuccess(successIds)
-	if e != nil {
-		return
-	}
-
 	defer func() {
 		if e != nil {
-			cmd.BehaviourRepository.BehavioursError(successIds)
+			cmd.BehaviourRepository.BehavioursError(successIds) //错误后重置
 			return
 		}
+		cmd.BehaviourRepository.BehavioursSuccess(successIds) //成功后重置
 		err := cmd.DataRepository.SaveSubmit(wholeFlowSubmit)
 		if err != nil {
 			cmd.Worker().Logger().Error("全站流量提交失败 error:", err)
 		}
 	}()
+
 	e = cmd.DataRepository.SaveSubmit(submit)
 	return
 }

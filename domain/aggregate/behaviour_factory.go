@@ -35,7 +35,7 @@ func (factory *BehaviourFactory) CreateBehaviourCmds() (cmds []*BehaviourCreate,
 		if featureEntity.SkipWarehouse != 0 {
 			continue
 		}
-		behaviours, e := factory.BehaviourRepository.FetchBehaviours(featureEntity.ID, conf.Get().System.JobEnteringHouseMaxCount)
+		behaviours, e := factory.BehaviourRepository.FetchBehaviours(featureEntity.ID, 0, conf.Get().System.JobEnteringHouseMaxCount)
 		if len(behaviours) == 0 {
 			continue
 		}
