@@ -51,7 +51,7 @@ const (
 	groupMonth = "month"
 )
 
-//compare eq相等 neq不相等 gt大于 gte大于等于 lt小于  lte小于等于 between范围
+//compare eq相等 neq不相等 gt大于 gte大于等于 lt小于  lte小于等于 between范围 in存在值 hasAll数组交叉存在
 type node struct {
 	XMLName    xml.Name
 	Attributes []xml.Attr `xml:",any,attr"`
@@ -93,6 +93,7 @@ func newDSL(data []byte) (*DSL, error) {
 
 type DSL struct {
 	node *node
+	whs  []Warehouse
 }
 
 func (dsl *DSL) Condition(conditionNode *node) (builder.Cond, error) {
@@ -385,6 +386,8 @@ func (dsl *DSL) personasHaving(aggregation, tablecolumn, compare, value string) 
 			return
 		}
 		err = builder.Between{Col: tablecolumn, LessVal: list[0], MoreVal: list[1]}.WriteTo(writerSql)
+	default:
+		err = fmt.Errorf("未识别Having参数 :%s", compare)
 	}
 	if err != nil {
 		return
@@ -436,11 +439,11 @@ func (dsl *DSL) logicWhere(andNode *node, label string) (builder.Cond, error) {
 
 func (dsl *DSL) where(nd *node) (cond builder.Cond, err error) {
 	var (
-		column  string
-		compare string
-		value   interface{}
-		from    string
-		method  string
+		sourceColumn string
+		compare      string
+		value        interface{}
+		from         string
+		method       string
 	)
 
 	//后续可以在这里做元数据检查
@@ -449,7 +452,7 @@ func (dsl *DSL) where(nd *node) (cond builder.Cond, err error) {
 		name := nd.Attributes[i].Name.Local
 		attributes[name] = nd.Attributes[i].Value
 	}
-	if column = nd.GetAttribute(attributeColumn); column == "" {
+	if sourceColumn = nd.GetAttribute(attributeColumn); sourceColumn == "" {
 		err = errors.New("attributeColumn 不存在")
 		return
 	}
@@ -463,42 +466,42 @@ func (dsl *DSL) where(nd *node) (cond builder.Cond, err error) {
 		return
 	}
 	method = nd.GetAttribute(attributeMethod)
-	column = from + "." + column
+	column := from + "." + sourceColumn
 	value = string(nd.Content)
 
 	switch method {
 	case methodDate:
 		column = fmt.Sprintf("date(%s)", column)
 		value = builder.Expr(fmt.Sprintf("date(%s)", value))
-		// value = fmt.Sprintf("date(%s)", value)
 	}
 	switch compare {
 	case "eq":
-		cond = builder.Eq{column: value}
+		cond = builder.Eq{column: dsl.convertValue(from, sourceColumn, value)}
 	case "neq":
-		cond = builder.Neq{column: value}
+		cond = builder.Neq{column: dsl.convertValue(from, sourceColumn, value)}
 	case "gt":
-		cond = builder.Gt{column: value}
+		cond = builder.Gt{column: dsl.convertValue(from, sourceColumn, value)}
 	case "gte":
-		cond = builder.Gte{column: value}
+		cond = builder.Gte{column: dsl.convertValue(from, sourceColumn, value)}
 	case "lt":
-		cond = builder.Lt{column: value}
+		cond = builder.Lt{column: dsl.convertValue(from, sourceColumn, value)}
 	case "lte":
-		cond = builder.Lte{column: value}
+		cond = builder.Lte{column: dsl.convertValue(from, sourceColumn, value)}
 	case "in":
-		list, e := utils.ToInterfaces(strings.Split(value.(string), ","))
-		if e != nil {
-			err = fmt.Errorf("in error %w", e)
-			return
-		}
-		cond = builder.In(column, list...)
+		cond = dsl.arrayIn(from, sourceColumn, value)
 	case "between":
 		list := strings.Split(value.(string), ",")
 		if len(list) != 2 {
 			err = errors.New("between错误")
 			return
 		}
-		cond = builder.Between{Col: column, LessVal: list[0], MoreVal: list[1]}
+		cond = builder.Between{
+			Col:     column,
+			LessVal: dsl.convertValue(from, sourceColumn, list[0]),
+			MoreVal: dsl.convertValue(from, sourceColumn, list[1]),
+		}
+	default:
+		err = fmt.Errorf("未识别比较参数 :%s", compare)
 	}
 	return
 }

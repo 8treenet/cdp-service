@@ -69,6 +69,7 @@ func TestBuilder1(t *testing.T) {
 	builder.Gte{"sb": 1}.WriteTo(w)
 	t.Log(builder.ConvertToBoundSQL(w.writer.String(), w.args))
 }
+
 func TestCondition(t *testing.T) {
 	data := []byte(`<root> 
 	<condition>
@@ -126,6 +127,14 @@ func TestSingleSum(t *testing.T) {
 
 func TestSingleOrderCondition(t *testing.T) {
 	//北京和天津地区 年龄大于=20 的次日下单用户数
+	metedata := newMockMetedata("user", func(s string) string {
+		switch s {
+		case "age":
+			return "Int32"
+		}
+		return ""
+	})
+
 	data := []byte(`<root>
 	<from>user</from>
 	<join>
@@ -145,6 +154,7 @@ func TestSingleOrderCondition(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
+	dsl.SetMetedata(metedata)
 
 	selectBuilder, err := ExplainSingleAnalysis(dsl, time.Now().AddDate(0, 0, -2), time.Now())
 	if err != nil {
@@ -154,7 +164,7 @@ func TestSingleOrderCondition(t *testing.T) {
 }
 
 func TestDenominator(t *testing.T) {
-	//北京地区 年龄大于=20 订单大于500 的总销售额
+	//读取分母
 	data := []byte(`<root>
 	<denominator>fuckDDD</denominator>
 	</root>`)
@@ -269,4 +279,57 @@ func TestExplainPersonasAnalysis(t *testing.T) {
 		panic(err)
 	}
 	fmt.Println(selectBuilder.ToBoundSQL())
+}
+
+func TestArrayCondition(t *testing.T) {
+	data := []byte(`<root> 
+	<from>testing2</from>
+	<condition>
+		<and>
+			<where from="testing2" column = "i32s" compare = "in">1,2</where>
+			<where from="testing2" column = "sourceId" compare = "in">1,2,3,4</where>
+			<where from="testing2" column = "f1" compare = "gte">0.3</where>
+		</and>
+	</condition>
+	<singleOut>people</singleOut>
+	</root>`)
+	dsl, err := newDSL(data)
+	if err != nil {
+		panic(err)
+	}
+	t2 := newMockMetedata("testing2", func(s string) string {
+		switch s {
+		case "i32s":
+			return "ArrayInt32"
+		case "sourceId":
+			return "Int32"
+		case "f1":
+			return "Float32"
+		}
+		return ""
+	})
+	dsl.SetMetedata(t2)
+
+	selectBuilder, err := ExplainSingleAnalysis(dsl, time.Now().AddDate(0, 0, -2), time.Now())
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(selectBuilder.ToBoundSQL())
+}
+
+func newMockMetedata(table string, call func(string) string) *mockMetedata {
+	return &mockMetedata{table: table, call: call}
+}
+
+type mockMetedata struct {
+	table string
+	call  func(string) string
+}
+
+func (m *mockMetedata) Warehouse() string {
+	return m.table
+}
+
+func (m *mockMetedata) GetColumnType(str string) string {
+	return m.call(str)
 }
