@@ -5,6 +5,7 @@ import (
 
 	"github.com/8treenet/cdp-service/domain"
 	"github.com/8treenet/cdp-service/server/conf"
+	"github.com/8treenet/cdp-service/utils"
 	"github.com/8treenet/freedom"
 )
 
@@ -25,7 +26,8 @@ func behaviourSaveJob() {
 
 		defer func() {
 			if err := recover(); err != nil {
-				freedom.Logger().Error("behaviourSaveJob recover:", err)
+				strace := string(utils.GetStackTrace())
+				freedom.Logger().Errorf("behaviourSaveJob recover:%v \n%s", err, strace)
 				behaviourSaveJob()
 			}
 		}()
@@ -50,7 +52,8 @@ func behaviourEnteringHouseJob() {
 
 		defer func() {
 			if err := recover(); err != nil {
-				freedom.Logger().Error("behaviourEnteringHouseJob recover:", err)
+				strace := string(utils.GetStackTrace())
+				freedom.Logger().Errorf("behaviourEnteringHouseJob recover:%v \n%s", err, strace)
 				behaviourSaveJob()
 			}
 		}()
@@ -80,7 +83,8 @@ func truncateJob() {
 		time.Sleep(1 * time.Second)
 		defer func() {
 			if err := recover(); err != nil {
-				freedom.Logger().Error("truncateJob recover:", err)
+				strace := string(utils.GetStackTrace())
+				freedom.Logger().Errorf("truncateJob recover:%v \n%s", err, strace)
 				behaviourSaveJob()
 			}
 		}()

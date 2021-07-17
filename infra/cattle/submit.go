@@ -19,6 +19,7 @@ type Submit struct {
 	tableName string
 	metadata  map[string]string
 	rows      []map[string]interface{}
+	ids       []int
 	defValue  struct {
 		region   string
 		city     string
@@ -54,13 +55,17 @@ func (submit *Submit) Do() error {
 	}
 	parpare := fmt.Sprintf("INSERT INTO %s (%s) VALUES(%s)", submit.tableName, strings.Join(keys, ","), strings.Join(perchs, ","))
 
-	return submit.manager.tx(func(tx *sql.Tx) error {
+	err := submit.manager.tx(func(tx *sql.Tx) error {
 		stmt, ferr := tx.Prepare(parpare)
 		if ferr != nil {
 			return ferr
 		}
 		return submit.stmtAdd(stmt, keys)
 	})
+	if err != nil {
+		submit.logger.Errorf("parpare:%s behaviourIds:%v", parpare, submit.ids)
+	}
+	return err
 }
 
 func (submit *Submit) stmtAdd(stmt *sql.Stmt, keys []string) error {
@@ -74,7 +79,6 @@ func (submit *Submit) stmtAdd(stmt *sql.Stmt, keys []string) error {
 			}
 			args = append(args, one)
 		}
-
 		if _, err := stmt.Exec(args...); err != nil {
 			return err
 		}
@@ -155,7 +159,7 @@ func (submit *Submit) parse(data map[string]interface{}, columnName string) (int
 		}
 		return datav, nil
 	case ColumnTypeIP:
-		if !ok {
+		if !ok || datav == "" {
 			return "0.0.0.0", nil
 		}
 		return datav, nil
@@ -164,8 +168,9 @@ func (submit *Submit) parse(data map[string]interface{}, columnName string) (int
 	return nil, errors.New("未知类型")
 }
 
-func (submit *Submit) AddRow(row map[string]interface{}) {
+func (submit *Submit) AddRow(id int, row map[string]interface{}) {
 	submit.rows = append(submit.rows, row)
+	submit.ids = append(submit.ids, id)
 }
 
 func (submit *Submit) AddMetadata(variable, kind string) {

@@ -97,9 +97,15 @@ func (cmd *CustomerCreateCmd) Do(customerDto vo.CustomerDTO, inBatche ...bool) (
 func (cmd *CustomerCreateCmd) BatcheDo(customerDtos []vo.CustomerDTO) (e error) {
 	sourceMap := map[string]int{}
 	var ipAddrs []string
+	allSource, e := cmd.SupportRepository.GetAllSource()
+	if e != nil {
+		return
+	}
+	for _, sourcePo := range allSource {
+		sourceMap[sourcePo.Source] = sourcePo.ID
+	}
 
 	for i := 0; i < len(customerDtos); i++ {
-		customerDtos[i].SourceID = cmd.SupportRepository.FindSourceID(customerDtos[i].Source)
 		if customerDtos[i].IP == "" || utils.InSlice(ipAddrs, customerDtos[i].IP) {
 			continue
 		}

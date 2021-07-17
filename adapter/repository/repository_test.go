@@ -226,7 +226,7 @@ func TestUserRegisterSubmit(t *testing.T) {
 	mdata["birthday"] = "1989-01-02"
 	mdata["gender"] = "男"
 
-	cmd.AddRow(mdata)
+	cmd.AddRow(1, mdata)
 	e := repo.SaveSubmit(cmd)
 	t.Log(e)
 }
@@ -275,7 +275,7 @@ func TestArraySubmit(t *testing.T) {
 	t.Log("json data", string(jsonData))
 	json.Unmarshal(jsonData, &mdata)
 	mdata["createTime"] = time.Now()
-	cmdSubmit.AddRow(mdata)
+	cmdSubmit.AddRow(1, mdata)
 	e := repo.SaveSubmit(cmdSubmit)
 	t.Log(e)
 }

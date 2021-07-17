@@ -36,10 +36,10 @@ func (cmd *BehaviourCreate) Do() (e error) {
 		if err != nil {
 			cmd.Worker().Logger().Error(err)
 		}
-		submit.AddRow(dataMap)
+		submit.AddRow(behaviour.ID, dataMap)
 
 		dataMap[wholeFlowMetadataFeatureId] = cmd.ID //只需要知道哪个行为的全站流量
-		wholeFlowSubmit.AddRow(dataMap)
+		wholeFlowSubmit.AddRow(behaviour.ID, dataMap)
 		successIds = append(successIds, behaviour.ID)
 	}
 
@@ -49,10 +49,14 @@ func (cmd *BehaviourCreate) Do() (e error) {
 	}
 
 	defer func() {
+		if e != nil {
+			return
+		}
 		err := cmd.DataRepository.SaveSubmit(wholeFlowSubmit)
 		if err != nil {
 			cmd.Worker().Logger().Error("全站流量提交失败 error:", err)
 		}
 	}()
-	return cmd.DataRepository.SaveSubmit(submit)
+	e = cmd.DataRepository.SaveSubmit(submit)
+	return
 }

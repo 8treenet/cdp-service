@@ -14,6 +14,8 @@ type Logger interface {
 	Errorf(format string, args ...interface{})
 	Info(...interface{})
 	Infof(format string, args ...interface{})
+	Debug(...interface{})
+	Debugf(format string, args ...interface{})
 }
 
 func init() {
