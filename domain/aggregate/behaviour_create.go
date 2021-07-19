@@ -17,7 +17,7 @@ type BehaviourCreate struct {
 	WholeFlow           *entity.Feature
 	behaviours          []*entity.Behaviour
 	BehaviourRepository *repository.BehaviourRepository
-	DataRepository      *repository.DataRepository
+	DataRepository      *repository.DataManagerRepository
 }
 
 // Do .

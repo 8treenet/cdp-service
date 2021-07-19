@@ -29,7 +29,7 @@ type SupportService struct {
 	SupportRepo       *repository.SupportRepository
 	FeatureRepository *repository.FeatureRepository
 	TX                transaction.Transaction
-	DataRepository    *repository.DataRepository
+	DataRepository    *repository.DataManagerRepository
 }
 
 // 创建渠道 .

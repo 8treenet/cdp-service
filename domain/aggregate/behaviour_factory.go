@@ -21,7 +21,7 @@ type BehaviourFactory struct {
 	BehaviourRepository *repository.BehaviourRepository
 	FeatureRepository   *repository.FeatureRepository
 	CustomerRepo        *repository.CustomerRepository
-	DataRepository      *repository.DataRepository
+	DataRepository      *repository.DataManagerRepository
 }
 
 // CreateBehaviourCmd

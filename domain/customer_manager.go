@@ -25,7 +25,7 @@ type CustomerManagerService struct {
 	CustomerRepository *repository.IntermediaryRepository
 	FeatureRepository  *repository.FeatureRepository
 	TX                 transaction.Transaction
-	DataRepository     *repository.DataRepository
+	DataRepository     *repository.DataManagerRepository
 }
 
 // GetMetaData 获取客户元数据列表.

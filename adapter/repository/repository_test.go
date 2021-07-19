@@ -188,7 +188,7 @@ func TestDataTable(t *testing.T) {
 	unitTest := getUnitTest()
 	unitTest.Run()
 
-	var repo *DataRepository
+	var repo *DataManagerRepository
 	unitTest.FetchRepository(&repo)
 
 	cmd := repo.NewCreateTable("testing1")
@@ -203,7 +203,7 @@ func TestUserRegisterSubmit(t *testing.T) {
 	unitTest := getUnitTest()
 	unitTest.Run()
 
-	var repo *DataRepository
+	var repo *DataManagerRepository
 	unitTest.FetchRepository(&repo)
 
 	cmd := repo.NewSubmit("user_register")
@@ -235,7 +235,7 @@ func TestArraySubmit(t *testing.T) {
 	unitTest := getUnitTest()
 	unitTest.Run()
 
-	var repo *DataRepository
+	var repo *DataManagerRepository
 	unitTest.FetchRepository(&repo)
 
 	cmd := repo.NewCreateTable("testing2")
