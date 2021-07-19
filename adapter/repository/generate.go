@@ -2115,3 +2115,156 @@ func saveBehaviour(repo GORMRepository, object saveObject) (rowsAffected int64, 
 	rowsAffected = db.RowsAffected
 	return
 }
+
+// findAnalysis .
+func findAnalysis(repo GORMRepository, result *po.Analysis, builders ...Builder) (e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Analysis", "findAnalysis", e, now)
+		ormErrorLog(repo, "Analysis", "findAnalysis", e, result)
+	}()
+	db := repo.db()
+	if len(builders) == 0 {
+		e = db.Where(result).Last(result).Error
+		return
+	}
+	e = builders[0].Execute(db.Limit(1), result)
+	return
+}
+
+// findAnalysisListByPrimarys .
+func findAnalysisListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.Analysis, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Analysis", "findAnalysisListByPrimarys", e, now)
+		ormErrorLog(repo, "Analysis", "findAnalysissByPrimarys", e, primarys)
+	}()
+
+	e = repo.db().Find(&results, primarys).Error
+	return
+}
+
+// findAnalysisByWhere .
+func findAnalysisByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.Analysis, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Analysis", "findAnalysisByWhere", e, now)
+		ormErrorLog(repo, "Analysis", "findAnalysisByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findAnalysisByMap .
+func findAnalysisByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.Analysis, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Analysis", "findAnalysisByMap", e, now)
+		ormErrorLog(repo, "Analysis", "findAnalysisByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findAnalysisList .
+func findAnalysisList(repo GORMRepository, query po.Analysis, builders ...Builder) (results []po.Analysis, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Analysis", "findAnalysisList", e, now)
+		ormErrorLog(repo, "Analysis", "findAnalysiss", e, query)
+	}()
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findAnalysisListByWhere .
+func findAnalysisListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.Analysis, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Analysis", "findAnalysisListByWhere", e, now)
+		ormErrorLog(repo, "Analysis", "findAnalysissByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findAnalysisListByMap .
+func findAnalysisListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.Analysis, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Analysis", "findAnalysisListByMap", e, now)
+		ormErrorLog(repo, "Analysis", "findAnalysissByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// createAnalysis .
+func createAnalysis(repo GORMRepository, object *po.Analysis) (rowsAffected int64, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Analysis", "createAnalysis", e, now)
+		ormErrorLog(repo, "Analysis", "createAnalysis", e, *object)
+	}()
+
+	db := repo.db().Create(object)
+	rowsAffected = db.RowsAffected
+	e = db.Error
+	return
+}
+
+// saveAnalysis .
+func saveAnalysis(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+	if len(object.Location()) == 0 {
+		return 0, errors.New("location cannot be empty")
+	}
+
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Analysis", "saveAnalysis", e, now)
+		ormErrorLog(repo, "Analysis", "saveAnalysis", e, object)
+	}()
+
+	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())
+	e = db.Error
+	rowsAffected = db.RowsAffected
+	return
+}
