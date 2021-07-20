@@ -17,7 +17,7 @@ func init() {
 	})
 }
 
-// SignRepository .
+// SignRepository 用户唯一相关.
 type SignRepository struct {
 	freedom.Repository
 	Termination *infra.Termination

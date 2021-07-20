@@ -1,8 +1,10 @@
 package repository
 
 import (
+	"github.com/8treenet/cdp-service/domain/entity"
 	"github.com/8treenet/cdp-service/infra/cattle"
 	"github.com/8treenet/freedom"
+	"github.com/go-xorm/builder"
 )
 
 func init() {
@@ -47,4 +49,14 @@ func (repo *DataManagerRepository) NewSubmit(tableName string) *cattle.Submit {
 // SaveSubmit
 func (repo *DataManagerRepository) SaveSubmit(submit *cattle.Submit) error {
 	return submit.Do()
+}
+
+// Query
+func (repo *DataManagerRepository) Query(result interface{}, b *builder.Builder) error {
+	return repo.Manager.CreateQuery(b).Do(result)
+}
+
+// GetRepot
+func (repo *DataManagerRepository) GetRepot(AnalysisID int) (report *entity.Report, e error) {
+	return
 }

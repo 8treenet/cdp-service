@@ -5,6 +5,7 @@ import (
 
 	"github.com/8treenet/freedom"
 	_ "github.com/ClickHouse/clickhouse-go"
+	"github.com/go-xorm/builder"
 	ormClickhouse "gorm.io/driver/clickhouse"
 	"gorm.io/gorm"
 )
@@ -82,6 +83,12 @@ func (ck *Manager) Submit(tableName string) *Submit {
 	result := &Submit{tableName: tableName, manager: ck}
 	result.init()
 	return result
+}
+
+func (ck *Manager) CreateQuery(builder *builder.Builder) *Query {
+	reuslt := &Query{manager: ck, builder: builder}
+	reuslt.init()
+	return reuslt
 }
 
 func (ck *Manager) tx(f func(*sql.Tx) error) error {

@@ -11,7 +11,7 @@ import (
 )
 
 type Warehouse interface {
-	Warehouse() string
+	GetWarehouse() string
 	GetColumnType(string) string
 }
 
@@ -42,7 +42,7 @@ func (dsl *DSL) convertValue(from, column string, value interface{}) (result int
 	}
 
 	for _, v := range dsl.whs {
-		if v.Warehouse() != from {
+		if v.GetWarehouse() != from {
 			continue
 		}
 

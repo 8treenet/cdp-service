@@ -77,3 +77,16 @@ func (entity *Feature) ToColumns() (result map[string]string) {
 	}
 	return result
 }
+
+func (entity *Feature) GetWarehouse() string {
+	return entity.Warehouse
+}
+
+func (entity *Feature) GetColumnType(column string) string {
+	for _, v := range entity.FeatureMetadata {
+		if v.Variable == column {
+			return v.Kind
+		}
+	}
+	return ""
+}

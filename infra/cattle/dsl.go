@@ -31,7 +31,6 @@ const (
 	attributeMethod      = "method"
 	attributeGroup       = "group"
 	attributeAggregation = "aggregation"
-	attributeDay         = "day"
 
 	outTypeSumValue    = "sum"
 	outTypeAvgValue    = "avg"
@@ -81,7 +80,7 @@ func (n *node) FindSubNode(name string) *node {
 	return nil
 }
 
-func newDSL(data []byte) (*DSL, error) {
+func NewDSL(data []byte) (*DSL, error) {
 	var obj node
 	err := xml.Unmarshal(data, &obj)
 	if err != nil {
@@ -151,6 +150,20 @@ func (dsl *DSL) FindJoinNode() (result *node) {
 		if n.XMLName.Local == labelJoin {
 			result = n
 			return false
+		}
+		return true
+	})
+	return
+}
+
+func (dsl *DSL) FindJoinFromNodes() (result []*node) {
+	walk(dsl.node, func(n *node, parent *node) bool {
+		if parent.XMLName.Local != labelJoin {
+			return true //继续
+		}
+		if n.XMLName.Local == labelFrom {
+			result = append(result, n)
+			return true
 		}
 		return true
 	})

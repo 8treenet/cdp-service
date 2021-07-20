@@ -76,7 +76,7 @@ func ExplainMultipleAnalysis(dsl *DSL, beginTime, endTime time.Time) (*builder.B
 	return join.Where(where), nil
 }
 
-func ExplainPersonasAnalysis(dsl *DSL, userIds []string, beginTimes ...time.Time) (*builder.Builder, error) {
+func ExplainPersonasAnalysis(dsl *DSL, userIds []string, beginTime time.Time) (*builder.Builder, error) {
 	from := dsl.FindFromNode()
 	if from == nil {
 		return nil, errors.New("未找到from标签")
@@ -104,15 +104,7 @@ func ExplainPersonasAnalysis(dsl *DSL, userIds []string, beginTimes ...time.Time
 		return nil, err
 	}
 
-	beginTime, err := DayToTime(dsl.FindPersonasNode().GetAttribute(attributeDay))
-	if err != nil {
-		err = fmt.Errorf("PersonasNode.GetAttribute(day) error: %w", err)
-		return nil, err
-	}
-	if len(beginTimes) > 0 {
-		beginTime = &beginTimes[0]
-	}
-	where = where.And(builder.Gte{from.GetContent() + "." + ColumnCreateTime: utils.DateTimeFormat(*beginTime)})
+	where = where.And(builder.Gte{from.GetContent() + "." + ColumnCreateTime: utils.DateTimeFormat(beginTime)})
 	return join.Where(where), nil
 }
 

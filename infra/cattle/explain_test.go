@@ -22,7 +22,7 @@ func TestDSL(t *testing.T) {
 	</and>
 	</root>`)
 
-	obj, err := newDSL(data)
+	obj, err := NewDSL(data)
 	if err != nil {
 		panic(err)
 	}
@@ -86,7 +86,7 @@ func TestCondition(t *testing.T) {
 	</and>
 	</condition>
 	</root>`)
-	dsl, err := newDSL(data)
+	dsl, err := NewDSL(data)
 	if err != nil {
 		panic(err)
 	}
@@ -114,7 +114,7 @@ func TestSingleSum(t *testing.T) {
 	</condition>
 	<singleOut column = "price">sum</singleOut>
 	</root>`)
-	dsl, err := newDSL(data)
+	dsl, err := NewDSL(data)
 	if err != nil {
 		panic(err)
 	}
@@ -150,7 +150,7 @@ func TestSingleOrderCondition(t *testing.T) {
 	</condition>
 	<singleOut>people</singleOut>
 	</root>`)
-	dsl, err := newDSL(data)
+	dsl, err := NewDSL(data)
 	if err != nil {
 		panic(err)
 	}
@@ -168,7 +168,7 @@ func TestDenominator(t *testing.T) {
 	data := []byte(`<root>
 	<denominator>fuckDDD</denominator>
 	</root>`)
-	dsl, err := newDSL(data)
+	dsl, err := NewDSL(data)
 	if err != nil {
 		panic(err)
 	}
@@ -192,7 +192,7 @@ func TestMultipleSum(t *testing.T) {
 	</condition>
 	<multipleOut group = "hour" column = "price">sum</multipleOut>
 	</root>`)
-	dsl, err := newDSL(data)
+	dsl, err := NewDSL(data)
 	if err != nil {
 		panic(err)
 	}
@@ -220,7 +220,7 @@ func TestMultipleOrderCondition(t *testing.T) {
 	</condition>
 	<multipleOut group = "productId">count</multipleOut>
 	</root>`)
-	dsl, err := newDSL(data)
+	dsl, err := NewDSL(data)
 	if err != nil {
 		panic(err)
 	}
@@ -238,7 +238,7 @@ func TestRegisterCondition(t *testing.T) {
 	<from>user_register</from>
 	<multipleOut group = "sourceId">count</multipleOut>
 	</root>`)
-	dsl, err := newDSL(data)
+	dsl, err := NewDSL(data)
 	if err != nil {
 		panic(err)
 	}
@@ -269,12 +269,12 @@ func TestExplainPersonasAnalysis(t *testing.T) {
 		<personasOut aggregation = "avg" column = "price" compare = "gte">50</personasOut>
 	</personas>
 	</root>`)
-	dsl, err := newDSL(data)
+	dsl, err := NewDSL(data)
 	if err != nil {
 		panic(err)
 	}
 
-	selectBuilder, err := ExplainPersonasAnalysis(dsl, []string{"1111", "22222", "33333"})
+	selectBuilder, err := ExplainPersonasAnalysis(dsl, []string{"1111", "22222", "33333"}, time.Now().AddDate(0, 0, -10))
 	if err != nil {
 		panic(err)
 	}
@@ -293,7 +293,7 @@ func TestArrayCondition(t *testing.T) {
 	</condition>
 	<singleOut>people</singleOut>
 	</root>`)
-	dsl, err := newDSL(data)
+	dsl, err := NewDSL(data)
 	if err != nil {
 		panic(err)
 	}
@@ -326,7 +326,7 @@ type mockMetedata struct {
 	call  func(string) string
 }
 
-func (m *mockMetedata) Warehouse() string {
+func (m *mockMetedata) GetWarehouse() string {
 	return m.table
 }
 
