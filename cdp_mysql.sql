@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.18)
 # Database: cdp
-# Generation Time: 2021-07-19 10:01:07 +0000
+# Generation Time: 2021-07-20 14:01:47 +0000
 # ************************************************************
 
 
@@ -31,7 +31,8 @@ CREATE TABLE `cdp_analysis` (
   `name` varchar(64) NOT NULL DEFAULT '' COMMENT '名称',
   `title` varchar(128) NOT NULL DEFAULT '' COMMENT '显示名称',
   `featureId` int(11) NOT NULL COMMENT '元id',
-  `range` int(11) NOT NULL COMMENT '天/范围',
+  `dateRange` int(11) NOT NULL COMMENT '天/范围',
+  `dateConservation` tinyint(11) NOT NULL DEFAULT '0' COMMENT '默认0自然日',
   `denominatorId` int(11) NOT NULL COMMENT '分母的统计表id',
   `outType` enum('multipleOut','singleOut') NOT NULL DEFAULT 'singleOut' COMMENT '输出类型',
   `xmlData` text NOT NULL COMMENT 'xml条件数据',
@@ -39,6 +40,23 @@ CREATE TABLE `cdp_analysis` (
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='统计的持久化表';
+
+
+
+# Dump of table cdp_analysis_report
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `cdp_analysis_report`;
+
+CREATE TABLE `cdp_analysis_report` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `analysisId` mediumint(11) NOT NULL COMMENT 'id',
+  `data` json NOT NULL COMMENT '结果',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `analysisId` (`analysisId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='统计的持久化表';
 
 

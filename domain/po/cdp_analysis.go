@@ -8,17 +8,18 @@ import (
 
 // Analysis .
 type Analysis struct {
-	changes       map[string]interface{}
-	ID            int       `gorm:"primaryKey;column:id"`
-	Name          string    `gorm:"column:name"`          // 名称
-	Title         string    `gorm:"column:title"`         // 显示名称
-	FeatureID     int       `gorm:"column:featureId"`     // 元id
-	DateRange     int       `gorm:"column:dateRange"`     // 天/范围
-	DenominatorID int       `gorm:"column:denominatorId"` // 分母的统计表id
-	OutType       string    `gorm:"column:outType"`       // 输出类型
-	XMLData       string    `gorm:"column:xmlData"`       // xml条件数据
-	Created       time.Time `gorm:"column:created"`
-	Updated       time.Time `gorm:"column:updated"`
+	changes          map[string]interface{}
+	ID               int       `gorm:"primaryKey;column:id"`
+	Name             string    `gorm:"column:name"`             // 名称
+	Title            string    `gorm:"column:title"`            // 显示名称
+	FeatureID        int       `gorm:"column:featureId"`        // 元id
+	DateRange        int       `gorm:"column:dateRange"`        // 天/范围
+	DateConservation int       `gorm:"column:dateConservation"` // 默认0自然日
+	DenominatorID    int       `gorm:"column:denominatorId"`    // 分母的统计表id
+	OutType          string    `gorm:"column:outType"`          // 输出类型
+	XMLData          string    `gorm:"column:xmlData"`          // xml条件数据
+	Created          time.Time `gorm:"column:created"`
+	Updated          time.Time `gorm:"column:updated"`
 }
 
 // TableName .
@@ -76,6 +77,12 @@ func (obj *Analysis) SetDateRange(dateRange int) {
 	obj.Update("dateRange", dateRange)
 }
 
+// SetDateConservation .
+func (obj *Analysis) SetDateConservation(dateConservation int) {
+	obj.DateConservation = dateConservation
+	obj.Update("dateConservation", dateConservation)
+}
+
 // SetDenominatorID .
 func (obj *Analysis) SetDenominatorID(denominatorID int) {
 	obj.DenominatorID = denominatorID
@@ -116,6 +123,12 @@ func (obj *Analysis) AddFeatureID(featureID int) {
 func (obj *Analysis) AddDateRange(dateRange int) {
 	obj.DateRange += dateRange
 	obj.Update("dateRange", gorm.Expr("dateRange + ?", dateRange))
+}
+
+// AddDateConservation .
+func (obj *Analysis) AddDateConservation(dateConservation int) {
+	obj.DateConservation += dateConservation
+	obj.Update("dateConservation", gorm.Expr("dateConservation + ?", dateConservation))
 }
 
 // AddDenominatorID .

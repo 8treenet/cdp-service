@@ -1,11 +1,17 @@
 package entity
 
 import (
+	"fmt"
+
+	"github.com/8treenet/cdp-service/domain/po"
 	"github.com/8treenet/freedom"
 )
 
 type Report struct {
+	po.AnalysisReport
 	freedom.Entity
-	AnalysisID int               `json:"analysisID"` //分析实体id
-	Detail     map[string]string `json:"detail"`     //结果详情
+}
+
+func (entity *Report) Identity() string {
+	return fmt.Sprint(entity.ID)
 }

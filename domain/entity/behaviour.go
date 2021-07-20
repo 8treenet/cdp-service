@@ -2,6 +2,7 @@ package entity
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/8treenet/cdp-service/domain/po"
 	"github.com/8treenet/cdp-service/infra/cattle"
@@ -16,6 +17,10 @@ type Behaviour struct {
 	UserId string //客户id
 	Region string //省
 	City   string //市
+}
+
+func (entity *Behaviour) Identity() string {
+	return fmt.Sprint(entity.ID)
 }
 
 // ToColumns 返回列和值

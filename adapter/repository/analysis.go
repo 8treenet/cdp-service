@@ -2,6 +2,7 @@ package repository
 
 import (
 	"encoding/base64"
+	"time"
 
 	"github.com/8treenet/cdp-service/domain/entity"
 	"github.com/8treenet/cdp-service/domain/po"
@@ -48,6 +49,8 @@ func (repo *AnalysisRepository) FindByName(name string) (result *entity.Analysis
 
 func (repo *AnalysisRepository) NewAnalysisEntity() (result *entity.Analysis) {
 	result = &entity.Analysis{}
+	result.Created = time.Now()
+	result.Updated = time.Now()
 	repo.InjectBaseEntity(result)
 	return
 }
@@ -107,6 +110,37 @@ func (repo *AnalysisRepository) GetAllAnalysis() (result []*entity.Analysis, e e
 	}
 	repo.InjectBaseEntitys(result)
 	return
+}
+
+func (repo *AnalysisRepository) GetReportEntity(analysisId int) (result *entity.Report, e error) {
+	if analysisId == 0 {
+		e = gorm.ErrRecordNotFound
+		return
+	}
+
+	result = &entity.Report{}
+	result.AnalysisID = analysisId
+	repo.InjectBaseEntity(result)
+	e = findAnalysisReport(repo, &result.AnalysisReport)
+	return
+}
+
+func (repo *AnalysisRepository) NewReportEntity() (result *entity.Report) {
+	result = &entity.Report{}
+	result.Created = time.Now()
+	result.Updated = time.Now()
+	repo.InjectBaseEntity(result)
+	return
+}
+
+func (repo *AnalysisRepository) SaveReportEntity(entity *entity.Report) error {
+	if entity.ID == 0 {
+		_, e := createAnalysisReport(repo, &entity.AnalysisReport)
+		return e
+	}
+
+	_, e := saveAnalysis(repo, entity)
+	return e
 }
 
 // db .

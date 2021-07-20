@@ -32,16 +32,14 @@ const (
 	attributeGroup       = "group"
 	attributeAggregation = "aggregation"
 
-	outTypeSumValue    = "sum"
-	outTypeAvgValue    = "avg"
-	outTypeMaxValue    = "max"
-	outTypeMinValue    = "min"
-	outTypeCountValue  = "count"
-	outTypePeopleValue = "people"
+	OutTypeSumValue    = "sum"
+	OutTypeAvgValue    = "avg"
+	OutTypeMaxValue    = "max"
+	OutTypeMinValue    = "min"
+	OutTypeCountValue  = "count"
+	OutTypePeopleValue = "people"
 
 	methodDate = "date"
-
-	AliasPeoples = "peoples"
 
 	groupMin   = "minute"
 	groupHour  = "hour"
@@ -218,18 +216,18 @@ func (dsl *DSL) SingleOut(isPeople *bool) (*builder.Builder, error) {
 
 	column := singleNode.GetAttribute(attributeColumn)
 	switch out {
-	case outTypePeopleValue:
+	case OutTypePeopleValue:
 		*isPeople = true
-		return builder.Select(fmt.Sprintf("count(*) as %s", AliasPeoples)), nil
-	case outTypeCountValue:
+		return builder.Select(fmt.Sprintf("count(*) as %s", OutTypePeopleValue)), nil
+	case OutTypeCountValue:
 		return builder.Select("count(*) as count"), nil
-	case outTypeSumValue:
+	case OutTypeSumValue:
 		return builder.Select(fmt.Sprintf("sum(%s.%s) as sum", table, column)), nil
-	case outTypeAvgValue:
+	case OutTypeAvgValue:
 		return builder.Select(fmt.Sprintf("avg(%s.%s) as avg", table, column)), nil
-	case outTypeMaxValue:
+	case OutTypeMaxValue:
 		return builder.Select(fmt.Sprintf("max(%s.%s) as max", table, column)), nil
-	case outTypeMinValue:
+	case OutTypeMinValue:
 		return builder.Select(fmt.Sprintf("min(%s.%s) as min", table, column)), nil
 	}
 	return nil, errors.New("singleOut未知错误")
@@ -297,23 +295,23 @@ func (dsl *DSL) MultipleOut() (result *builder.Builder, e error) {
 	}
 
 	switch out {
-	case outTypePeopleValue:
-		result = builder.Select(fmt.Sprintf("count(*) as %s, %s", AliasPeoples, groupExpl[0]))
-	case outTypeCountValue:
+	case OutTypePeopleValue:
+		result = builder.Select(fmt.Sprintf("count(*) as %s, %s", OutTypePeopleValue, groupExpl[0]))
+	case OutTypeCountValue:
 		result = builder.Select(fmt.Sprintf("count(*) as count, %s", groupExpl[0]))
-	case outTypeSumValue:
+	case OutTypeSumValue:
 		result = builder.Select(fmt.Sprintf("sum(%s.%s) as sum, %s", table, column, groupExpl[0]))
-	case outTypeAvgValue:
+	case OutTypeAvgValue:
 		result = builder.Select(fmt.Sprintf("avg(%s.%s) as avg, %s", table, column, groupExpl[0]))
-	case outTypeMaxValue:
+	case OutTypeMaxValue:
 		result = builder.Select(fmt.Sprintf("max(%s.%s) as max, %s", table, column, groupExpl[0]))
-	case outTypeMinValue:
+	case OutTypeMinValue:
 		result = builder.Select(fmt.Sprintf("min(%s.%s) as min, %s", table, column, groupExpl[0]))
 	default:
 		e = errors.New("multipleOut未知错误")
 		return
 	}
-	if out == outTypePeopleValue {
+	if out == OutTypePeopleValue {
 		result = result.GroupBy(fmt.Sprintf("%s.%s,%s", table, ColumnUserId, groupExpl[1]))
 		return
 	}
@@ -356,15 +354,15 @@ func (dsl *DSL) PersonasOut() (result *builder.Builder, e error) {
 
 func (dsl *DSL) personasHaving(aggregation, tablecolumn, compare, value string) (result string, err error) {
 	switch aggregation {
-	case outTypeCountValue:
+	case OutTypeCountValue:
 		tablecolumn = "count(*)"
-	case outTypeSumValue:
+	case OutTypeSumValue:
 		tablecolumn = fmt.Sprintf("sum(%s)", tablecolumn)
-	case outTypeAvgValue:
+	case OutTypeAvgValue:
 		tablecolumn = fmt.Sprintf("avg(%s)", tablecolumn)
-	case outTypeMaxValue:
+	case OutTypeMaxValue:
 		tablecolumn = fmt.Sprintf("max(%s)", tablecolumn)
-	case outTypeMinValue:
+	case OutTypeMinValue:
 		tablecolumn = fmt.Sprintf("min(%s)", tablecolumn)
 	default:
 		err = errors.New("aggregation error")
