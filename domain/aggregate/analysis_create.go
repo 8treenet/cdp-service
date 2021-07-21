@@ -42,14 +42,13 @@ func (cmd *AnalysisCreate) Do() (e error) {
 		return
 	}
 
-	if denominatorNode := dsl.FindDenominatorNode(); denominatorNode != nil {
+	if cmd.DenominatorID != 0 {
 		//寻找分母
-		dentity, err := cmd.analysisRepository.FindByName(denominatorNode.GetContent())
-		if err != nil || dentity.OutType != AnalysisSingleOutType || dentity.DenominatorID != 0 {
-			e = fmt.Errorf("分母设置%s错误，请检查规则。", denominatorNode.GetContent())
+		dentity, err := cmd.analysisRepository.Find(cmd.DenominatorID)
+		if err != nil || dentity.OutType != AnalysisSingleOutType {
+			e = fmt.Errorf("分母设置DenominatorID%d错误，请检查规则。", cmd.DenominatorID)
 			return
 		}
-		cmd.DenominatorID = dentity.ID
 	}
 
 	//读取元数据来适配类型
@@ -67,9 +66,9 @@ func (cmd *AnalysisCreate) Do() (e error) {
 	//检查是否可以查询
 	var b *builder.Builder
 	if cmd.OutType == AnalysisSingleOutType {
-		b, e = cattle.ExplainMultipleAnalysis(dsl, time.Now().Add(1*time.Minute), time.Now())
-	} else {
 		b, e = cattle.ExplainSingleAnalysis(dsl, time.Now().Add(1*time.Minute), time.Now())
+	} else {
+		b, e = cattle.ExplainMultipleAnalysis(dsl, time.Now().Add(1*time.Minute), time.Now())
 	}
 	if e != nil {
 		return

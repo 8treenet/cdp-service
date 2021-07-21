@@ -3,7 +3,9 @@ package domain
 import (
 	"os"
 	"testing"
+	"time"
 
+	"github.com/8treenet/cdp-service/domain/vo"
 	"github.com/8treenet/freedom"
 	"github.com/go-redis/redis"
 	"gorm.io/driver/mysql"
@@ -56,11 +58,153 @@ func TestExecuteDayJob(t *testing.T) {
 	//获取资源库
 }
 
-func TestCreateAnalysis(t *testing.T) {
+func TestCreateRegdayAnalysis(t *testing.T) {
 	unitTest := getUnitTest()
 	unitTest.Run()
 
 	var service *AnalysisService
 	unitTest.FetchService(&service)
 
+	var data vo.ReqCreateAnalysis
+	data.Name = "reg_day"
+	data.Title = "注册用户日统计"
+	data.FeatureId = 1
+	data.OutType = "singleOut"
+	data.DateRange = 7
+	data.DateConservation = 1
+
+	data.XmlData = []byte(`<root>
+		<from>user_register</from>
+		<singleOut>people</singleOut>
+	</root>
+	`)
+
+	e := service.CreateAnalysis(data)
+	t.Log(e)
+	time.Sleep(20 * time.Second)
+}
+
+func TestCreateSexRegdayAnalysis(t *testing.T) {
+	unitTest := getUnitTest()
+	unitTest.Run()
+
+	var service *AnalysisService
+	unitTest.FetchService(&service)
+
+	var data vo.ReqCreateAnalysis
+	data.Name = "reg_nan_day"
+	data.Title = "注册用户性别女日统计"
+	data.FeatureId = 1
+	data.OutType = "singleOut"
+	data.DateRange = 7
+	data.DateConservation = 1
+	data.DenominatorAnalysisId = 14
+
+	data.XmlData = []byte(`<root>
+		<from>user_register</from>
+		<condition>
+			<and>
+				<where from="user_register" column = "gender" compare = "eq">女</where>
+			</and>
+		</condition>
+		<singleOut>people</singleOut>
+	</root>
+	`)
+
+	e := service.CreateAnalysis(data)
+	t.Log(e)
+	time.Sleep(20 * time.Second)
+}
+
+func TestCreateSourceRegdayAnalysis(t *testing.T) {
+	unitTest := getUnitTest()
+	unitTest.Run()
+
+	var service *AnalysisService
+	unitTest.FetchService(&service)
+
+	var data vo.ReqCreateAnalysis
+	data.Name = "reg_source_day"
+	data.Title = "注册用户渠道区间统计"
+	data.FeatureId = 1
+	data.OutType = "multipleOut"
+	data.DateRange = 7
+	data.DateConservation = 1
+
+	data.XmlData = []byte(`<root>
+		<from>user_register</from>
+		<multipleOut group = "sourceId">count</multipleOut>
+	</root>
+	`)
+
+	e := service.CreateAnalysis(data)
+	t.Log(e)
+	time.Sleep(10 * time.Second)
+}
+
+func TestCreateMinRegdayAnalysis(t *testing.T) {
+	//创建注册用户分钟 区间统计
+	unitTest := getUnitTest()
+	unitTest.Run()
+
+	var service *AnalysisService
+	unitTest.FetchService(&service)
+
+	var data vo.ReqCreateAnalysis
+	data.Name = "reg_min_day"
+	data.Title = "注册用户分钟 区间统计"
+	data.FeatureId = 1
+	data.OutType = "multipleOut"
+	data.DateRange = 7
+	data.DateConservation = 1
+	data.DenominatorAnalysisId = 14
+
+	data.XmlData = []byte(`<root>
+		<from>user_register</from>
+		<multipleOut group = "minute">count</multipleOut>
+	</root>
+	`)
+
+	e := service.CreateAnalysis(data)
+	t.Log(e)
+	time.Sleep(10 * time.Second)
+}
+
+func TestQuerySexRegdayAnalysis(t *testing.T) {
+	unitTest := getUnitTest()
+	unitTest.Run()
+
+	var service *AnalysisService
+	unitTest.FetchService(&service)
+	//注册用户统计
+	result, e := service.QueryAnalysis(15)
+	if e != nil {
+		panic(e)
+	}
+	jsondata, e := result.MarshalJSON()
+	t.Log(string(jsondata), e)
+
+	//注册用户性别女的比例
+	result2, e2 := service.QueryAnalysis(14)
+	if e2 != nil {
+		panic(e2)
+	}
+	jsondata, e2 = result2.MarshalJSON()
+	t.Log(string(jsondata), e)
+
+	//注册用户渠道分布
+	result3, e3 := service.QueryAnalysis(16)
+	if e3 != nil {
+		panic(e3)
+	}
+	jsondata, e2 = result3.MarshalJSON()
+	t.Log(string(jsondata), e)
+
+	//注册用户分钟数分布
+	result4, e4 := service.QueryAnalysis(19)
+	if e3 != nil {
+		panic(e4)
+	}
+	jsondata, e2 = result4.MarshalJSON()
+	t.Log(string(jsondata), e)
 }

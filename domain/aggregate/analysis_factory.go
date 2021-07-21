@@ -24,7 +24,7 @@ type AnalysisFactory struct {
 }
 
 // CreateAnalysisCMD
-func (factory *AnalysisFactory) CreateAnalysisCMD(name, title, outType string, featureId, dateRange int, xmlData []byte) *AnalysisCreate {
+func (factory *AnalysisFactory) CreateAnalysisCMD(name, title, outType string, featureId, dateRange, dateConservation, denominatorAnalysisId int, xmlData []byte) *AnalysisCreate {
 	result := &AnalysisCreate{
 		featureRepository:     factory.FeatureRepository,
 		analysisRepository:    factory.AnalysisRepository,
@@ -38,6 +38,8 @@ func (factory *AnalysisFactory) CreateAnalysisCMD(name, title, outType string, f
 	result.Title = title
 	result.DateRange = dateRange
 	result.OutType = outType
+	result.DateConservation = dateConservation
+	result.DenominatorID = denominatorAnalysisId
 
 	feature, err := factory.FeatureRepository.GetFeatureEntity(featureId)
 	if err != nil {
@@ -46,6 +48,28 @@ func (factory *AnalysisFactory) CreateAnalysisCMD(name, title, outType string, f
 	}
 	result.feature = feature
 	return result
+}
+
+func (factory *AnalysisFactory) JobCMD(id int) (result *AnalysisJob) {
+	result = &AnalysisJob{
+		featureRepository:     factory.FeatureRepository,
+		analysisRepository:    factory.AnalysisRepository,
+		dataManagerRepository: factory.DataManagerRepository,
+	}
+	analysisEntity, e := factory.AnalysisRepository.Find(id)
+	if e != nil {
+		result.newError = e
+		return
+	}
+	result.Analysis = *analysisEntity
+
+	feature, err := factory.FeatureRepository.GetFeatureEntity(result.FeatureID)
+	if err != nil {
+		result.newError = err
+		return
+	}
+	result.feature = feature
+	return
 }
 
 // BatchJobCMD

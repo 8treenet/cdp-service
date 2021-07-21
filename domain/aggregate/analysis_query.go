@@ -32,7 +32,7 @@ func (cmd *AnalysisQuery) Do() (e error) {
 	}
 
 	if cmd.DenominatorID == 0 {
-		return json.Unmarshal(cmd.report.Data, cmd.result) //原始数据
+		return json.Unmarshal(cmd.report.Data, &cmd.result) //原始数据
 	}
 
 	if cmd.OutType == AnalysisSingleOutType {

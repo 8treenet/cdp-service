@@ -72,13 +72,13 @@ func TestCustomerController_Post(t *testing.T) {
 		RegisterDateTime string                 `json:"registerDateTime"`
 	}
 	data.Name = "yangshu3333"
-	data.Gender = "男"
+	data.Gender = "女"
 	data.Birthday2 = "1989-05-13"
 	data.Email = "4932004@qq.com"
 	data.Phone = "135135179333"
 	data.UserKey = "yangshu611113513517944333"
 	data.WechatUnionID = "10012133333"
-	data.RegisterDateTime = "2021-06-01 15:15:15"
+
 	//data.City = "太原"
 	//data.Region = "山西"
 	data.Source = "ali"
@@ -125,13 +125,14 @@ func TestCustomerController_PostList(t *testing.T) {
 		IP        string                 `json:"ip"`
 	}, 5)
 	for i := 0; i < 5; i++ {
-		datas[i].Name = "yangshuList-" + fmt.Sprint(i)
+		uid := 90
+		datas[i].Name = "yangshuList-" + fmt.Sprint(i+uid)
 		datas[i].Gender = "男"
 		datas[i].Birthday2 = "1989-05-13"
 		datas[i].Email = "4932004@qq.com"
-		datas[i].Phone = "13513517939" + fmt.Sprint(i)
-		datas[i].UserKey = "yangshu611113513517944333" + fmt.Sprint(i)
-		datas[i].WechatUnionID = "10012133333" + fmt.Sprint(i)
+		datas[i].Phone = "135135179" + fmt.Sprint(i+uid)
+		datas[i].UserKey = "yangshu611113513517944333" + fmt.Sprint(i+uid)
+		datas[i].WechatUnionID = "10012133333" + fmt.Sprint(i+uid)
 		datas[i].City = "太原"
 		datas[i].Region = "山西"
 		datas[i].Source = "ali"

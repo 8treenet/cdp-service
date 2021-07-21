@@ -53,7 +53,7 @@ func (repo *DataManagerRepository) SaveSubmit(submit *cattle.Submit) error {
 
 // Query
 func (repo *DataManagerRepository) Query(result interface{}, b *builder.Builder) error {
-	return repo.Manager.CreateQuery(b).Do(result)
+	return repo.Manager.CreateQuery(b).SetLogger(repo.Worker().Logger()).Do(result)
 }
 
 // GetRepot

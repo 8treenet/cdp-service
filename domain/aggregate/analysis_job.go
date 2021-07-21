@@ -3,10 +3,12 @@ package aggregate
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/8treenet/cdp-service/adapter/repository"
 	"github.com/8treenet/cdp-service/domain/entity"
 	"github.com/8treenet/cdp-service/infra/cattle"
+	"github.com/8treenet/cdp-service/utils"
 	"github.com/go-xorm/builder"
 	"gorm.io/gorm"
 )
@@ -48,9 +50,9 @@ func (cmd *AnalysisJob) Do() (e error) {
 	//解析查询
 	var b *builder.Builder
 	if cmd.OutType == AnalysisSingleOutType {
-		b, e = cattle.ExplainMultipleAnalysis(dsl, cmd.GetBeginTime(), cmd.GetEndTime())
-	} else {
 		b, e = cattle.ExplainSingleAnalysis(dsl, cmd.GetBeginTime(), cmd.GetEndTime())
+	} else {
+		b, e = cattle.ExplainMultipleAnalysis(dsl, cmd.GetBeginTime(), cmd.GetEndTime())
 	}
 
 	detail := []map[string]interface{}{}
@@ -70,7 +72,7 @@ func (cmd *AnalysisJob) Do() (e error) {
 			e = fmt.Errorf("GetReportEntity %w", e)
 			return
 		}
-		if report != nil {
+		if e == nil {
 			break
 		}
 		report = cmd.analysisRepository.NewReportEntity()
@@ -82,7 +84,7 @@ func (cmd *AnalysisJob) Do() (e error) {
 	if cmd.OutType == AnalysisSingleOutType {
 		reportData, e = json.Marshal(detail[0])
 	} else {
-		reportData, e = json.Marshal(detail)
+		reportData, e = json.Marshal(cmd.conversionList(detail))
 	}
 	if e != nil {
 		return
@@ -90,4 +92,22 @@ func (cmd *AnalysisJob) Do() (e error) {
 
 	report.SetData(reportData)
 	return cmd.analysisRepository.SaveReportEntity(report)
+}
+
+func (cmd *AnalysisJob) conversionList(list []map[string]interface{}) []map[string]interface{} {
+	result := []map[string]interface{}{}
+
+	for _, vmap := range list {
+		newMap := map[string]interface{}{}
+		for key, v := range vmap {
+			switch v := v.(type) {
+			case time.Time:
+				newMap[key] = utils.DateTimeFormat(v)
+				continue
+			}
+			newMap[key] = v
+		}
+		result = append(result, newMap)
+	}
+	return result
 }

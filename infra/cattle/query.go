@@ -25,5 +25,6 @@ func (q *Query) Do(dest interface{}) error {
 	if err != nil {
 		return err
 	}
+	q.logger.Debug("query:", sql)
 	return q.manager.db.Raw(sql).Scan(dest).Error
 }

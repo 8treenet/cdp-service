@@ -1,10 +1,12 @@
 package domain
 
 import (
+	"encoding/json"
 	"sort"
 
 	"github.com/8treenet/cdp-service/domain/aggregate"
 	"github.com/8treenet/cdp-service/domain/vo"
+	"github.com/8treenet/cdp-service/utils"
 	"github.com/8treenet/freedom"
 )
 
@@ -65,12 +67,27 @@ func (service *AnalysisService) ExecuteRefreshJob() {
 
 // CreateAnalysis
 func (service *AnalysisService) CreateAnalysis(req vo.ReqCreateAnalysis) error {
-	cmd := service.AnalysisFactory.CreateAnalysisCMD(req.Name, req.Title, req.OutType, req.FeatureId, req.DateRange, req.XmlData)
-	return cmd.Do()
+	cmd := service.AnalysisFactory.CreateAnalysisCMD(req.Name, req.Title, req.OutType, req.FeatureId, req.DateRange, req.DateConservation, req.DenominatorAnalysisId, req.XmlData)
+	err := cmd.Do()
+	if err != nil {
+		return err
+	}
+
+	utils.Async("CreateAnalysis.Job", service.Worker, func() {
+		job := service.AnalysisFactory.JobCMD(cmd.ID)
+		e := job.Do()
+		if e != nil {
+			service.Worker.Logger().Error("CreateAnalysis.Job id:%d error:%v", cmd.ID, e)
+		}
+	})
+	return nil
 }
 
 // QueryAnalysis
-func (service *AnalysisService) QueryAnalysis(id int) error {
+func (service *AnalysisService) QueryAnalysis(id int) (json.Marshaler, error) {
 	query := service.AnalysisFactory.Query(id)
-	return query.Do()
+	if e := query.Do(); e != nil {
+		return nil, e
+	}
+	return query, nil
 }

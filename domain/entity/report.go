@@ -58,7 +58,7 @@ func (entity *Report) RatioSingle(numerator *Report) (interface{}, error) {
 	}
 
 	result := map[string]interface{}{
-		cattle.OutTypeRatioValue: numeratorValue / selfValue,
+		cattle.OutTypeRatioValue: toRatio(numeratorValue / selfValue),
 	}
 	return result, nil
 }
@@ -106,10 +106,15 @@ func (entity *Report) RatioMultiple(numerator *Report) (interface{}, error) {
 			if err != nil {
 				return 0.0, err
 			}
-			newMap[cattle.OutTypeRatioValue] = parseValue / selfValue
+			newMap[cattle.OutTypeRatioValue] = toRatio(parseValue / selfValue)
 		}
 		result = append(result, newMap)
 	}
 
 	return result, nil
+}
+
+func toRatio(zeroRatio float64) float64 {
+	result, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", zeroRatio*100), 64)
+	return result
 }
