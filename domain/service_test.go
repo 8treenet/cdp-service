@@ -170,6 +170,16 @@ func TestCreateMinRegdayAnalysis(t *testing.T) {
 	time.Sleep(10 * time.Second)
 }
 
+func TestAnalysisJob(t *testing.T) {
+	unitTest := getUnitTest()
+	unitTest.Run()
+
+	var service *AnalysisService
+	unitTest.FetchService(&service)
+	service.ExecuteDayJob()
+	service.ExecuteRefreshJob()
+}
+
 func TestQuerySexRegdayAnalysis(t *testing.T) {
 	unitTest := getUnitTest()
 	unitTest.Run()

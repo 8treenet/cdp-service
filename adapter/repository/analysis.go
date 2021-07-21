@@ -118,7 +118,7 @@ func (repo *AnalysisRepository) GetAllAnalysis() (result []*entity.Analysis, e e
 	}
 
 	for i := 0; i < len(list); i++ {
-		entity := &entity.Analysis{Analysis: list[0]}
+		entity := &entity.Analysis{Analysis: list[i]}
 		entity.XMLBytes, e = base64.StdEncoding.DecodeString(entity.XMLData)
 		if e != nil {
 			return

@@ -2,6 +2,7 @@ package domain
 
 import (
 	"encoding/json"
+
 	"sort"
 
 	"github.com/8treenet/cdp-service/domain/aggregate"
@@ -32,7 +33,7 @@ type AnalysisService struct {
 func (service *AnalysisService) ExecuteDayJob() {
 	cmds, err := service.AnalysisFactory.BatchJobCMD(true)
 	if err != nil {
-		service.Worker.Logger().Errorf("DayTask.CreateBatchTaskCMD err :%s", err.Error())
+		service.Worker.Logger().Errorf("ExecuteDayJob err :%s", err.Error())
 		return
 	}
 	for _, cmd := range cmds {
@@ -48,7 +49,7 @@ func (service *AnalysisService) ExecuteDayJob() {
 func (service *AnalysisService) ExecuteRefreshJob() {
 	cmds, err := service.AnalysisFactory.BatchJobCMD(false)
 	if err != nil {
-		service.Worker.Logger().Errorf("DayTask.CreateBatchTaskCMD err :%s", err.Error())
+		service.Worker.Logger().Errorf("ExecuteRefreshJob err :%s", err.Error())
 		return
 	}
 
