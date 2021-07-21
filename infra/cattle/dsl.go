@@ -20,7 +20,6 @@ const (
 	labelJoin       = "join"
 	labelSingle     = "singleOut"
 	labelMultiple   = "multipleOut"
-	labeDenominator = "denominator"
 	labePersonas    = "personas"
 	labePersonasOut = "personasOut"
 
@@ -125,17 +124,6 @@ func (dsl *DSL) FindFromNode() (result *node) {
 			return true //继续
 		}
 		if n.XMLName.Local == labelFrom {
-			result = n
-			return false
-		}
-		return true
-	})
-	return
-}
-
-func (dsl *DSL) FindDenominatorNode() (result *node) {
-	walk(dsl.node, func(n *node, parent *node) bool {
-		if n.XMLName.Local == labeDenominator {
 			result = n
 			return false
 		}

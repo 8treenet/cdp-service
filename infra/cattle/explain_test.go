@@ -163,18 +163,6 @@ func TestSingleOrderCondition(t *testing.T) {
 	fmt.Println(selectBuilder.ToBoundSQL())
 }
 
-func TestDenominator(t *testing.T) {
-	//读取分母
-	data := []byte(`<root>
-	<denominator>fuckDDD</denominator>
-	</root>`)
-	dsl, err := NewDSL(data)
-	if err != nil {
-		panic(err)
-	}
-	t.Log(dsl.FindDenominatorNode().GetContent())
-}
-
 func TestMultipleSum(t *testing.T) {
 	//北京地区 年龄大于=20 订单大于500 的总销售额 小时/分布
 	data := []byte(`<root>
