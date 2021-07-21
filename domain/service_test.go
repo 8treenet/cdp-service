@@ -2,7 +2,6 @@ package domain
 
 import (
 	"os"
-	"strconv"
 	"testing"
 
 	"github.com/8treenet/freedom"
@@ -57,10 +56,11 @@ func TestExecuteDayJob(t *testing.T) {
 	//获取资源库
 }
 
-func Test123(t *testing.T) {
-	fv, err := strconv.ParseFloat("100.09", 64)
-	t.Log(fv, err)
+func TestCreateAnalysis(t *testing.T) {
+	unitTest := getUnitTest()
+	unitTest.Run()
 
-	f := 10.54 / 25.123
-	t.Log(f)
+	var service *AnalysisService
+	unitTest.FetchService(&service)
+
 }

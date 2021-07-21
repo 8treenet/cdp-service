@@ -28,6 +28,24 @@ type AnalysisRepository struct {
 	detailedCacheKey string
 }
 
+func (repo *AnalysisRepository) Find(id int) (result *entity.Analysis, e error) {
+	defer func() {
+		if e != nil {
+			return
+		}
+		result.XMLBytes, e = base64.StdEncoding.DecodeString(result.XMLData)
+	}()
+	if id == 0 {
+		e = gorm.ErrRecordNotFound
+		return
+	}
+	result = &entity.Analysis{}
+	result.ID = id
+	repo.InjectBaseEntity(result)
+	e = findAnalysis(repo, &result.Analysis)
+	return
+}
+
 func (repo *AnalysisRepository) FindByName(name string) (result *entity.Analysis, e error) {
 	defer func() {
 		if e != nil {

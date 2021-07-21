@@ -20,6 +20,10 @@ type AnalysisQuery struct {
 
 // Do .
 func (cmd *AnalysisQuery) Do() (e error) {
+	if cmd.newError != nil {
+		e = cmd.newError
+		return
+	}
 	if cmd.report == nil {
 		return cmd.termination.AnalysisIng()
 	}

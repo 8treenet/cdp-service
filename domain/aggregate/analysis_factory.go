@@ -80,3 +80,43 @@ func (factory *AnalysisFactory) BatchJobCMD(dateConservation bool) (result []*An
 	}
 	return
 }
+
+// Query
+func (factory *AnalysisFactory) Query(id int) (result *AnalysisQuery) {
+	result = &AnalysisQuery{
+		termination: factory.Termination,
+	}
+
+	analysisEntity, e := factory.AnalysisRepository.Find(id)
+	if e != nil {
+		result.newError = e
+		return
+	}
+	result.Analysis = *analysisEntity
+
+	feature, err := factory.FeatureRepository.GetFeatureEntity(result.FeatureID)
+	if err != nil {
+		result.newError = err
+		return
+	}
+	result.feature = feature
+
+	report, err := factory.AnalysisRepository.GetReportEntity(id)
+	if err != nil {
+		result.newError = err
+		return
+	}
+	result.report = report
+
+	if result.DenominatorID == 0 {
+		return //没有分母直接返回
+	}
+
+	dreport, derr := factory.AnalysisRepository.GetReportEntity(result.DenominatorID)
+	if derr != nil {
+		result.newError = derr
+		return
+	}
+	result.denominatorReport = dreport
+	return
+}

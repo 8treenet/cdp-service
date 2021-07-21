@@ -68,3 +68,9 @@ func (service *AnalysisService) CreateAnalysis(req vo.ReqCreateAnalysis) error {
 	cmd := service.AnalysisFactory.CreateAnalysisCMD(req.Name, req.Title, req.OutType, req.FeatureId, req.DateRange, req.XmlData)
 	return cmd.Do()
 }
+
+// QueryAnalysis
+func (service *AnalysisService) QueryAnalysis(id int) error {
+	query := service.AnalysisFactory.Query(id)
+	return query.Do()
+}
