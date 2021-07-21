@@ -71,7 +71,6 @@ func (service *BehaviourService) CreateBehaviour(req vo.ReqBehaviourDTO) error {
 
 // BatchSave 批量入库
 func (service *BehaviourService) BatchSave() func() bool {
-	service.Worker.Logger().Debug("BatchSave")
 	list, cancel := service.BehaviourRepository.FetchQueue(service.fetchCount, service.fetchTime)
 
 	if len(list) == 0 {

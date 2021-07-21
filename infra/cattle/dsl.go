@@ -38,6 +38,7 @@ const (
 	OutTypeMinValue    = "min"
 	OutTypeCountValue  = "count"
 	OutTypePeopleValue = "people"
+	OutTypeRatioValue  = "ratio"
 
 	methodDate = "date"
 

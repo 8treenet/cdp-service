@@ -42,6 +42,8 @@ type SystemConf struct {
 	JobEnteringHouseSleep    int `toml:"job_entering_house_sleep"`
 	JobEnteringHouseMaxCount int `toml:"job_entering_house_max_count"`
 	JobTruncateHour          int `toml:"job_truncate_hour"`
+	JobAnalysisHour          int `toml:"job_analysis_hour"`
+	JobAnalysisRefreshHour   int `toml:"job_analysis_refresh_hour"`
 }
 
 // DBConf .

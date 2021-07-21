@@ -34,3 +34,9 @@ func (response *Termination) Custom(code int, msg string) error {
 	setErrorCode(response.Worker(), code)
 	return errors.New(msg)
 }
+
+// AnalysisIng
+func (response *Termination) AnalysisIng() error {
+	setErrorCode(response.Worker(), 10002)
+	return errors.New("正在分析中")
+}

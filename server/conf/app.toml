@@ -3,6 +3,10 @@
 job_entering_house_sleep = 8
 #每日4点
 job_truncate_hour = 4
+#每日1点
+job_analysis_hour = 1
+#每1小时刷新实时
+job_analysis_refresh_hour = 1
 #批量插入最大条数
 job_entering_house_max_count = 1000 
 

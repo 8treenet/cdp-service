@@ -11,9 +11,10 @@ import (
 	"gorm.io/gorm"
 )
 
-// AnalysisTask 负责分析的处理，并且写入数据库.
-type AnalysisTask struct {
+// AnalysisJob 负责分析的处理，并且写入数据库.
+type AnalysisJob struct {
 	entity.Analysis
+	newError              error
 	feature               *entity.Feature
 	featureRepository     *repository.FeatureRepository
 	analysisRepository    *repository.AnalysisRepository
@@ -21,7 +22,12 @@ type AnalysisTask struct {
 }
 
 // Do .
-func (cmd *AnalysisTask) Do() (e error) {
+func (cmd *AnalysisJob) Do() (e error) {
+	if cmd.newError != nil {
+		e = cmd.newError
+		return
+	}
+
 	dsl, e := cattle.NewDSL(cmd.XMLBytes)
 	if e != nil {
 		return
@@ -63,6 +69,9 @@ func (cmd *AnalysisTask) Do() (e error) {
 		if e != nil && e != gorm.ErrRecordNotFound {
 			e = fmt.Errorf("GetReportEntity %w", e)
 			return
+		}
+		if report != nil {
+			break
 		}
 		report = cmd.analysisRepository.NewReportEntity()
 		report.AnalysisID = cmd.ID
