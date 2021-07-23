@@ -47,12 +47,14 @@ func (cmd *AnalysisJob) Do(now time.Time) (e error) {
 	}
 	dsl.SetMetedata(cmd.feature)
 
+	beginTime := cmd.GetBeginTime(now)
+	endTime := cmd.GetEndTime(now)
 	//解析查询
 	var b *builder.Builder
 	if cmd.OutType == AnalysisSingleOutType {
-		b, e = cattle.ExplainSingleAnalysis(dsl, cmd.GetBeginTime(now), cmd.GetEndTime(now))
+		b, e = cattle.ExplainSingleAnalysis(dsl, beginTime, endTime)
 	} else {
-		b, e = cattle.ExplainMultipleAnalysis(dsl, cmd.GetBeginTime(now), cmd.GetEndTime(now))
+		b, e = cattle.ExplainMultipleAnalysis(dsl, beginTime, endTime)
 	}
 
 	detail := []map[string]interface{}{}
@@ -91,6 +93,8 @@ func (cmd *AnalysisJob) Do(now time.Time) (e error) {
 	}
 
 	report.SetData(reportData)
+	report.SetBeginTime(beginTime)
+	report.SetEndTime(endTime)
 	return cmd.analysisRepository.SaveReportEntity(report)
 }
 

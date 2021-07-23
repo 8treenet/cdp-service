@@ -98,7 +98,7 @@ func TestCreateSexRegdayAnalysis(t *testing.T) {
 	data.OutType = "singleOut"
 	data.DateRange = 7
 	data.DateConservation = 1
-	data.DenominatorAnalysisId = 14
+	data.DenominatorAnalysisId = 21
 
 	data.XmlData = []byte(`<root>
 		<from>user_register</from>
@@ -157,7 +157,7 @@ func TestCreateMinRegdayAnalysis(t *testing.T) {
 	data.OutType = "multipleOut"
 	data.DateRange = 7
 	data.DateConservation = 1
-	data.DenominatorAnalysisId = 14
+	data.DenominatorAnalysisId = 21
 
 	data.XmlData = []byte(`<root>
 		<from>user_register</from>
@@ -187,7 +187,7 @@ func TestQuerySexRegdayAnalysis(t *testing.T) {
 	var service *AnalysisService
 	unitTest.FetchService(&service)
 	//注册用户统计
-	result, e := service.QueryAnalysis(15)
+	result, e := service.QueryAnalysis(21)
 	if e != nil {
 		panic(e)
 	}
@@ -195,7 +195,7 @@ func TestQuerySexRegdayAnalysis(t *testing.T) {
 	t.Log(string(jsondata), e)
 
 	//注册用户性别女的比例
-	result2, e2 := service.QueryAnalysis(14)
+	result2, e2 := service.QueryAnalysis(22)
 	if e2 != nil {
 		panic(e2)
 	}
@@ -203,7 +203,7 @@ func TestQuerySexRegdayAnalysis(t *testing.T) {
 	t.Log(string(jsondata), e)
 
 	//注册用户渠道分布
-	result3, e3 := service.QueryAnalysis(16)
+	result3, e3 := service.QueryAnalysis(23)
 	if e3 != nil {
 		panic(e3)
 	}
@@ -211,7 +211,7 @@ func TestQuerySexRegdayAnalysis(t *testing.T) {
 	t.Log(string(jsondata), e)
 
 	//注册用户分钟数分布
-	result4, e4 := service.QueryAnalysis(19)
+	result4, e4 := service.QueryAnalysis(24)
 	if e3 != nil {
 		panic(e4)
 	}

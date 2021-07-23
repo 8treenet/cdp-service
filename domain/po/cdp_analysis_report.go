@@ -13,6 +13,8 @@ type AnalysisReport struct {
 	ID         int            `gorm:"primaryKey;column:id"`
 	AnalysisID int            `gorm:"column:analysisId"` // id
 	Data       datatypes.JSON `gorm:"column:data"`       // 结果
+	BeginTime  time.Time      `gorm:"column:beginTime"`
+	EndTime    time.Time      `gorm:"column:endTime"`
 	Created    time.Time      `gorm:"column:created"`
 	Updated    time.Time      `gorm:"column:updated"`
 }
@@ -58,6 +60,18 @@ func (obj *AnalysisReport) SetAnalysisID(analysisID int) {
 func (obj *AnalysisReport) SetData(data datatypes.JSON) {
 	obj.Data = data
 	obj.Update("data", data)
+}
+
+// SetBeginTime .
+func (obj *AnalysisReport) SetBeginTime(beginTime time.Time) {
+	obj.BeginTime = beginTime
+	obj.Update("beginTime", beginTime)
+}
+
+// SetEndTime .
+func (obj *AnalysisReport) SetEndTime(endTime time.Time) {
+	obj.EndTime = endTime
+	obj.Update("endTime", endTime)
 }
 
 // SetCreated .
