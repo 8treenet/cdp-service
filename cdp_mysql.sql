@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.18)
 # Database: cdp
-# Generation Time: 2021-07-21 13:00:39 +0000
+# Generation Time: 2021-07-23 07:57:15 +0000
 # ************************************************************
 
 
@@ -47,10 +47,10 @@ LOCK TABLES `cdp_analysis` WRITE;
 
 INSERT INTO `cdp_analysis` (`id`, `name`, `title`, `featureId`, `dateRange`, `dateConservation`, `denominatorId`, `outType`, `xmlData`, `created`, `updated`)
 VALUES
-	(14,'reg_day','注册用户日统计',1,7,1,0,'singleOut','PHJvb3Q+CgkJPGZyb20+dXNlcl9yZWdpc3RlcjwvZnJvbT4KCQk8c2luZ2xlT3V0PnBlb3BsZTwvc2luZ2xlT3V0PgoJPC9yb290PgoJ','2021-07-21 19:34:46','2021-07-21 19:34:46'),
-	(15,'reg_nan_day','注册用户性别女日统计',1,7,1,14,'singleOut','PHJvb3Q+CgkJPGZyb20+dXNlcl9yZWdpc3RlcjwvZnJvbT4KCQk8Y29uZGl0aW9uPgoJCQk8YW5kPgoJCQkJPHdoZXJlIGZyb209InVzZXJfcmVnaXN0ZXIiIGNvbHVtbiA9ICJnZW5kZXIiIGNvbXBhcmUgPSAiZXEiPuWlszwvd2hlcmU+CgkJCTwvYW5kPgoJCTwvY29uZGl0aW9uPgoJCTxzaW5nbGVPdXQ+cGVvcGxlPC9zaW5nbGVPdXQ+Cgk8L3Jvb3Q+Cgk=','2021-07-21 19:35:06','2021-07-21 19:35:06'),
-	(16,'reg_source_day','注册用户渠道区间统计',1,7,1,0,'multipleOut','PHJvb3Q+CgkJPGZyb20+dXNlcl9yZWdpc3RlcjwvZnJvbT4KCQk8bXVsdGlwbGVPdXQgZ3JvdXAgPSAic291cmNlSWQiPmNvdW50PC9tdWx0aXBsZU91dD4KCTwvcm9vdD4KCQ==','2021-07-21 19:50:42','2021-07-21 19:50:42'),
-	(19,'reg_min_day','注册用户分钟 区间统计',1,7,1,14,'multipleOut','PHJvb3Q+CgkJPGZyb20+dXNlcl9yZWdpc3RlcjwvZnJvbT4KCQk8bXVsdGlwbGVPdXQgZ3JvdXAgPSAibWludXRlIj5jb3VudDwvbXVsdGlwbGVPdXQ+Cgk8L3Jvb3Q+Cgk=','2021-07-21 20:08:52','2021-07-21 20:08:52');
+	(21,'reg_day','注册用户日统计',1,7,0,0,'singleOut','PHJvb3Q+CgkJPGZyb20+dXNlcl9yZWdpc3RlcjwvZnJvbT4KCQk8c2luZ2xlT3V0PnBlb3BsZTwvc2luZ2xlT3V0PgoJPC9yb290PgoJ','2021-07-23 15:48:36','2021-07-23 15:54:32'),
+	(22,'reg_nan_day','注册用户性别女日统计',1,7,0,21,'singleOut','PHJvb3Q+CgkJPGZyb20+dXNlcl9yZWdpc3RlcjwvZnJvbT4KCQk8Y29uZGl0aW9uPgoJCQk8YW5kPgoJCQkJPHdoZXJlIGZyb209InVzZXJfcmVnaXN0ZXIiIGNvbHVtbiA9ICJnZW5kZXIiIGNvbXBhcmUgPSAiZXEiPuWlszwvd2hlcmU+CgkJCTwvYW5kPgoJCTwvY29uZGl0aW9uPgoJCTxzaW5nbGVPdXQ+cGVvcGxlPC9zaW5nbGVPdXQ+Cgk8L3Jvb3Q+Cgk=','2021-07-23 15:49:00','2021-07-23 15:54:34'),
+	(23,'reg_source_day','注册用户渠道区间统计',1,7,0,0,'multipleOut','PHJvb3Q+CgkJPGZyb20+dXNlcl9yZWdpc3RlcjwvZnJvbT4KCQk8bXVsdGlwbGVPdXQgZ3JvdXAgPSAic291cmNlSWQiPmNvdW50PC9tdWx0aXBsZU91dD4KCTwvcm9vdD4KCQ==','2021-07-23 15:49:23','2021-07-23 15:54:35'),
+	(24,'reg_min_day','注册用户分钟 区间统计',1,7,0,21,'multipleOut','PHJvb3Q+CgkJPGZyb20+dXNlcl9yZWdpc3RlcjwvZnJvbT4KCQk8bXVsdGlwbGVPdXQgZ3JvdXAgPSAibWludXRlIj5jb3VudDwvbXVsdGlwbGVPdXQ+Cgk8L3Jvb3Q+Cgk=','2021-07-23 15:49:40','2021-07-23 15:54:38');
 
 /*!40000 ALTER TABLE `cdp_analysis` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -65,6 +65,8 @@ CREATE TABLE `cdp_analysis_report` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `analysisId` mediumint(11) NOT NULL COMMENT 'id',
   `data` json NOT NULL COMMENT '结果',
+  `beginTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `endTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -74,12 +76,12 @@ CREATE TABLE `cdp_analysis_report` (
 LOCK TABLES `cdp_analysis_report` WRITE;
 /*!40000 ALTER TABLE `cdp_analysis_report` DISABLE KEYS */;
 
-INSERT INTO `cdp_analysis_report` (`id`, `analysisId`, `data`, `created`, `updated`)
+INSERT INTO `cdp_analysis_report` (`id`, `analysisId`, `data`, `beginTime`, `endTime`, `created`, `updated`)
 VALUES
-	(7,14,'{\"people\": 11}','2021-07-21 19:34:46','2021-07-21 20:00:03'),
-	(8,15,'{\"people\": 1}','2021-07-21 19:35:06','2021-07-21 19:35:06'),
-	(9,16,'[{\"count\": 4, \"sourceId\": 0}, {\"count\": 7, \"sourceId\": 2}]','2021-07-21 19:50:42','2021-07-21 20:23:25'),
-	(12,19,'[{\"count\": 6, \"createTime\": \"2021-07-21 19:33:00\"}, {\"count\": 5, \"createTime\": \"2021-07-21 19:55:00\"}]','2021-07-21 20:08:52','2021-07-21 20:08:52');
+	(13,21,'{\"people\": 11}','2021-07-16 00:00:00','2021-07-22 23:59:59','2021-07-23 15:48:36','2021-07-23 15:54:45'),
+	(14,22,'{\"people\": 1}','2021-07-16 00:00:00','2021-07-22 23:59:59','2021-07-23 15:49:00','2021-07-23 15:54:45'),
+	(15,23,'[{\"count\": 4, \"sourceId\": 0}, {\"count\": 7, \"sourceId\": 2}]','2021-07-16 00:00:00','2021-07-22 23:59:59','2021-07-23 15:49:23','2021-07-23 15:54:45'),
+	(16,24,'[{\"count\": 6, \"createTime\": \"2021-07-21 19:33:00\"}, {\"count\": 5, \"createTime\": \"2021-07-21 19:55:00\"}]','2021-07-16 00:00:00','2021-07-22 23:59:59','2021-07-23 15:49:40','2021-07-23 15:54:45');
 
 /*!40000 ALTER TABLE `cdp_analysis_report` ENABLE KEYS */;
 UNLOCK TABLES;
