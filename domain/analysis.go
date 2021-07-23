@@ -2,6 +2,7 @@ package domain
 
 import (
 	"encoding/json"
+	"time"
 
 	"sort"
 
@@ -31,13 +32,14 @@ type AnalysisService struct {
 
 // ExecuteDayJob
 func (service *AnalysisService) ExecuteDayJob() {
+	now := time.Now()
 	cmds, err := service.AnalysisFactory.BatchJobCMD(true)
 	if err != nil {
 		service.Worker.Logger().Errorf("ExecuteDayJob err :%s", err.Error())
 		return
 	}
 	for _, cmd := range cmds {
-		err := cmd.Do()
+		err := cmd.Do(now)
 		if err == nil {
 			continue
 		}
@@ -47,6 +49,7 @@ func (service *AnalysisService) ExecuteDayJob() {
 
 // ExecuteRefreshJob
 func (service *AnalysisService) ExecuteRefreshJob() {
+	now := time.Now()
 	cmds, err := service.AnalysisFactory.BatchJobCMD(false)
 	if err != nil {
 		service.Worker.Logger().Errorf("ExecuteRefreshJob err :%s", err.Error())
@@ -58,7 +61,7 @@ func (service *AnalysisService) ExecuteRefreshJob() {
 	})
 
 	for _, cmd := range cmds {
-		err := cmd.Do()
+		err := cmd.Do(now)
 		if err == nil {
 			continue
 		}
@@ -76,7 +79,7 @@ func (service *AnalysisService) CreateAnalysis(req vo.ReqCreateAnalysis) error {
 
 	utils.Async("CreateAnalysis.Job", service.Worker, func() {
 		job := service.AnalysisFactory.JobCMD(cmd.ID)
-		e := job.Do()
+		e := job.Do(time.Now())
 		if e != nil {
 			service.Worker.Logger().Error("CreateAnalysis.Job id:%d error:%v", cmd.ID, e)
 		}

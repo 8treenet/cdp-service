@@ -19,22 +19,22 @@ func (entity *Analysis) Identity() string {
 	return fmt.Sprint(entity.ID)
 }
 
-func (entity *Analysis) GetBeginTime() time.Time {
+func (entity *Analysis) GetBeginTime(now time.Time) time.Time {
 	if entity.DateConservation != 0 {
-		return time.Now().AddDate(0, 0, -entity.DateRange)
+		return now.AddDate(0, 0, -entity.DateRange)
 	}
 
-	date := time.Now().Format("2006-01-02")
+	date := now.Format("2006-01-02")
 	currentDateTime, _ := time.ParseInLocation("2006-01-02", date, time.Local)
 	return currentDateTime.AddDate(0, 0, -entity.DateRange)
 }
 
-func (entity *Analysis) GetEndTime() time.Time {
+func (entity *Analysis) GetEndTime(now time.Time) time.Time {
 	if entity.DateConservation != 0 {
-		return time.Now()
+		return now.Add(-20 * time.Minute) //endtime固定推后20分钟
 	}
 
-	date := time.Now().Format("2006-01-02")
+	date := now.Format("2006-01-02")
 	currentDateTime, _ := time.ParseInLocation("2006-01-02", date, time.Local)
-	return currentDateTime.Add(-1 * time.Second)
+	return currentDateTime.Add(-1 * time.Second) //昨日23:59:59
 }

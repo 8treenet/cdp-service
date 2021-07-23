@@ -24,7 +24,7 @@ type AnalysisJob struct {
 }
 
 // Do .
-func (cmd *AnalysisJob) Do() (e error) {
+func (cmd *AnalysisJob) Do(now time.Time) (e error) {
 	if cmd.newError != nil {
 		e = cmd.newError
 		return
@@ -50,9 +50,9 @@ func (cmd *AnalysisJob) Do() (e error) {
 	//解析查询
 	var b *builder.Builder
 	if cmd.OutType == AnalysisSingleOutType {
-		b, e = cattle.ExplainSingleAnalysis(dsl, cmd.GetBeginTime(), cmd.GetEndTime())
+		b, e = cattle.ExplainSingleAnalysis(dsl, cmd.GetBeginTime(now), cmd.GetEndTime(now))
 	} else {
-		b, e = cattle.ExplainMultipleAnalysis(dsl, cmd.GetBeginTime(), cmd.GetEndTime())
+		b, e = cattle.ExplainMultipleAnalysis(dsl, cmd.GetBeginTime(now), cmd.GetEndTime(now))
 	}
 
 	detail := []map[string]interface{}{}
