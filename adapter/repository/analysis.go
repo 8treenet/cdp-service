@@ -15,7 +15,7 @@ import (
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
 		initiator.BindRepository(func() *AnalysisRepository {
-			return &AnalysisRepository{detailedCacheKey: "cdp_detailed_%d"}
+			return &AnalysisRepository{}
 		})
 	})
 }
@@ -23,9 +23,8 @@ func init() {
 // AnalysisRepository 统计仓库.
 type AnalysisRepository struct {
 	freedom.Repository
-	Common           *infra.CommonRequest
-	Manager          *cattle.Manager
-	detailedCacheKey string
+	Common  *infra.CommonRequest
+	Manager *cattle.Manager
 }
 
 func (repo *AnalysisRepository) Find(id int) (result *entity.Analysis, e error) {

@@ -313,6 +313,26 @@ func (repo *CustomerRepository) GetCustomersByPage() (result []*entity.Customer,
 	return
 }
 
+// GetRangeUserIds .
+func (repo *CustomerRepository) GetRangeUserIds(startId, size int) (userIds []string, lastId int, e error) {
+	list := []struct {
+		ID     int    `gorm:"primaryKey;column:id"`
+		UserID string `gorm:"column:userId"`
+	}{}
+
+	sel := repo.db().Model(&po.Customer{}).Select("id,userId")
+	sel.Where("id>", startId).Order("id asc").Limit(size).Scan(&list)
+	if len(list) == 0 {
+		return
+	}
+
+	lastId = list[len(list)-1].ID
+	for _, v := range list {
+		userIds = append(userIds, v.UserID)
+	}
+	return
+}
+
 // db .
 func (repo *CustomerRepository) db() *gorm.DB {
 	var db *gorm.DB

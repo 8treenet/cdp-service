@@ -23,7 +23,7 @@ func (obj *CustomerProfile) TableName() string {
 
 // Location .
 func (obj *CustomerProfile) Location() map[string]interface{} {
-	return map[string]interface{}{"personaId": obj.PersonaID}
+	return map[string]interface{}{"personaId": obj.PersonaID, "userId": obj.UserID}
 }
 
 // GetChanges .
