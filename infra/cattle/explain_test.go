@@ -240,7 +240,8 @@ func TestRegisterCondition(t *testing.T) {
 
 func TestExplainPersonasAnalysis(t *testing.T) {
 	//用户画像描述 北京和天津购买1001分类或1002分类的商品  3天内 均单消费50以上
-	data := []byte(`<root>
+	data := []byte(`<list>
+	<root>
 	<from>order</from>
 	<join>
 		<from leftColumn = "userId" column = "userId">user</from>
@@ -253,14 +254,16 @@ func TestExplainPersonasAnalysis(t *testing.T) {
 			<where from="goods" column = "category_id" compare = "in">1001,1002</where>
 		</and>
 	</condition>
-	<personas day="3">
+	<personas>
 		<personasOut aggregation = "avg" column = "price" compare = "gte">50</personasOut>
 	</personas>
-	</root>`)
-	dsl, err := NewDSL(data)
+	</root>
+	</list>`)
+	dsls, err := NewArrayDSL(data)
 	if err != nil {
 		panic(err)
 	}
+	dsl := dsls[0]
 
 	selectBuilder, err := ExplainPersonasAnalysis(dsl, []string{"1111", "22222", "33333"}, time.Now().AddDate(0, 0, -10))
 	if err != nil {

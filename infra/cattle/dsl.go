@@ -78,6 +78,15 @@ func (n *node) FindSubNode(name string) *node {
 	return nil
 }
 
+func (n *node) FindSubNodes(name string) (result []*node) {
+	for i := 0; i < len(n.Nodes); i++ {
+		if n.Nodes[i].XMLName.Local == name {
+			result = append(result, n.Nodes[i])
+		}
+	}
+	return
+}
+
 func NewDSL(data []byte) (*DSL, error) {
 	var obj node
 	err := xml.Unmarshal(data, &obj)
@@ -86,6 +95,25 @@ func NewDSL(data []byte) (*DSL, error) {
 	}
 
 	return &DSL{node: &obj}, nil
+}
+
+func NewArrayDSL(data []byte) ([]*DSL, error) {
+	var obj node
+	err := xml.Unmarshal(data, &obj)
+	if err != nil {
+		return nil, err
+	}
+	list := obj.FindSubNodes(labelRoot)
+	if len(list) == 0 {
+		return nil, fmt.Errorf("xml数组数据错误")
+	}
+	result := []*DSL{}
+	for _, v := range list {
+		result = append(result, &DSL{
+			node: v,
+		})
+	}
+	return result, nil
 }
 
 type DSL struct {
