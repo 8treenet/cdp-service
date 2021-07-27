@@ -2,7 +2,7 @@ package aggregate
 
 import (
 	"github.com/8treenet/cdp-service/adapter/repository"
-	"github.com/8treenet/cdp-service/infra"
+	"github.com/8treenet/cdp-service/infra/geo"
 	"github.com/8treenet/freedom"
 	"github.com/8treenet/freedom/infra/transaction"
 )
@@ -24,7 +24,7 @@ type IntermediaryFactory struct {
 	FeatureRepository   *repository.FeatureRepository
 	TX                  transaction.Transaction //依赖倒置事务组件
 	Worker              freedom.Worker          //运行时，一个请求绑定一个运行时
-	GEO                 *infra.GEO              //geo
+	GEO                 *geo.GEO                //geo
 	BehaviourRepository *repository.BehaviourRepository
 }
 

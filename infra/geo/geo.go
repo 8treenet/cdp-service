@@ -1,7 +1,6 @@
-package infra
+package geo
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
@@ -28,11 +27,17 @@ func init() {
 	})
 }
 
+type dispatcher interface {
+	Idle() bool
+	Do(requests.Client, []string, map[string]*GEOInfo) bool
+}
+
 // GEO
 type GEO struct {
 	freedom.Infra
-	client requests.Client
-	ipcom  struct {
+	client           requests.Client
+	backupDispatcher []dispatcher
+	ipcom            struct {
 		lock      sync.Mutex
 		count     int       //使用次数
 		maxCount  int       //最大使用次数
@@ -145,7 +150,7 @@ func (geo *GEO) fetchIPCom(addr []string) (result map[string]*GEOInfo, err error
 		now := time.Now()
 		//执行次数等于最大 并且 当前时间-61 小于首次时间
 		if geo.ipcom.count >= geo.ipcom.maxCount && now.Unix()-geo.ipcom.diffSec < geo.ipcom.firstTime.Unix() {
-			fmt.Println(geo.ipcom.count, geo.ipcom.maxCount, now.Unix()-geo.ipcom.diffSec, geo.ipcom.firstTime.Unix())
+			freedom.Logger().Info("等待ipcom限制", geo.ipcom.count, geo.ipcom.maxCount, now.Unix()-geo.ipcom.diffSec, geo.ipcom.firstTime.Unix())
 			return false
 		}
 		return true
@@ -162,6 +167,9 @@ func (geo *GEO) fetchIPCom(addr []string) (result map[string]*GEOInfo, err error
 	}
 	for i := 0; i < len(list); i++ {
 		if !check() {
+			if geo.backup(list[i], result) {
+				continue //备用成功
+			}
 			time.Sleep(1 * time.Second)
 			i--
 			continue
@@ -177,4 +185,18 @@ func (geo *GEO) fetchIPCom(addr []string) (result map[string]*GEOInfo, err error
 		}
 	}
 	return
+}
+
+func (geo *GEO) backup(addr []string, result map[string]*GEOInfo) bool {
+	if len(geo.backupDispatcher) == 0 {
+		return false
+	}
+
+	for _, v := range geo.backupDispatcher {
+		if !v.Idle() {
+			continue
+		}
+		return v.Do(geo.client, addr, result)
+	}
+	return false
 }

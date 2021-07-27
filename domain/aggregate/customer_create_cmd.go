@@ -9,7 +9,7 @@ import (
 	"github.com/8treenet/cdp-service/domain/entity"
 	"github.com/8treenet/cdp-service/domain/po"
 	"github.com/8treenet/cdp-service/domain/vo"
-	"github.com/8treenet/cdp-service/infra"
+	"github.com/8treenet/cdp-service/infra/geo"
 	"github.com/8treenet/cdp-service/utils"
 	"github.com/8treenet/freedom/infra/transaction"
 )
@@ -20,7 +20,7 @@ type CustomerCreateCmd struct {
 	CustomerRepo        *repository.CustomerRepository //客户仓库
 	SignRepo            *repository.SignRepository     //识别仓库
 	TX                  transaction.Transaction        //依赖倒置事务组件
-	GEO                 *infra.GEO                     //geo
+	GEO                 *geo.GEO                       //geo
 	UserRegisterEntity  *entity.Feature                //注册行为实体
 	SupportRepository   *repository.SupportRepository
 	BehaviourRepository *repository.BehaviourRepository

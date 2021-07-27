@@ -6,7 +6,7 @@ import (
 
 	"github.com/8treenet/cdp-service/domain/entity"
 	"github.com/8treenet/cdp-service/domain/po"
-	"github.com/8treenet/cdp-service/infra"
+	"github.com/8treenet/cdp-service/infra/geo"
 	"github.com/8treenet/cdp-service/utils"
 	"github.com/8treenet/freedom"
 	"github.com/go-redis/redis"
@@ -48,7 +48,7 @@ var (
 type BehaviourRepository struct {
 	freedom.Repository
 	cacheActiveCustomer string
-	GEO                 *infra.GEO
+	GEO                 *geo.GEO
 }
 
 // FetchQueue max:最大数量, duration:等待时间.
@@ -216,9 +216,9 @@ func (repo *BehaviourRepository) TruncateBehaviour() bool {
 }
 
 // GetIP
-func (repo *BehaviourRepository) GetIP(addr []string) (map[string]*infra.GEOInfo, error) {
+func (repo *BehaviourRepository) GetIP(addr []string) (map[string]*geo.GEOInfo, error) {
 	if len(addr) == 0 {
-		return make(map[string]*infra.GEOInfo), nil
+		return make(map[string]*geo.GEOInfo), nil
 	}
 	return repo.GEO.ParseBatchIP(addr)
 }
