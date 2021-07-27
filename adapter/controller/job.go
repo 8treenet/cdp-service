@@ -17,6 +17,8 @@ func init() {
 			truncateJob()
 			analysisDayJob()
 			analysisRefreshJob()
+			personaDayJob()
+			personaRefreshJob()
 		})
 	})
 }
@@ -135,6 +137,50 @@ func analysisRefreshJob() {
 				service.ExecuteRefreshJob()
 			})
 		}, conf.Get().System.JobAnalysisRefreshHour, "analysisRefreshJob")
+	}()
+}
+
+func personaDayJob() {
+	if conf.Get().System.JobPersonaHour == 0 {
+		return
+	}
+
+	go func() {
+		time.Sleep(1 * time.Second)
+		defer func() {
+			if err := recover(); err != nil {
+				strace := string(utils.GetStackTrace())
+				freedom.Logger().Errorf("personaDayJob recover:%v \n%s", err, strace)
+				personaDayJob()
+			}
+		}()
+		dayTrigger(func() {
+			freedom.ServiceLocator().Call(func(service *domain.PersonaService) {
+				service.ExecuteDayJob()
+			})
+		}, conf.Get().System.JobPersonaHour, "personaDayJob")
+	}()
+}
+
+func personaRefreshJob() {
+	if conf.Get().System.JobPersonaRefreshHour == 0 {
+		return
+	}
+
+	go func() {
+		time.Sleep(1 * time.Second)
+		defer func() {
+			if err := recover(); err != nil {
+				strace := string(utils.GetStackTrace())
+				freedom.Logger().Errorf("personaRefreshJob recover:%v \n%s", err, strace)
+				personaRefreshJob()
+			}
+		}()
+		hourTrigger(func() {
+			freedom.ServiceLocator().Call(func(service *domain.PersonaService) {
+				service.ExecuteRefreshJob()
+			})
+		}, conf.Get().System.JobPersonaRefreshHour, "personaRefreshJob")
 	}()
 }
 

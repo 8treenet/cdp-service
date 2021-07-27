@@ -44,6 +44,8 @@ type SystemConf struct {
 	JobTruncateHour          int `toml:"job_truncate_hour"`
 	JobAnalysisHour          int `toml:"job_analysis_hour"`
 	JobAnalysisRefreshHour   int `toml:"job_analysis_refresh_hour"`
+	JobPersonaHour           int `toml:"job_persona_hour"`
+	JobPersonaRefreshHour    int `toml:"job_persona_refresh_hour"`
 }
 
 // DBConf .

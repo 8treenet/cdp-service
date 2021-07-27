@@ -279,3 +279,16 @@ func TestArraySubmit(t *testing.T) {
 	e := repo.SaveSubmit(cmdSubmit)
 	t.Log(e)
 }
+
+func TestActiveCustomer(t *testing.T) {
+	unitTest := getUnitTest()
+	unitTest.Run()
+
+	var repo *BehaviourRepository
+	//获取资源库
+	unitTest.FetchRepository(&repo)
+	repo.setActiveCustomer([]string{"1", "2", "3", "4"})
+
+	t.Log(repo.FetchActiveCustomer(20))
+	t.Log(repo.FetchActiveCustomer(20))
+}

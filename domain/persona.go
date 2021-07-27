@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"time"
+
 	"github.com/8treenet/cdp-service/adapter/repository"
 	"github.com/8treenet/cdp-service/domain/aggregate"
 	"github.com/8treenet/cdp-service/domain/vo"
@@ -21,9 +23,10 @@ func init() {
 
 // PersonaService .
 type PersonaService struct {
-	Worker             freedom.Worker
-	PersonaFactory     *aggregate.PersonaFactory
-	CustomerRepository *repository.CustomerRepository
+	Worker              freedom.Worker
+	PersonaFactory      *aggregate.PersonaFactory
+	CustomerRepository  *repository.CustomerRepository
+	BehaviourRepository *repository.BehaviourRepository
 }
 
 // CreatePersona
@@ -72,15 +75,25 @@ func (service *PersonaService) ExecuteRefreshJob() {
 		return
 	}
 
+	size := 500
 	for {
-		userIds := []string{}
-		//从redis获取最近
-		service.job(userIds, cmds)
+		userIds := service.BehaviourRepository.FetchActiveCustomer(size)
+		if len(userIds) != 0 {
+			service.job(userIds, cmds)
+			continue
+		}
 		break
 	}
 }
 
 // job 处理画像
 func (service *PersonaService) job(userIds []string, cmds []*aggregate.PersonaJob) {
-
+	now := time.Now()
+	for _, cmd := range cmds {
+		err := cmd.Do(userIds, now)
+		if err == nil {
+			continue
+		}
+		service.Worker.Logger().Errorf("PersonaService.job.Do cmd:%v, err:%v", *cmd, err)
+	}
 }

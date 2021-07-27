@@ -7,7 +7,9 @@ import (
 	"github.com/8treenet/cdp-service/domain/entity"
 	"github.com/8treenet/cdp-service/domain/po"
 	"github.com/8treenet/cdp-service/infra"
+	"github.com/8treenet/cdp-service/utils"
 	"github.com/8treenet/freedom"
+	"github.com/go-redis/redis"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +19,7 @@ func init() {
 
 	freedom.Prepare(func(initiator freedom.Initiator) {
 		initiator.BindRepository(func() *BehaviourRepository {
-			return &BehaviourRepository{}
+			return &BehaviourRepository{cacheActiveCustomer: "cdp_active_customer_%s"}
 		})
 
 		initiator.BindBooting(func(bootManager freedom.BootManager) {
@@ -45,7 +47,8 @@ var (
 // BehaviourRepository .
 type BehaviourRepository struct {
 	freedom.Repository
-	GEO *infra.GEO
+	cacheActiveCustomer string
+	GEO                 *infra.GEO
 }
 
 // FetchQueue max:最大数量, duration:等待时间.
@@ -115,8 +118,15 @@ func (repo *BehaviourRepository) FetchBehaviours(featureId int, processed, max i
 
 func (repo *BehaviourRepository) BehavioursFinish(behaviours []*entity.Behaviour) error {
 	m := map[int][]int{}
+	userids := []string{}
 	for _, v := range behaviours {
 		m[v.Processed] = append(m[v.Processed], v.ID)
+		if v.Processed != 2 {
+			continue
+		}
+		if !utils.InSlice(userids, v.UserId) {
+			userids = append(userids, v.UserId)
+		}
 	}
 	for processed, v := range m {
 		e := repo.db().Model(&po.Behaviour{}).Where("id in (?)", v).Update("processed", processed).Error
@@ -124,7 +134,70 @@ func (repo *BehaviourRepository) BehavioursFinish(behaviours []*entity.Behaviour
 			return e
 		}
 	}
+	if len(userids) == 0 {
+		return nil
+	}
+	repo.setActiveCustomer(userids)
 	return nil
+}
+
+// setActiveCustomer 活跃用户存入redis
+func (repo *BehaviourRepository) setActiveCustomer(userids []string) {
+	hashkey := fmt.Sprintf(repo.cacheActiveCustomer, "hash")
+	listKey := fmt.Sprintf(repo.cacheActiveCustomer, "list")
+
+	userMap := map[string]bool{}
+	for _, v := range userids {
+		userMap[v] = true
+	}
+
+	list, err := repo.Redis().HMGet(hashkey, userids...).Result()
+	if err != nil {
+		repo.Worker().Logger().Errorf("activeCustomer.redis.hget error:%v", err)
+		return
+	}
+
+	for _, v := range list {
+		uid, ok := v.(string)
+		if !ok {
+			continue
+		}
+		delete(userMap, uid)
+	}
+	if len(userMap) == 0 {
+		return
+	}
+
+	for userId := range userMap {
+		repo.Redis().HSet(hashkey, userId, userId).Result()
+		repo.Redis().RPush(listKey, userId).Result()
+	}
+	repo.Redis().Expire(hashkey, time.Hour*12).Result()
+	repo.Redis().Expire(listKey, time.Hour*12).Result()
+}
+
+// FetchActiveCustomer 获取活跃用户
+func (repo *BehaviourRepository) FetchActiveCustomer(size int) (userids []string) {
+	hashkey := fmt.Sprintf(repo.cacheActiveCustomer, "hash")
+	listKey := fmt.Sprintf(repo.cacheActiveCustomer, "list")
+
+	for i := 0; i < size; i++ {
+		uid, err := repo.Redis().LPop(listKey).Result()
+		if err == redis.Nil {
+			break
+		}
+		if err != nil {
+			repo.Worker().Logger().Errorf("FetchActiveCustomer.redis.LPop error:%v", err)
+			time.Sleep(1 * time.Second)
+			continue
+		}
+		userids = append(userids, uid)
+	}
+	if len(userids) == 0 {
+		return
+	}
+	repo.Redis().HDel(hashkey, userids...).Result()
+	return
 }
 
 // TruncateBehaviour .
