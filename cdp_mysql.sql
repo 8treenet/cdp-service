@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.18)
 # Database: cdp
-# Generation Time: 2021-07-23 07:57:15 +0000
+# Generation Time: 2021-07-27 07:45:38 +0000
 # ************************************************************
 
 
@@ -278,6 +278,25 @@ CREATE TABLE `cdp_customer_phone` (
 
 
 
+# Dump of table cdp_customer_profile
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `cdp_customer_profile`;
+
+CREATE TABLE `cdp_customer_profile` (
+  `userId` varchar(40) NOT NULL DEFAULT '',
+  `personaId` int(11) NOT NULL COMMENT '画像id',
+  `beginTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `endTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`userId`,`personaId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户画像表'
+/*!50100 PARTITION BY KEY (personaId)
+PARTITIONS 256 */;
+
+
+
 # Dump of table cdp_customer_temporary
 # ------------------------------------------------------------
 
@@ -523,6 +542,26 @@ VALUES
 
 /*!40000 ALTER TABLE `cdp_ip_addr` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+# Dump of table cdp_persona
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `cdp_persona`;
+
+CREATE TABLE `cdp_persona` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL DEFAULT '' COMMENT '名称',
+  `title` varchar(128) NOT NULL DEFAULT '' COMMENT '显示名称',
+  `dateRange` int(11) NOT NULL COMMENT '天/范围',
+  `xmlData` text NOT NULL COMMENT 'xml条件数据',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='画像描述的持久化表';
+
 
 
 # Dump of table cdp_source

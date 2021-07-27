@@ -55,7 +55,7 @@ func (ck *Manager) visitConfig() {
 func (ck *Manager) Booting(bootManager freedom.BootManager) {
 	ck.visitConfig()
 	var e error
-	ck.db, e = gorm.Open(ormClickhouse.Open(ck.dsn))
+	ck.db, e = gorm.Open(ormClickhouse.Open(ck.dsn), &gorm.Config{SkipDefaultTransaction: true})
 	if e != nil {
 		freedom.Logger().Fatalf("ClickHouse gorm.Open dsn:%s, err:%v", ck.dsn, e.Error())
 	}

@@ -50,7 +50,7 @@ func installMiddleware(app freedom.Application) {
 func installDatabase(app freedom.Application) {
 	app.InstallDB(func() interface{} {
 		dbConf := conf.Get().DB
-		db, e := gorm.Open(mysql.Open(dbConf.Addr), &gorm.Config{})
+		db, e := gorm.Open(mysql.Open(dbConf.Addr), &gorm.Config{SkipDefaultTransaction: true})
 		if e != nil {
 			freedom.Logger().Fatal(e.Error())
 		}

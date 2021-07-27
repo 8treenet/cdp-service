@@ -27,6 +27,7 @@ type PersonaService struct {
 	PersonaFactory      *aggregate.PersonaFactory
 	CustomerRepository  *repository.CustomerRepository
 	BehaviourRepository *repository.BehaviourRepository
+	PersonaRepository   *repository.PersonaRepository
 }
 
 // CreatePersona
@@ -48,6 +49,16 @@ func (service *PersonaService) ExecuteDayJob() {
 		return
 	}
 
+	var validCmds []*aggregate.PersonaJob
+	for _, cmd := range cmds {
+		if cmd.Deleted == 0 {
+			validCmds = append(validCmds, cmd)
+		}
+	}
+
+	if len(validCmds) == 0 {
+		return
+	}
 	startId := 0
 	size := 500
 	for {
@@ -59,7 +70,7 @@ func (service *PersonaService) ExecuteDayJob() {
 			break
 		}
 		if len(userIds) != 0 {
-			service.job(userIds, cmds)
+			service.job(userIds, validCmds)
 		}
 		if len(userIds) <= size {
 			break
@@ -74,12 +85,28 @@ func (service *PersonaService) ExecuteRefreshJob() {
 		service.Worker.Logger().Errorf("PersonaService.ExecuteDayJob.JobPersonaCmds err:%v", err)
 		return
 	}
+	var validCmds []*aggregate.PersonaJob
+	for _, cmd := range cmds {
+		if cmd.Deleted == 0 {
+			validCmds = append(validCmds, cmd)
+			continue
+		}
+
+		hour := cmd.GetDeadHour()
+		if hour > 0 && hour < 5*24 {
+			service.PersonaRepository.DeleteCustomerProfileByPersona(&cmd.Persona)
+		}
+	}
+
+	if len(validCmds) == 0 {
+		return
+	}
 
 	size := 500
 	for {
 		userIds := service.BehaviourRepository.FetchActiveCustomer(size)
 		if len(userIds) != 0 {
-			service.job(userIds, cmds)
+			service.job(userIds, validCmds)
 			continue
 		}
 		break

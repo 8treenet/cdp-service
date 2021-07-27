@@ -94,7 +94,7 @@ func (cmd *PersonaJob) getMatchUsers(checkUsers []string, now time.Time) (users 
 			return
 		}
 
-		for k, _ := range userMap {
+		for k := range userMap {
 			if utils.InSlice(matchUsers, k) {
 				continue
 			}
@@ -102,7 +102,7 @@ func (cmd *PersonaJob) getMatchUsers(checkUsers []string, now time.Time) (users 
 		}
 	}
 
-	for key, _ := range userMap {
+	for key := range userMap {
 		users = append(users, key)
 	}
 	return
