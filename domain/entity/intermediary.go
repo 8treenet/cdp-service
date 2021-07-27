@@ -37,7 +37,7 @@ func (entity *Intermediary) VerifyCustomer(customer *Customer, isNew bool) error
 	for key, value := range data {
 		po, ok := mt[key]
 		if !ok {
-			return fmt.Errorf("该字段在模板中不存在 %s", key)
+			continue
 		}
 
 		val := reflect.ValueOf(value)

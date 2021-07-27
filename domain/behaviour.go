@@ -48,9 +48,10 @@ func (service *BehaviourService) CreateBehaviour(req vo.ReqBehaviourDTO) error {
 	}
 
 	sourceId := service.SupportRepository.FindSourceID(req.Source)
-	createTime, err := time.ParseInLocation("2006-01-02 15:04:05", req.CreateTime, time.Local)
-	if err != nil {
-		return err
+	createTime := time.Now()
+	inCreateTime, err := time.ParseInLocation("2006-01-02 15:04:05", req.CreateTime, time.Local)
+	if err == nil {
+		createTime = inCreateTime
 	}
 
 	obj := &po.Behaviour{

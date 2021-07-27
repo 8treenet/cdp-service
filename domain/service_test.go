@@ -218,3 +218,56 @@ func TestQuerySexRegdayAnalysis(t *testing.T) {
 	jsondata, e2 = result4.MarshalJSON()
 	t.Log(string(jsondata), e)
 }
+
+func TestCreatePersona(t *testing.T) {
+	unitTest := getUnitTest()
+	unitTest.Run()
+
+	var service *PersonaService
+	unitTest.FetchService(&service)
+
+	var req vo.ReqCreatePersona
+	req.DateRange = 10
+	req.Name = "tuhao"
+	req.Title = "土豪"
+	req.XmlData = []byte(`<list>
+	<root>
+	<from>shop_goods</from>
+	<condition>
+		<and>
+			<where from="shop_goods" column = "sourceId" compare = "eq">2</where>
+			<where from="shop_goods" column = "tag" compare = "in">801,810</where>
+		</and>
+	</condition>
+	<personas>
+		<personasOut aggregation = "sum" column = "price" compare = "gte">10</personasOut>
+	</personas>
+	</root>
+	<root>
+	<from>user_register</from>
+	<personas>
+		<personasOut aggregation = "count"  compare = "eq">1</personasOut>
+	</personas>
+	</root>
+	</list>`)
+	t.Log(service.CreatePersona(req))
+	time.Sleep(1 * time.Second)
+}
+
+func TestPersonaExecuteDayJob(t *testing.T) {
+	unitTest := getUnitTest()
+	unitTest.Run()
+
+	var service *PersonaService
+	unitTest.FetchService(&service)
+	service.ExecuteDayJob()
+}
+
+func TestPersonaExecuteRefreshJob(t *testing.T) {
+	unitTest := getUnitTest()
+	unitTest.Run()
+
+	var service *PersonaService
+	unitTest.FetchService(&service)
+	service.ExecuteRefreshJob()
+}

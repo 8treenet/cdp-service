@@ -321,7 +321,7 @@ func (repo *CustomerRepository) GetRangeUserIds(startId, size int) (userIds []st
 	}{}
 
 	sel := repo.db().Model(&po.Customer{}).Select("id,userId")
-	sel.Where("id>", startId).Order("id asc").Limit(size).Scan(&list)
+	sel.Where("id>?", startId).Order("id asc").Limit(size).Scan(&list)
 	if len(list) == 0 {
 		return
 	}

@@ -54,6 +54,11 @@ func (service *PersonaService) ExecuteDayJob() {
 		if cmd.Deleted == 0 {
 			validCmds = append(validCmds, cmd)
 		}
+
+		hour := cmd.GetDeadHour()
+		if hour > 0 && hour < 5*24 {
+			service.PersonaRepository.DeleteCustomerProfileByPersona(&cmd.Persona)
+		}
 	}
 
 	if len(validCmds) == 0 {
@@ -90,11 +95,6 @@ func (service *PersonaService) ExecuteRefreshJob() {
 		if cmd.Deleted == 0 {
 			validCmds = append(validCmds, cmd)
 			continue
-		}
-
-		hour := cmd.GetDeadHour()
-		if hour > 0 && hour < 5*24 {
-			service.PersonaRepository.DeleteCustomerProfileByPersona(&cmd.Persona)
 		}
 	}
 

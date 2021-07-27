@@ -34,8 +34,10 @@ func (cmd *PersonaJob) Do(checkUsers []string, now time.Time) (e error) {
 		deleteUsers = append(deleteUsers, v)
 	}
 
-	if err := cmd.personaRepository.DeleteCustomerProfile(&cmd.Persona, deleteUsers); err != nil {
-		cmd.Worker().Logger().Errorf("DeleteCustomerProfile失败: entity:%v err:%v", *cmd, err)
+	if len(deleteUsers) > 0 {
+		if err := cmd.personaRepository.DeleteCustomerProfile(&cmd.Persona, deleteUsers); err != nil {
+			cmd.Worker().Logger().Errorf("DeleteCustomerProfile失败: entity:%v err:%v", *cmd, err)
+		}
 	}
 
 	var profiles []*po.CustomerProfile
@@ -55,7 +57,7 @@ func (cmd *PersonaJob) Do(checkUsers []string, now time.Time) (e error) {
 
 func (cmd *PersonaJob) getMatchUsers(checkUsers []string, now time.Time) (users []string, e error) {
 	userMap := map[string]struct{}{}
-	for _, user := range users {
+	for _, user := range checkUsers {
 		userMap[user] = struct{}{}
 	}
 

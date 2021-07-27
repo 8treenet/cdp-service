@@ -48,7 +48,7 @@ const (
 	groupMonth = "month"
 )
 
-//compare eq相等 neq不相等 gt大于 gte大于等于 lt小于  lte小于等于 between范围 in存在值 hasAll数组交叉存在
+//compare eq相等 neq不相等 gt大于 gte大于等于 lt小于  lte小于等于 between范围 in存在值
 type node struct {
 	XMLName    xml.Name
 	Attributes []xml.Attr `xml:",any,attr"`

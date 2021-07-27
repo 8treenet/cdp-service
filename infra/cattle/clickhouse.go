@@ -18,7 +18,7 @@ type Warehouse interface {
 func (dsl *DSL) arrayIn(from, column string, listValue interface{}) builder.Cond {
 	value := dsl.convertValue(from, column, listValue)
 	if reflect.ValueOf(value).Kind() == reflect.Slice {
-		return builder.Expr(fmt.Sprintf("hasAll(%s.%s,[%s])", from, column, listValue))
+		return builder.Expr(fmt.Sprintf("hasAny(%s.%s,[%s])", from, column, listValue))
 	}
 
 	list, _ := utils.ToInterfaces(strings.Split(listValue.(string), ","))
@@ -39,6 +39,12 @@ func (dsl *DSL) convertValue(from, column string, value interface{}) (result int
 	v := reflect.ValueOf(value)
 	if v.Kind() == reflect.Ptr || v.Kind() == reflect.Struct {
 		return value
+	}
+	if column == ColumnSourceId {
+		if ivalue, e := strconv.ParseInt(fmt.Sprint(value), 10, 64); e == nil {
+			result = ivalue
+			return
+		}
 	}
 
 	for _, v := range dsl.whs {
