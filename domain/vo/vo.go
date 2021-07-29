@@ -36,7 +36,6 @@ type ReqBehaviourDTO struct {
 	UserPhone     string                 `json:"userPhone"`
 	TempUserID    string                 `json:"tempUserID"`
 	IPAddr        string                 `json:"ipAddr"`
-	FeatureID     int                    `json:"featureID"`
 	CreateTime    string                 `json:"createTime"`
 	Data          map[string]interface{} `json:"data"`
 	Source        string                 `json:"source"`

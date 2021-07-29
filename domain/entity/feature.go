@@ -2,9 +2,15 @@ package entity
 
 import (
 	"fmt"
+	"net"
+	"reflect"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/8treenet/cdp-service/domain/po"
+	"github.com/8treenet/cdp-service/infra/cattle"
+	"github.com/8treenet/cdp-service/utils"
 	"github.com/8treenet/freedom"
 )
 
@@ -89,4 +95,127 @@ func (entity *Feature) GetColumnType(column string) string {
 		}
 	}
 	return ""
+}
+
+func (entity *Feature) CheckMetadata(data map[string]interface{}) error {
+	for _, v := range entity.FeatureMetadata {
+		value, ok := data[v.Variable]
+		if !ok {
+			continue
+		}
+
+		rv := reflect.ValueOf(value)
+		err := false
+
+		switch v.Kind {
+		case cattle.ColumnTypeDate, cattle.ColumnTypeDateTime:
+			if !utils.IsDateTime(fmt.Sprint(value)) {
+				err = true
+			}
+		case cattle.ColumnTypeString:
+			if rv.Kind() != reflect.String {
+				err = true
+			}
+		case cattle.ColumnTypeFloat32, cattle.ColumnTypeFloat64, cattle.ColumnTypeUInt8, cattle.ColumnTypeUInt16, cattle.ColumnTypeUInt32, cattle.ColumnTypeUInt64, cattle.ColumnTypeInt8, cattle.ColumnTypeInt16, cattle.ColumnTypeInt32, cattle.ColumnTypeInt64:
+			if !utils.IsNumber(value) {
+				err = true
+			}
+		case cattle.ColumnTypeArrayFloat32, cattle.ColumnTypeArrayFloat64,
+			cattle.ColumnTypeArrayUInt8, cattle.ColumnTypeArrayUInt16, cattle.ColumnTypeArrayUInt32, cattle.ColumnTypeArrayUInt64, cattle.ColumnTypeArrayInt8, cattle.ColumnTypeArrayInt16, cattle.ColumnTypeArrayInt32, cattle.ColumnTypeArrayInt64:
+			if !utils.IsNumberSlice(value) {
+				err = true
+			}
+		case cattle.ColumnTypeArrayString:
+			if rv.Kind() != reflect.Slice || rv.Elem().Kind() != reflect.String {
+				err = true
+			}
+		case cattle.ColumnTypeArrayDate, cattle.ColumnTypeArrayDateTime:
+			if !utils.IsDateTimeSlice(value) {
+				err = true
+			}
+		case cattle.ColumnTypeIP:
+			if net.ParseIP(fmt.Sprint(value)) == nil {
+				err = true
+			}
+		}
+		if err {
+			return fmt.Errorf("feature:%v variable %s value:%v, unable.", v.Title, v.Variable, value)
+		}
+	}
+
+	return nil
+}
+
+func (entity *Feature) ConvertMetadata(data map[string]string) (result map[string]interface{}, e error) {
+	result = make(map[string]interface{})
+
+	for _, v := range entity.FeatureMetadata {
+		value, ok := data[v.Variable]
+		if !ok {
+			continue
+		}
+		typeErr := fmt.Errorf("feature:%v variable %s value:%v, unable.", v.Title, v.Variable, value)
+
+		switch v.Kind {
+		case cattle.ColumnTypeDate, cattle.ColumnTypeDateTime:
+			if !utils.IsDateTime(fmt.Sprint(value)) {
+				e = typeErr
+				return
+			}
+			result[v.Variable] = value
+
+		case cattle.ColumnTypeFloat32, cattle.ColumnTypeFloat64, cattle.ColumnTypeUInt8, cattle.ColumnTypeUInt16, cattle.ColumnTypeUInt32, cattle.ColumnTypeUInt64, cattle.ColumnTypeInt8, cattle.ColumnTypeInt16, cattle.ColumnTypeInt32, cattle.ColumnTypeInt64:
+			if !utils.IsNumber(value) {
+				e = typeErr
+				return
+			}
+			result[v.Variable] = utils.ToNumber(value)
+
+		case cattle.ColumnTypeArrayFloat32, cattle.ColumnTypeArrayFloat64:
+			list := strings.Split(value, ",")
+			if !utils.IsNumberSlice(list) {
+				e = typeErr
+				return
+			}
+			newArray := []float64{}
+			for _, vstr := range list {
+				fv, _ := strconv.ParseFloat(vstr, 64)
+				newArray = append(newArray, fv)
+			}
+			result[v.Variable] = newArray
+
+		case cattle.ColumnTypeArrayUInt8, cattle.ColumnTypeArrayUInt16, cattle.ColumnTypeArrayUInt32, cattle.ColumnTypeArrayUInt64, cattle.ColumnTypeArrayInt8, cattle.ColumnTypeArrayInt16, cattle.ColumnTypeArrayInt32, cattle.ColumnTypeArrayInt64:
+			list := strings.Split(value, ",")
+			if !utils.IsNumberSlice(list) {
+				e = typeErr
+				return
+			}
+			newArray := []interface{}{}
+			for _, vstr := range list {
+				newArray = append(newArray, utils.ToNumber(vstr))
+			}
+			result[v.Variable] = newArray
+
+		case cattle.ColumnTypeArrayString:
+			list := strings.Split(value, ",")
+			result[v.Variable] = list
+		case cattle.ColumnTypeArrayDate, cattle.ColumnTypeArrayDateTime:
+			list := strings.Split(value, ",")
+			if !utils.IsDateTimeSlice(list) {
+				e = typeErr
+				return
+			}
+			result[v.Variable] = list
+		case cattle.ColumnTypeIP:
+			if net.ParseIP(value) == nil {
+				e = typeErr
+				return
+			}
+			result[v.Variable] = value
+		default:
+			result[v.Variable] = value
+		}
+	}
+
+	return
 }

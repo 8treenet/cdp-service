@@ -43,10 +43,9 @@ func TestSupportController_PostFeature(t *testing.T) {
 }
 
 func TestBehaviourShopGoods(t *testing.T) {
-	req := requests.NewHTTPRequest(domain + "/behaviour/list").Post()
+	req := requests.NewHTTPRequest(domain + "/behaviour/list?featureId=5").Post()
 	var body vo.ReqBehaviourDTO
 	//body.CreateTime = "2021-07-28 17:32:47"
-	body.FeatureID = 5
 	body.IPAddr = "221.204.133.15"
 	body.Source = "ali"
 	body.UserKey = "yangshu611113513517944333"

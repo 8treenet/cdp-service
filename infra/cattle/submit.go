@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/8treenet/cdp-service/utils"
 	"github.com/8treenet/freedom"
 	"github.com/ClickHouse/clickhouse-go"
 )
@@ -105,6 +106,9 @@ func (submit *Submit) parse(data map[string]interface{}, columnName string) (int
 		if !ok {
 			return 0.0, nil
 		}
+		if !utils.IsNumber(datav) {
+			return 0.0, fmt.Errorf("not int, key:%v, value:%v", columnName, datav)
+		}
 		return datav, nil
 	case ColumnTypeArrayFloat32, ColumnTypeArrayFloat64:
 		if !ok {
@@ -115,11 +119,10 @@ func (submit *Submit) parse(data map[string]interface{}, columnName string) (int
 		if !ok {
 			return 0, nil
 		}
-		i, err := strconv.Atoi(fmt.Sprint(datav))
-		if err != nil {
-			return 0, err
+		if !utils.IsNumber(datav) {
+			return 0, fmt.Errorf("not int, key:%v, value:%v", columnName, datav)
 		}
-		return i, nil
+		return datav, nil
 
 	case ColumnTypeArrayUInt8, ColumnTypeArrayUInt16, ColumnTypeArrayUInt32, ColumnTypeArrayUInt64, ColumnTypeArrayInt8, ColumnTypeArrayInt16, ColumnTypeArrayInt32, ColumnTypeArrayInt64:
 		if !ok {

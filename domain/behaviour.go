@@ -2,6 +2,9 @@ package domain
 
 import (
 	"encoding/json"
+	"fmt"
+	"net"
+	"strconv"
 	"time"
 
 	"github.com/8treenet/cdp-service/adapter/repository"
@@ -37,36 +40,97 @@ type BehaviourService struct {
 }
 
 // CreateBehaviour
-func (service *BehaviourService) CreateBehaviour(req vo.ReqBehaviourDTO) error {
-	jsonData, err := json.Marshal(req.Data)
-	if err != nil {
-		return err
-	}
-	fentity, err := service.FeatureRepository.GetFeatureEntity(req.FeatureID)
+func (service *BehaviourService) CreateBehaviours(featureID int, reqs []vo.ReqBehaviourDTO) error {
+	fentity, err := service.FeatureRepository.GetFeatureEntity(featureID)
 	if err != nil {
 		return err
 	}
 
-	sourceId := service.SupportRepository.FindSourceID(req.Source)
-	createTime := time.Now()
-	inCreateTime, err := time.ParseInLocation("2006-01-02 15:04:05", req.CreateTime, time.Local)
-	if err == nil {
-		createTime = inCreateTime
+	for _, req := range reqs {
+		if err := fentity.CheckMetadata(req.Data); err != nil {
+			return err
+		}
+		jsonData, err := json.Marshal(req.Data)
+		if err != nil {
+			return err
+		}
+
+		sourceId := service.SupportRepository.FindSourceID(req.Source)
+		createTime := time.Now()
+		inCreateTime, err := time.ParseInLocation("2006-01-02 15:04:05", req.CreateTime, time.Local)
+		if err == nil {
+			createTime = inCreateTime
+		}
+
+		obj := &po.Behaviour{
+			WechatUnionID: req.WechatUnionID,
+			UserKey:       req.UserKey,
+			UserPhone:     req.UserPhone,
+			TempUserID:    req.TempUserID,
+			UserIPAddr:    req.IPAddr,
+			FeatureID:     fentity.ID,
+			CreateTime:    createTime,
+			Data:          jsonData,
+			SourceID:      sourceId,
+			Created:       time.Now(),
+		}
+		service.BehaviourRepository.AddQueue([]*po.Behaviour{obj})
+	}
+	return nil
+}
+
+// CreateBehavioursByCSV
+func (service *BehaviourService) CreateBehavioursByCSV(featureID int, data []byte) error {
+	fentity, err := service.FeatureRepository.GetFeatureEntity(featureID)
+	if err != nil {
+		return err
 	}
 
-	obj := &po.Behaviour{
-		WechatUnionID: req.WechatUnionID,
-		UserKey:       req.UserKey,
-		UserPhone:     req.UserPhone,
-		TempUserID:    req.TempUserID,
-		UserIPAddr:    req.IPAddr,
-		FeatureID:     fentity.ID,
-		CreateTime:    createTime,
-		Data:          jsonData,
-		SourceID:      sourceId,
-		Created:       time.Now(),
+	csv, err := utils.NewCSV(data)
+	if err != nil {
+		return err
 	}
-	service.BehaviourRepository.AddQueue([]*po.Behaviour{obj})
+
+	var pos []*po.Behaviour
+	for _, v := range csv.ToMaps() {
+		metadata, err := fentity.ConvertMetadata(v)
+		if err != nil {
+			return err
+		}
+		jsonData, err := json.Marshal(metadata)
+		if err != nil {
+			return err
+		}
+		createTime := time.Now()
+		inCreateTime, err := time.ParseInLocation("2006-01-02 15:04:05", v["createTime"], time.Local)
+		if err == nil {
+			createTime = inCreateTime
+		}
+		sourceId, err := strconv.Atoi(v["source"])
+		if err != nil {
+			return fmt.Errorf("strconv.Atoi(source) error:%w", err)
+		}
+		ipAddr := ""
+		if net.ParseIP(v["ipAddr"]) == nil {
+			ipAddr = v["ipAddr"]
+		}
+		obj := &po.Behaviour{
+			WechatUnionID: v["wechatUnionID"],
+			UserKey:       v["userKey"],
+			UserPhone:     v["userPhone"],
+			TempUserID:    v["tempUserID"],
+			FeatureID:     fentity.ID,
+			CreateTime:    createTime,
+			Data:          jsonData,
+
+			SourceID:   sourceId,
+			UserIPAddr: ipAddr,
+			Created:    time.Now(),
+		}
+		pos = append(pos, obj)
+	}
+
+	service.BehaviourRepository.AddQueue(pos)
 	return nil
 }
 
