@@ -3,7 +3,7 @@ package utils
 import (
 	"fmt"
 	"net"
-	"strconv"
+	"reflect"
 	"testing"
 )
 
@@ -27,5 +27,7 @@ func TestUtils(t *testing.T) {
 }
 
 func TestUtils2(t *testing.T) {
-	t.Log(strconv.ParseFloat("1", 64))
+	vv := []string{"controller", "service", "repository"}
+	r := reflect.ValueOf(vv)
+	t.Log(r.Type().Elem().Kind())
 }

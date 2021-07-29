@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"reflect"
-	"strconv"
 	"strings"
 	"time"
 
@@ -64,7 +62,7 @@ func (submit *Submit) Do() error {
 		return submit.stmtAdd(stmt, keys)
 	})
 	if err != nil {
-		submit.logger.Errorf("parpare:%s behaviourIds:%v", parpare, submit.ids)
+		submit.logger.Errorf("parpare:%s behaviourIds:%v err:%v", parpare, submit.ids, err)
 	}
 	return err
 }
@@ -95,51 +93,44 @@ func (submit *Submit) parse(data map[string]interface{}, columnName string) (int
 		if !ok {
 			return "", nil
 		}
-		return datav, nil
+		return fmt.Sprint(datav), nil
 	case ColumnTypeArrayString:
 		if !ok {
 			return clickhouse.Array([]string{}), nil
 		}
-		return datav, nil
+		return utils.ToStringSlice(datav)
 
 	case ColumnTypeFloat32, ColumnTypeFloat64:
 		if !ok {
 			return 0.0, nil
 		}
-		if !utils.IsNumber(datav) {
-			return 0.0, fmt.Errorf("not int, key:%v, value:%v", columnName, datav)
-		}
-		return datav, nil
+		return utils.ToFloat(datav)
 	case ColumnTypeArrayFloat32, ColumnTypeArrayFloat64:
 		if !ok {
 			return []float32{}, nil
 		}
-		return datav, nil
-	case ColumnTypeUInt8, ColumnTypeUInt16, ColumnTypeUInt32, ColumnTypeUInt64, ColumnTypeInt8, ColumnTypeInt16, ColumnTypeInt32, ColumnTypeInt64:
+		return utils.ToFloatSlice(datav)
+	case ColumnTypeUInt8, ColumnTypeUInt16, ColumnTypeUInt32, ColumnTypeUInt64:
 		if !ok {
 			return 0, nil
 		}
-		if !utils.IsNumber(datav) {
-			return 0, fmt.Errorf("not int, key:%v, value:%v", columnName, datav)
+		return utils.ToUint(datav)
+	case ColumnTypeInt8, ColumnTypeInt16, ColumnTypeInt32, ColumnTypeInt64:
+		if !ok {
+			return 0, nil
 		}
-		return datav, nil
+		return utils.ToInt(datav)
 
-	case ColumnTypeArrayUInt8, ColumnTypeArrayUInt16, ColumnTypeArrayUInt32, ColumnTypeArrayUInt64, ColumnTypeArrayInt8, ColumnTypeArrayInt16, ColumnTypeArrayInt32, ColumnTypeArrayInt64:
+	case ColumnTypeArrayUInt8, ColumnTypeArrayUInt16, ColumnTypeArrayUInt32, ColumnTypeArrayUInt64:
+		if !ok {
+			return clickhouse.Array([]uint{}), nil
+		}
+		return utils.ToUintSlice(datav)
+	case ColumnTypeArrayInt8, ColumnTypeArrayInt16, ColumnTypeArrayInt32, ColumnTypeArrayInt64:
 		if !ok {
 			return clickhouse.Array([]int{}), nil
 		}
-		listValue := reflect.ValueOf(datav)
-		if listValue.Kind() != reflect.Slice {
-			return nil, errors.New("该数据不是数组")
-		}
-
-		newDatav := []int{}
-		for i := 0; i < listValue.Len(); i++ {
-			numstr := strings.Split(fmt.Sprint(listValue.Index(i).Interface()), ".")[0]
-			i, _ := strconv.Atoi(numstr)
-			newDatav = append(newDatav, i)
-		}
-		return newDatav, nil
+		return utils.ToIntSlice(datav)
 
 	case ColumnTypeDate:
 		if !ok {

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net"
 	"reflect"
-	"strconv"
 	"strings"
 	"time"
 
@@ -103,43 +102,54 @@ func (entity *Feature) CheckMetadata(data map[string]interface{}) error {
 		if !ok {
 			continue
 		}
+		typeErr := fmt.Errorf("feature:%v variable %s value:%v, unable.", v.Title, v.Variable, value)
 
 		rv := reflect.ValueOf(value)
-		err := false
-
 		switch v.Kind {
 		case cattle.ColumnTypeDate, cattle.ColumnTypeDateTime:
 			if !utils.IsDateTime(fmt.Sprint(value)) {
-				err = true
+				return typeErr
 			}
 		case cattle.ColumnTypeString:
 			if rv.Kind() != reflect.String {
-				err = true
+				return typeErr
 			}
-		case cattle.ColumnTypeFloat32, cattle.ColumnTypeFloat64, cattle.ColumnTypeUInt8, cattle.ColumnTypeUInt16, cattle.ColumnTypeUInt32, cattle.ColumnTypeUInt64, cattle.ColumnTypeInt8, cattle.ColumnTypeInt16, cattle.ColumnTypeInt32, cattle.ColumnTypeInt64:
-			if !utils.IsNumber(value) {
-				err = true
+		case cattle.ColumnTypeFloat32, cattle.ColumnTypeFloat64:
+			if _, e := utils.ToFloat(value); e != nil {
+				return typeErr
 			}
-		case cattle.ColumnTypeArrayFloat32, cattle.ColumnTypeArrayFloat64,
-			cattle.ColumnTypeArrayUInt8, cattle.ColumnTypeArrayUInt16, cattle.ColumnTypeArrayUInt32, cattle.ColumnTypeArrayUInt64, cattle.ColumnTypeArrayInt8, cattle.ColumnTypeArrayInt16, cattle.ColumnTypeArrayInt32, cattle.ColumnTypeArrayInt64:
-			if !utils.IsNumberSlice(value) {
-				err = true
+		case cattle.ColumnTypeUInt8, cattle.ColumnTypeUInt16, cattle.ColumnTypeUInt32, cattle.ColumnTypeUInt64:
+			if _, e := utils.ToUint(value); e != nil {
+				return typeErr
+			}
+		case cattle.ColumnTypeInt8, cattle.ColumnTypeInt16, cattle.ColumnTypeInt32, cattle.ColumnTypeInt64:
+			if _, e := utils.ToInt(value); e != nil {
+				return typeErr
+			}
+		case cattle.ColumnTypeArrayFloat32, cattle.ColumnTypeArrayFloat64:
+			if _, e := utils.ToFloatSlice(value); e != nil {
+				return typeErr
+			}
+		case cattle.ColumnTypeArrayUInt8, cattle.ColumnTypeArrayUInt16, cattle.ColumnTypeArrayUInt32, cattle.ColumnTypeArrayUInt64:
+			if _, e := utils.ToUintSlice(value); e != nil {
+				return typeErr
+			}
+		case cattle.ColumnTypeArrayInt8, cattle.ColumnTypeArrayInt16, cattle.ColumnTypeArrayInt32, cattle.ColumnTypeArrayInt64:
+			if _, e := utils.ToIntSlice(value); e != nil {
+				return typeErr
 			}
 		case cattle.ColumnTypeArrayString:
-			if rv.Kind() != reflect.Slice || rv.Elem().Kind() != reflect.String {
-				err = true
+			if rv.Kind() != reflect.Slice {
+				return typeErr
 			}
 		case cattle.ColumnTypeArrayDate, cattle.ColumnTypeArrayDateTime:
 			if !utils.IsDateTimeSlice(value) {
-				err = true
+				return typeErr
 			}
 		case cattle.ColumnTypeIP:
 			if net.ParseIP(fmt.Sprint(value)) == nil {
-				err = true
+				return typeErr
 			}
-		}
-		if err {
-			return fmt.Errorf("feature:%v variable %s value:%v, unable.", v.Title, v.Variable, value)
 		}
 	}
 
@@ -164,43 +174,59 @@ func (entity *Feature) ConvertMetadata(data map[string]string) (result map[strin
 			}
 			result[v.Variable] = value
 
-		case cattle.ColumnTypeFloat32, cattle.ColumnTypeFloat64, cattle.ColumnTypeUInt8, cattle.ColumnTypeUInt16, cattle.ColumnTypeUInt32, cattle.ColumnTypeUInt64, cattle.ColumnTypeInt8, cattle.ColumnTypeInt16, cattle.ColumnTypeInt32, cattle.ColumnTypeInt64:
-			if !utils.IsNumber(value) {
+		case cattle.ColumnTypeFloat32, cattle.ColumnTypeFloat64:
+			fnum, err := utils.ToFloat(value)
+			if err != nil {
 				e = typeErr
 				return
 			}
-			result[v.Variable] = utils.ToNumber(value)
+			result[v.Variable] = fnum
+		case cattle.ColumnTypeUInt8, cattle.ColumnTypeUInt16, cattle.ColumnTypeUInt32, cattle.ColumnTypeUInt64:
+			unum, err := utils.ToUint(value)
+			if err != nil {
+				e = typeErr
+				return
+			}
+			result[v.Variable] = unum
+		case cattle.ColumnTypeInt8, cattle.ColumnTypeInt16, cattle.ColumnTypeInt32, cattle.ColumnTypeInt64:
+			unum, err := utils.ToInt(value)
+			if err != nil {
+				e = typeErr
+				return
+			}
+			result[v.Variable] = unum
 
 		case cattle.ColumnTypeArrayFloat32, cattle.ColumnTypeArrayFloat64:
-			list := strings.Split(value, ",")
-			if !utils.IsNumberSlice(list) {
+			list := strings.Split(value, "|")
+			flist, err := utils.ToFloatSlice(list)
+			if err != nil {
 				e = typeErr
 				return
 			}
-			newArray := []float64{}
-			for _, vstr := range list {
-				fv, _ := strconv.ParseFloat(vstr, 64)
-				newArray = append(newArray, fv)
-			}
-			result[v.Variable] = newArray
+			result[v.Variable] = flist
 
-		case cattle.ColumnTypeArrayUInt8, cattle.ColumnTypeArrayUInt16, cattle.ColumnTypeArrayUInt32, cattle.ColumnTypeArrayUInt64, cattle.ColumnTypeArrayInt8, cattle.ColumnTypeArrayInt16, cattle.ColumnTypeArrayInt32, cattle.ColumnTypeArrayInt64:
-			list := strings.Split(value, ",")
-			if !utils.IsNumberSlice(list) {
+		case cattle.ColumnTypeArrayUInt8, cattle.ColumnTypeArrayUInt16, cattle.ColumnTypeArrayUInt32, cattle.ColumnTypeArrayUInt64:
+			list := strings.Split(value, "|")
+			flist, err := utils.ToUintSlice(list)
+			if err != nil {
 				e = typeErr
 				return
 			}
-			newArray := []interface{}{}
-			for _, vstr := range list {
-				newArray = append(newArray, utils.ToNumber(vstr))
+			result[v.Variable] = flist
+		case cattle.ColumnTypeArrayInt8, cattle.ColumnTypeArrayInt16, cattle.ColumnTypeArrayInt32, cattle.ColumnTypeArrayInt64:
+			list := strings.Split(value, "|")
+			flist, err := utils.ToIntSlice(list)
+			if err != nil {
+				e = typeErr
+				return
 			}
-			result[v.Variable] = newArray
+			result[v.Variable] = flist
 
 		case cattle.ColumnTypeArrayString:
-			list := strings.Split(value, ",")
+			list := strings.Split(value, "|")
 			result[v.Variable] = list
 		case cattle.ColumnTypeArrayDate, cattle.ColumnTypeArrayDateTime:
-			list := strings.Split(value, ",")
+			list := strings.Split(value, "|")
 			if !utils.IsDateTimeSlice(list) {
 				e = typeErr
 				return

@@ -21,7 +21,6 @@ type ReqFeatureMetadataDTO struct {
 	Kind          string `json:"kind"  validate:"required"`    // 类型
 	Dict          string `json:"dict"`                         // 关联字典的key
 	OrderByNumber int    `json:"orderByNumber"`                // ck排序键，非0排序
-	Partition     int    `json:"partition"`                    // 非0分区
 }
 
 type ReqFeatureDTO struct {
@@ -34,7 +33,6 @@ type ReqBehaviourDTO struct {
 	WechatUnionID string                 `json:"wechatUnionID"`
 	UserKey       string                 `json:"userKey"`
 	UserPhone     string                 `json:"userPhone"`
-	TempUserID    string                 `json:"tempUserID"`
 	IPAddr        string                 `json:"ipAddr"`
 	CreateTime    string                 `json:"createTime"`
 	Data          map[string]interface{} `json:"data"`

@@ -2,9 +2,7 @@ package domain
 
 import (
 	"encoding/json"
-	"fmt"
 	"net"
-	"strconv"
 	"time"
 
 	"github.com/8treenet/cdp-service/adapter/repository"
@@ -61,13 +59,16 @@ func (service *BehaviourService) CreateBehaviours(featureID int, reqs []vo.ReqBe
 		if err == nil {
 			createTime = inCreateTime
 		}
+		ipAddr := ""
+		if net.ParseIP(req.IPAddr) != nil {
+			ipAddr = req.IPAddr
+		}
 
 		obj := &po.Behaviour{
 			WechatUnionID: req.WechatUnionID,
 			UserKey:       req.UserKey,
 			UserPhone:     req.UserPhone,
-			TempUserID:    req.TempUserID,
-			UserIPAddr:    req.IPAddr,
+			UserIPAddr:    ipAddr,
 			FeatureID:     fentity.ID,
 			CreateTime:    createTime,
 			Data:          jsonData,
@@ -106,19 +107,17 @@ func (service *BehaviourService) CreateBehavioursByCSV(featureID int, data []byt
 		if err == nil {
 			createTime = inCreateTime
 		}
-		sourceId, err := strconv.Atoi(v["source"])
-		if err != nil {
-			return fmt.Errorf("strconv.Atoi(source) error:%w", err)
-		}
+
+		sourceId := service.SupportRepository.FindSourceID(v["source"])
 		ipAddr := ""
-		if net.ParseIP(v["ipAddr"]) == nil {
+		if net.ParseIP(v["ipAddr"]) != nil {
 			ipAddr = v["ipAddr"]
 		}
+
 		obj := &po.Behaviour{
 			WechatUnionID: v["wechatUnionID"],
 			UserKey:       v["userKey"],
 			UserPhone:     v["userPhone"],
-			TempUserID:    v["tempUserID"],
 			FeatureID:     fentity.ID,
 			CreateTime:    createTime,
 			Data:          jsonData,

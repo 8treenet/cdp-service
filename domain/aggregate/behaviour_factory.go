@@ -156,11 +156,11 @@ func (factory *BehaviourFactory) setUserId(behaviours []*entity.Behaviour) {
 			v.UserId = customerId
 			continue
 		}
-		if v.TempUserID == "" {
-			continue
-		}
-
-		v.UserId = factory.CustomerRepo.GetTempUserIDByUUID(v.TempUserID, v.SourceID)
+		//暂时不支持临时用户
+		// if v.TempUserID == "" {
+		// 	continue
+		// }
+		// v.UserId = factory.CustomerRepo.GetTempUserIDByUUID(v.TempUserID, v.SourceID)
 	}
 	return
 }

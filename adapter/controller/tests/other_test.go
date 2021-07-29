@@ -70,7 +70,7 @@ func TestBehaviourShopGoods(t *testing.T) {
 func TestSupportController_PutFeatureBy(t *testing.T) {
 	req := requests.NewHTTPRequest(domain + "/support/feature/10").Put()
 	var metadata []vo.ReqFeatureMetadataDTO
-	metadata = append(metadata, vo.ReqFeatureMetadataDTO{Variable: "dts", Title: "dts", Kind: "ArrayDateTime", Partition: 0})
+	metadata = append(metadata, vo.ReqFeatureMetadataDTO{Variable: "dts", Title: "dts", Kind: "ArrayDateTime"})
 
 	str, _ := req.SetJSONBody(metadata).ToString()
 	t.Log(str)
