@@ -33,6 +33,7 @@ type BehaviourService struct {
 	FeatureRepository   *repository.FeatureRepository
 	CustomerRepository  *repository.CustomerRepository
 	BehaviourFactory    *aggregate.BehaviourFactory
+	ClondRepository     *repository.ClondRepository
 	fetchTime           time.Duration
 	fetchCount          int
 }
@@ -81,7 +82,11 @@ func (service *BehaviourService) CreateBehaviours(featureID int, reqs []vo.ReqBe
 }
 
 // CreateBehavioursByCSV
-func (service *BehaviourService) CreateBehavioursByCSV(featureID int, data []byte) error {
+func (service *BehaviourService) CreateBehavioursByCSV(featureID int, key string) error {
+	data, err := service.ClondRepository.PublicDownload(key)
+	if err != nil {
+		return err
+	}
 	fentity, err := service.FeatureRepository.GetFeatureEntity(featureID)
 	if err != nil {
 		return err
