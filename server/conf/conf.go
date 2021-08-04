@@ -46,6 +46,12 @@ type SystemConf struct {
 	JobAnalysisRefreshHour   int `toml:"job_analysis_refresh_hour"`
 	JobPersonaHour           int `toml:"job_persona_hour"`
 	JobPersonaRefreshHour    int `toml:"job_persona_refresh_hour"`
+
+	QiniuBucket    string `toml:"qiniu_bucket"`
+	QiniuAccessKey string `toml:"qiniu_access_key"`
+	QiniuSecretKey string `toml:"qiniu_secret_key"`
+	QiniuExpire    uint64 `toml:"qiniu_expire"`
+	QiniuDomain    string `toml:"qiniu_domain"`
 }
 
 // DBConf .
