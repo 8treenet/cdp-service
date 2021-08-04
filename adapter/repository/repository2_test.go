@@ -24,7 +24,7 @@ func TestClondUpload(t *testing.T) {
 	var repo *ClondRepository
 	//获取资源库
 	unitTest.FetchRepository(&repo)
-	err := repo.UpLoad("test.csv", []byte("1,2,3,4"), map[string]string{})
+	err := repo.UpLoad("test.csv", []byte("1,2,3,4"))
 	if err != nil {
 		panic(err)
 	}

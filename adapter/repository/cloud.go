@@ -42,7 +42,7 @@ func (repo *ClondRepository) NewUptoken(key ...string) (string, error) {
 }
 
 // UpLoad .
-func (repo *ClondRepository) UpLoad(key string, data []byte, params map[string]string) error {
+func (repo *ClondRepository) UpLoad(key string, data []byte) error {
 	cfg := storage.Config{}
 	// 空间对应的机房
 	cfg.Zone, _ = storage.GetZone(conf.Get().System.QiniuAccessKey, conf.Get().System.QiniuBucket)
@@ -54,9 +54,7 @@ func (repo *ClondRepository) UpLoad(key string, data []byte, params map[string]s
 	ret := storage.PutRet{}
 	dataLen := int64(len(data))
 
-	putExtra := storage.PutExtra{
-		Params: params,
-	}
+	putExtra := storage.PutExtra{}
 
 	token, err := repo.NewUptoken()
 	if err != nil {
