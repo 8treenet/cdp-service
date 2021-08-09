@@ -3,8 +3,9 @@ package repository
 import (
 	"time"
 
-	"github.com/8treenet/cdp-service/domain/po"
-	"github.com/8treenet/cdp-service/infra"
+	"cdp-service/domain/po"
+	"cdp-service/infra"
+
 	"github.com/8treenet/freedom"
 	"gorm.io/gorm"
 )

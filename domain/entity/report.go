@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/8treenet/cdp-service/domain/po"
-	"github.com/8treenet/cdp-service/infra/cattle"
-	"github.com/8treenet/cdp-service/utils"
+	"cdp-service/domain/po"
+	"cdp-service/infra/cattle"
+	"cdp-service/utils"
+
 	"github.com/8treenet/freedom"
 )
 

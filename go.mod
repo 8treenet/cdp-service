@@ -1,4 +1,4 @@
-module github.com/8treenet/cdp-service
+module cdp-service
 
 go 1.13
 

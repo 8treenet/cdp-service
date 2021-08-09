@@ -1,8 +1,9 @@
 package aggregate
 
 import (
-	"github.com/8treenet/cdp-service/adapter/repository"
-	"github.com/8treenet/cdp-service/infra"
+	"cdp-service/adapter/repository"
+	"cdp-service/infra"
+
 	"github.com/8treenet/freedom"
 )
 

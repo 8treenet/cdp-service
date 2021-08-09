@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/8treenet/cdp-service/server/conf"
+	"cdp-service/server/conf"
+
 	"github.com/8treenet/freedom"
 	"github.com/qiniu/go-sdk/v7/auth/qbox"
 	"github.com/qiniu/go-sdk/v7/storage"

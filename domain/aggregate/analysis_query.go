@@ -3,8 +3,8 @@ package aggregate
 import (
 	"encoding/json"
 
-	"github.com/8treenet/cdp-service/domain/entity"
-	"github.com/8treenet/cdp-service/infra"
+	"cdp-service/domain/entity"
+	"cdp-service/infra"
 )
 
 // AnalysisQuery 负责分析的查询.

@@ -6,7 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/8treenet/cdp-service/utils"
+	"cdp-service/utils"
+
 	"github.com/go-xorm/builder"
 )
 

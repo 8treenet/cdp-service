@@ -1,9 +1,10 @@
 package controller
 
 import (
-	"github.com/8treenet/cdp-service/domain"
-	"github.com/8treenet/cdp-service/domain/vo"
-	"github.com/8treenet/cdp-service/infra"
+	"cdp-service/domain"
+	"cdp-service/domain/vo"
+	"cdp-service/infra"
+
 	"github.com/8treenet/freedom"
 )
 

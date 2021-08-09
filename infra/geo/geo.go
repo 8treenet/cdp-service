@@ -4,7 +4,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/8treenet/cdp-service/utils"
+	"cdp-service/utils"
+
 	"github.com/8treenet/freedom"
 	"github.com/8treenet/freedom/infra/requests"
 	"gorm.io/gorm"

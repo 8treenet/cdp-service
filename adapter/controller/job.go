@@ -3,9 +3,10 @@ package controller
 import (
 	"time"
 
-	"github.com/8treenet/cdp-service/domain"
-	"github.com/8treenet/cdp-service/server/conf"
-	"github.com/8treenet/cdp-service/utils"
+	"cdp-service/domain"
+	"cdp-service/server/conf"
+	"cdp-service/utils"
+
 	"github.com/8treenet/freedom"
 )
 

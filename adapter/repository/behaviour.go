@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/8treenet/cdp-service/domain/entity"
-	"github.com/8treenet/cdp-service/domain/po"
-	"github.com/8treenet/cdp-service/infra/geo"
-	"github.com/8treenet/cdp-service/utils"
+	"cdp-service/domain/entity"
+	"cdp-service/domain/po"
+	"cdp-service/infra/geo"
+	"cdp-service/utils"
+
 	"github.com/8treenet/freedom"
 	"github.com/go-redis/redis"
 	"gorm.io/gorm"

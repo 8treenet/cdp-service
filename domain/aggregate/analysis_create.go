@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/8treenet/cdp-service/adapter/repository"
-	"github.com/8treenet/cdp-service/domain/entity"
-	"github.com/8treenet/cdp-service/infra/cattle"
-	"github.com/8treenet/cdp-service/utils"
+	"cdp-service/adapter/repository"
+	"cdp-service/domain/entity"
+	"cdp-service/infra/cattle"
+	"cdp-service/utils"
+
 	"github.com/go-xorm/builder"
 )
 

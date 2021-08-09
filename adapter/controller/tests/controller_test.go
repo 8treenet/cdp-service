@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/8treenet/cdp-service/domain/po"
+	"cdp-service/domain/po"
+
 	"github.com/8treenet/freedom/infra/requests"
 )
 

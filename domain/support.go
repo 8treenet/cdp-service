@@ -3,10 +3,11 @@ package domain
 import (
 	"time"
 
-	"github.com/8treenet/cdp-service/adapter/repository"
-	"github.com/8treenet/cdp-service/domain/entity"
-	"github.com/8treenet/cdp-service/domain/po"
-	"github.com/8treenet/cdp-service/domain/vo"
+	"cdp-service/adapter/repository"
+	"cdp-service/domain/entity"
+	"cdp-service/domain/po"
+	"cdp-service/domain/vo"
+
 	"github.com/8treenet/freedom"
 	"github.com/8treenet/freedom/infra/transaction"
 )

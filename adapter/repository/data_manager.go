@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"github.com/8treenet/cdp-service/domain/entity"
-	"github.com/8treenet/cdp-service/infra/cattle"
+	"cdp-service/domain/entity"
+	"cdp-service/infra/cattle"
+
 	"github.com/8treenet/freedom"
 	"github.com/go-xorm/builder"
 )

@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/8treenet/cdp-service/domain/entity"
-	"github.com/8treenet/cdp-service/domain/po"
-	"github.com/8treenet/cdp-service/infra"
-	"github.com/8treenet/cdp-service/utils"
+	"cdp-service/domain/entity"
+	"cdp-service/domain/po"
+	"cdp-service/infra"
+	"cdp-service/utils"
+
 	"github.com/8treenet/freedom"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"

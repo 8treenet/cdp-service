@@ -3,7 +3,7 @@ package repository
 import (
 	"testing"
 
-	_ "github.com/8treenet/cdp-service/infra" //Implicit initialization infra
+	_ "cdp-service/infra" //Implicit initialization infra
 )
 
 func TestClondToken(t *testing.T) {

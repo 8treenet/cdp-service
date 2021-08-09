@@ -3,7 +3,8 @@ package controller_test
 import (
 	"testing"
 
-	"github.com/8treenet/cdp-service/domain/vo"
+	"cdp-service/domain/vo"
+
 	"github.com/8treenet/freedom/infra/requests"
 )
 

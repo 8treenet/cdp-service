@@ -5,7 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/8treenet/cdp-service/domain/vo"
+	"cdp-service/domain/vo"
+
 	"github.com/8treenet/freedom"
 	"github.com/go-redis/redis"
 	"gorm.io/driver/mysql"
@@ -13,7 +14,7 @@ import (
 )
 
 func getUnitTest() freedom.UnitTest {
-	os.Setenv(freedom.ProfileENV, os.Getenv("GOPATH")+"/src/github.com/8treenet/cdp-service/server/conf")
+	os.Setenv(freedom.ProfileENV, os.Getenv("GOPATH")+"/src/cdp-service/server/conf")
 	//创建单元测试工具
 	unitTest := freedom.NewUnitTest()
 	unitTest.InstallDB(func() interface{} {

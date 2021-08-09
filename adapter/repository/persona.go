@@ -4,10 +4,11 @@ import (
 	"encoding/base64"
 	"time"
 
-	"github.com/8treenet/cdp-service/domain/entity"
-	"github.com/8treenet/cdp-service/domain/po"
-	"github.com/8treenet/cdp-service/infra"
-	"github.com/8treenet/cdp-service/infra/cattle"
+	"cdp-service/domain/entity"
+	"cdp-service/domain/po"
+	"cdp-service/infra"
+	"cdp-service/infra/cattle"
+
 	"github.com/8treenet/freedom"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"

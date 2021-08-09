@@ -12,14 +12,15 @@ import (
 	"github.com/go-redis/redis"
 	"gorm.io/driver/mysql"
 
-	"github.com/8treenet/cdp-service/domain/po"
-	_ "github.com/8treenet/cdp-service/infra" //Implicit initialization infra
-	"github.com/8treenet/cdp-service/utils"
+	"cdp-service/domain/po"
+	_ "cdp-service/infra" //Implicit initialization infra
+	"cdp-service/utils"
+
 	"gorm.io/gorm"
 )
 
 func getUnitTest() freedom.UnitTest {
-	os.Setenv(freedom.ProfileENV, os.Getenv("GOPATH")+"/src/github.com/8treenet/cdp-service/server/conf")
+	os.Setenv(freedom.ProfileENV, os.Getenv("GOPATH")+"/src/cdp-service/server/conf")
 	//创建单元测试工具
 	unitTest := freedom.NewUnitTest()
 	unitTest.InstallDB(func() interface{} {
