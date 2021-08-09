@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
 	_ "cdp-service/infra" //Implicit initialization infra
 )
@@ -33,4 +35,19 @@ func TestClondUpload(t *testing.T) {
 		panic(err)
 	}
 	t.Log(string(data))
+}
+
+func TestClondKey(t *testing.T) {
+	unitTest := getUnitTest()
+	unitTest.Run()
+
+	var repo *ClondRepository
+	//获取资源库
+	unitTest.FetchRepository(&repo)
+	e := repo.CreateKey(fmt.Sprintf("keystest-%d", time.Now().Unix()))
+	if e != nil {
+		panic(e)
+	}
+
+	t.Log(repo.GetKeysByPage())
 }

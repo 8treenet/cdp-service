@@ -6,17 +6,20 @@ import (
 	"fmt"
 	"time"
 
+	"cdp-service/domain/po"
+	"cdp-service/infra"
 	"cdp-service/server/conf"
 
 	"github.com/8treenet/freedom"
 	"github.com/qiniu/go-sdk/v7/auth/qbox"
 	"github.com/qiniu/go-sdk/v7/storage"
+	"gorm.io/gorm"
 )
 
 func init() {
 	freedom.Prepare(func(initiator freedom.Initiator) {
 		initiator.BindRepository(func() *ClondRepository {
-			return &ClondRepository{}
+			return &ClondRepository{keyExpireDay: 20}
 		})
 	})
 }
@@ -24,6 +27,8 @@ func init() {
 // ClondRepository .
 type ClondRepository struct {
 	freedom.Repository
+	Common       *infra.CommonRequest
+	keyExpireDay int
 }
 
 // NewUptoken .
@@ -85,4 +90,41 @@ func (repo *ClondRepository) PrivateDownload(key string) ([]byte, error) {
 		return nil, rep.Error
 	}
 	return data, nil
+}
+
+// GetKeysByPage .
+func (repo *ClondRepository) GetKeysByPage() (result []*po.Clond, totalPage int, e error) {
+	findAnalysisList(repo, po.Analysis{})
+	page, pageSize := repo.Common.GetPage()
+	pager := NewDescPager("id").SetPage(page, pageSize)
+	list, e := findClondListByWhere(repo, "deadline > ?", []interface{}{time.Now().Unix()}, pager)
+	if e != nil {
+		return
+	}
+
+	for i := 0; i < len(list); i++ {
+		result = append(result, &list[i])
+	}
+	totalPage = pager.TotalPage()
+	return
+}
+
+// GetKeysByPage .
+func (repo *ClondRepository) CreateKey(key string) (e error) {
+	_, e = createClond(repo, &po.Clond{
+		Key:      key,
+		Deadline: time.Now().AddDate(0, 0, repo.keyExpireDay),
+		Created:  time.Now(),
+		Updated:  time.Now(),
+	})
+	return
+}
+
+// db .
+func (repo *ClondRepository) db() *gorm.DB {
+	var db *gorm.DB
+	if err := repo.FetchDB(&db); err != nil {
+		panic(err)
+	}
+	return db
 }

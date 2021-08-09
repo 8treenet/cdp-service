@@ -13,7 +13,7 @@ import (
 var domain = "http://127.0.0.1:8000/cdp-service"
 
 func TestCustomerManagerController_PostList(t *testing.T) {
-	req := requests.NewHTTPRequest(domain + "/customer/metaDataManager/list").Post()
+	req := requests.NewHTTPRequest(domain + "/customer/metaDataManager").Post()
 	var list []po.CustomerExtensionMetadata
 	list = append(list, po.CustomerExtensionMetadata{
 		Variable: "score",
@@ -42,7 +42,7 @@ func TestCustomerManagerController_PostList(t *testing.T) {
 }
 
 func TestCustomerManagerController_GetList(t *testing.T) {
-	req := requests.NewHTTPRequest(domain + "/customer/metaDataManager/list").Get()
+	req := requests.NewHTTPRequest(domain + "/customer/metaDataManager").Get()
 	var body struct {
 		Code int                            `json:"code"`
 		Msg  string                         `json:"msg"`

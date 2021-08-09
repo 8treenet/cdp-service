@@ -7,6 +7,7 @@ import (
 	"cdp-service/domain/entity"
 	"cdp-service/domain/po"
 	"cdp-service/domain/vo"
+	"cdp-service/utils"
 
 	"github.com/8treenet/freedom"
 	"github.com/8treenet/freedom/infra/transaction"
@@ -108,8 +109,32 @@ func (service *SupportService) GetFeaturesByPage() (result []interface{}, totalP
 	return
 }
 
-// GetUploadTopen 获取token
-func (service *SupportService) GetUploadTopen() (token string, e error) {
-	token, e = service.ClondRepository.NewUptoken()
+// GetClondUploadTopen 获取token
+func (service *SupportService) GetClondUploadTopen() (string, error) {
+	return service.ClondRepository.NewUptoken()
+}
+
+// CreateClond 创建key
+func (service *SupportService) CreateClondKey(key string) error {
+	return service.ClondRepository.CreateKey(key)
+}
+
+// GetClondKeysByPage 分页获取keys
+func (service *SupportService) GetClondKeysByPage() (result []struct {
+	Key      string `json:"key"`
+	Deadline int64  `json:"deadline"`
+}, totalPage int, e error) {
+	list, totalPage, e := service.ClondRepository.GetKeysByPage()
+	if e != nil || len(list) == 0 {
+		return
+	}
+
+	if e = utils.NewSlice(&result, len(list)); e != nil {
+		return
+	}
+	for i := 0; i < len(list); i++ {
+		result[i].Key = list[i].Key
+		result[i].Deadline = list[i].Deadline.Unix()
+	}
 	return
 }

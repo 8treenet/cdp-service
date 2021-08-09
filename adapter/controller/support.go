@@ -2,6 +2,7 @@
 package controller
 
 import (
+	"cdp-service/adapter/repository"
 	"cdp-service/domain"
 	"cdp-service/domain/vo"
 	"cdp-service/infra"
@@ -17,10 +18,11 @@ func init() {
 
 // SupportController .
 type SupportController struct {
-	SupportService *domain.SupportService
-	Worker         freedom.Worker
-	Request        *infra.Request
-	Common         *infra.CommonRequest
+	SupportService  *domain.SupportService
+	Worker          freedom.Worker
+	Request         *infra.Request
+	Common          *infra.CommonRequest
+	ClondRepository *repository.ClondRepository
 }
 
 //Get handles the GET: /support/source route.
@@ -99,12 +101,44 @@ func (support *SupportController) PutFeatureBy(featureId int) freedom.Result {
 	return &infra.JSONResponse{}
 }
 
-//GetUptoken handles the Get: /support/uptoken route.
-func (support *SupportController) GetUptoken() freedom.Result {
-	token, e := support.SupportService.GetUploadTopen()
+//GetClondUptoken handles the Get: /support/clond/uptoken route.
+func (support *SupportController) GetClondUptoken() freedom.Result {
+	token, e := support.SupportService.GetClondUploadTopen()
+	if e != nil {
+		return &infra.JSONResponse{Error: e}
+	}
+	return &infra.JSONResponse{Object: token}
+}
+
+//PostClondKey handles the Get: /support/clond/key route.
+func (support *SupportController) PostClondKey() freedom.Result {
+	var data struct {
+		Key string `json:"key" validate:"required"`
+	}
+	if e := support.Request.ReadJSON(&data, true); e != nil {
+		return &infra.JSONResponse{Error: e}
+	}
+
+	e := support.SupportService.CreateClondKey(data.Key)
+	if e != nil {
+		return &infra.JSONResponse{Error: e}
+	}
+	return &infra.JSONResponse{}
+}
+
+//PostClondKey handles the Get: /support/clond/keys route.
+func (support *SupportController) GetClondKeys() freedom.Result {
+	result, totalPage, e := support.SupportService.GetClondKeysByPage()
 	if e != nil {
 		return &infra.JSONResponse{Error: e}
 	}
 
-	return &infra.JSONResponse{Object: token}
+	page, pageSize := support.Common.GetPage()
+	pageData := infra.PageResponse{
+		List:     result,
+		Total:    totalPage,
+		Page:     page,
+		PageSize: pageSize,
+	}
+	return &infra.JSONResponse{Object: pageData}
 }

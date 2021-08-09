@@ -22,8 +22,8 @@ type CustomerManagerController struct {
 	Request                 *infra.Request
 }
 
-//Post handles the Post: /customer/metaDataManager/list route.
-func (c *CustomerManagerController) PostList() freedom.Result {
+//Post handles the Post: /customer/metaDataManager route.
+func (c *CustomerManagerController) Post() freedom.Result {
 	var list []po.CustomerExtensionMetadata
 	if e := c.Request.ReadJSON(&list, true); e != nil {
 		return &infra.JSONResponse{Error: e}
@@ -35,8 +35,8 @@ func (c *CustomerManagerController) PostList() freedom.Result {
 	return &infra.JSONResponse{}
 }
 
-//Get handles the Get: /customer/metaDataManager/list route.
-func (c *CustomerManagerController) GetList() freedom.Result {
+//Get handles the Get: /customer/metaDataManager route.
+func (c *CustomerManagerController) Get() freedom.Result {
 	data, e := c.CustomerTempleteService.GetMetaData()
 	if e != nil {
 		return &infra.JSONResponse{Error: e}

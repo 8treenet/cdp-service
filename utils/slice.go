@@ -74,3 +74,15 @@ func ToInterfaces(value interface{}) ([]interface{}, error) {
 	}
 	return result, nil
 }
+
+//NewSlice .
+func NewSlice(dsc interface{}, len int) error {
+	dstv := reflect.ValueOf(dsc)
+	if dstv.Elem().Kind() != reflect.Slice {
+		return errors.New("dsc error")
+	}
+
+	result := reflect.MakeSlice(reflect.TypeOf(dsc).Elem(), len, len)
+	dstv.Elem().Set(result)
+	return nil
+}

@@ -88,35 +88,32 @@ func (p *Pager) SetPage(page, pageSize int) *Pager {
 
 // Execute .
 func (p *Pager) Execute(db *gorm.DB, object interface{}) (e error) {
-	pageFind := false
+	if p.page != 0 && p.pageSize != 0 {
+		var count64 int64
+		e = db.Model(object).Count(&count64).Error
+		count := int(count64)
+		if e != nil {
+			return
+		}
+		if count != 0 {
+			//Calculate the length of the pagination
+			if count%p.pageSize == 0 {
+				p.totalPage = count / p.pageSize
+			} else {
+				p.totalPage = count/p.pageSize + 1
+			}
+		}
+		db = db.Offset((p.page - 1) * p.pageSize).Limit(p.pageSize)
+	}
+
 	orderValue := p.Order()
 	if orderValue != nil {
 		db = db.Order(orderValue)
-	}
-	if p.page != 0 && p.pageSize != 0 {
-		pageFind = true
-		db = db.Offset((p.page - 1) * p.pageSize).Limit(p.pageSize)
 	}
 
 	resultDB := db.Find(object)
 	if resultDB.Error != nil {
 		return resultDB.Error
-	}
-
-	if !pageFind {
-		return
-	}
-
-	var count64 int64
-	e = resultDB.Offset(0).Limit(1).Count(&count64).Error
-	count := int(count64)
-	if e == nil && count != 0 {
-		//Calculate the length of the pagination
-		if count%p.pageSize == 0 {
-			p.totalPage = count / p.pageSize
-		} else {
-			p.totalPage = count/p.pageSize + 1
-		}
 	}
 	return
 }
@@ -1956,6 +1953,159 @@ func saveCustomer(repo GORMRepository, object saveObject) (rowsAffected int64, e
 	defer func() {
 		freedom.Prometheus().OrmWithLabelValues("Customer", "saveCustomer", e, now)
 		ormErrorLog(repo, "Customer", "saveCustomer", e, object)
+	}()
+
+	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())
+	e = db.Error
+	rowsAffected = db.RowsAffected
+	return
+}
+
+// findClond .
+func findClond(repo GORMRepository, result *po.Clond, builders ...Builder) (e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Clond", "findClond", e, now)
+		ormErrorLog(repo, "Clond", "findClond", e, result)
+	}()
+	db := repo.db()
+	if len(builders) == 0 {
+		e = db.Where(result).Last(result).Error
+		return
+	}
+	e = builders[0].Execute(db.Limit(1), result)
+	return
+}
+
+// findClondListByPrimarys .
+func findClondListByPrimarys(repo GORMRepository, primarys ...interface{}) (results []po.Clond, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Clond", "findClondListByPrimarys", e, now)
+		ormErrorLog(repo, "Clond", "findClondsByPrimarys", e, primarys)
+	}()
+
+	e = repo.db().Find(&results, primarys).Error
+	return
+}
+
+// findClondByWhere .
+func findClondByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (result po.Clond, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Clond", "findClondByWhere", e, now)
+		ormErrorLog(repo, "Clond", "findClondByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findClondByMap .
+func findClondByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (result po.Clond, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Clond", "findClondByMap", e, now)
+		ormErrorLog(repo, "Clond", "findClondByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+	if len(builders) == 0 {
+		e = db.Last(&result).Error
+		return
+	}
+
+	e = builders[0].Execute(db.Limit(1), &result)
+	return
+}
+
+// findClondList .
+func findClondList(repo GORMRepository, query po.Clond, builders ...Builder) (results []po.Clond, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Clond", "findClondList", e, now)
+		ormErrorLog(repo, "Clond", "findClonds", e, query)
+	}()
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findClondListByWhere .
+func findClondListByWhere(repo GORMRepository, query string, args []interface{}, builders ...Builder) (results []po.Clond, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Clond", "findClondListByWhere", e, now)
+		ormErrorLog(repo, "Clond", "findClondsByWhere", e, query, args)
+	}()
+	db := repo.db()
+	if query != "" {
+		db = db.Where(query, args...)
+	}
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// findClondListByMap .
+func findClondListByMap(repo GORMRepository, query map[string]interface{}, builders ...Builder) (results []po.Clond, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Clond", "findClondListByMap", e, now)
+		ormErrorLog(repo, "Clond", "findClondsByMap", e, query)
+	}()
+
+	db := repo.db().Where(query)
+
+	if len(builders) == 0 {
+		e = db.Find(&results).Error
+		return
+	}
+	e = builders[0].Execute(db, &results)
+	return
+}
+
+// createClond .
+func createClond(repo GORMRepository, object *po.Clond) (rowsAffected int64, e error) {
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Clond", "createClond", e, now)
+		ormErrorLog(repo, "Clond", "createClond", e, *object)
+	}()
+
+	db := repo.db().Create(object)
+	rowsAffected = db.RowsAffected
+	e = db.Error
+	return
+}
+
+// saveClond .
+func saveClond(repo GORMRepository, object saveObject) (rowsAffected int64, e error) {
+	if len(object.Location()) == 0 {
+		return 0, errors.New("location cannot be empty")
+	}
+
+	now := time.Now()
+	defer func() {
+		freedom.Prometheus().OrmWithLabelValues("Clond", "saveClond", e, now)
+		ormErrorLog(repo, "Clond", "saveClond", e, object)
 	}()
 
 	db := repo.db().Table(object.TableName()).Where(object.Location()).Updates(object.GetChanges())
