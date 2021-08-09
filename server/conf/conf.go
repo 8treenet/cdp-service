@@ -131,6 +131,10 @@ func newRedisConf() *RedisConf {
 }
 
 func entryPoint() {
+	env := os.Getenv("cdpconf")
+	if env != "" {
+		os.Setenv(freedom.ProfileENV, env)
+	}
 	// [./cdp-service -c ./server/conf]
 	for i := 0; i < len(os.Args); i++ {
 		if os.Args[i] != "-c" {
