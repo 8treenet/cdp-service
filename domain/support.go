@@ -31,6 +31,7 @@ type SupportService struct {
 	FeatureRepository *repository.FeatureRepository
 	TX                transaction.Transaction
 	DataRepository    *repository.DataManagerRepository
+	ClondRepository   *repository.ClondRepository
 }
 
 // 创建渠道 .
@@ -104,5 +105,11 @@ func (service *SupportService) GetFeaturesByPage() (result []interface{}, totalP
 	for _, v := range list {
 		result = append(result, v.View())
 	}
+	return
+}
+
+// GetUploadTopen 获取token
+func (service *SupportService) GetUploadTopen() (token string, e error) {
+	token, e = service.ClondRepository.NewUptoken()
 	return
 }

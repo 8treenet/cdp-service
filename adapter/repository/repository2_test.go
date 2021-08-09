@@ -28,7 +28,7 @@ func TestClondUpload(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	data, err := repo.PublicDownload("test.csv")
+	data, err := repo.PrivateDownload("test.csv")
 	if err != nil {
 		panic(err)
 	}

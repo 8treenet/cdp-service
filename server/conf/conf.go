@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	entryPoint()
+	EntryPoint()
 }
 
 // Get .
@@ -130,11 +130,13 @@ func newRedisConf() *RedisConf {
 	return result
 }
 
-func entryPoint() {
+func EntryPoint() {
 	env := os.Getenv("cdpconf")
 	if env != "" {
 		os.Setenv(freedom.ProfileENV, env)
+		return
 	}
+
 	// [./cdp-service -c ./server/conf]
 	for i := 0; i < len(os.Args); i++ {
 		if os.Args[i] != "-c" {

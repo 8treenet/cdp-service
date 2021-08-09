@@ -98,3 +98,13 @@ func (support *SupportController) PutFeatureBy(featureId int) freedom.Result {
 
 	return &infra.JSONResponse{}
 }
+
+//GetUptoken handles the Get: /support/uptoken route.
+func (support *SupportController) GetUptoken() freedom.Result {
+	token, e := support.SupportService.GetUploadTopen()
+	if e != nil {
+		return &infra.JSONResponse{Error: e}
+	}
+
+	return &infra.JSONResponse{Object: token}
+}

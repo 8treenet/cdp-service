@@ -14,17 +14,21 @@ import (
 
 	"cdp-service/domain/po"
 	_ "cdp-service/infra" //Implicit initialization infra
+	"cdp-service/server/conf"
 	"cdp-service/utils"
 
 	"gorm.io/gorm"
 )
 
 func getUnitTest() freedom.UnitTest {
-	os.Setenv(freedom.ProfileENV, os.Getenv("GOPATH")+"/src/cdp-service/server/conf")
+	os.Setenv("cdpconf", "/Users/ysmac/global_conf/conf") //自己的conf目录
+	conf.EntryPoint()
+
 	//创建单元测试工具
 	unitTest := freedom.NewUnitTest()
 	unitTest.InstallDB(func() interface{} {
-		db, e := gorm.Open(mysql.Open("root:123123@tcp(127.0.0.1:3306)/cdp?charset=utf8&parseTime=True&loc=Local"))
+		dbConf := conf.Get().DB
+		db, e := gorm.Open(mysql.Open(dbConf.Addr), &gorm.Config{SkipDefaultTransaction: true})
 		if e != nil {
 			freedom.Logger().Fatal(e.Error())
 		}
@@ -32,8 +36,11 @@ func getUnitTest() freedom.UnitTest {
 		return db
 	})
 
+	cfg := conf.Get().Redis
 	opt := &redis.Options{
-		Addr: "127.0.0.1:6379",
+		Addr:     cfg.Addr,
+		Password: cfg.Password,
+		DB:       cfg.DB,
 	}
 	redisClient := redis.NewClient(opt)
 	if e := redisClient.Ping().Err(); e != nil {
