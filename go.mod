@@ -2,10 +2,8 @@ module cdp-service
 
 go 1.13
 
-replace github.com/8treenet/freedom => /Users/ysmac/go/src/github.com/8treenet/freedom
-
 require (
-	github.com/8treenet/freedom v1.8.10
+	github.com/8treenet/freedom v1.8.11
 	github.com/ClickHouse/clickhouse-go v1.4.5
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-xorm/builder v0.3.4
