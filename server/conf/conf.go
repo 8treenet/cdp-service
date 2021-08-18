@@ -104,6 +104,7 @@ func newAppConf() *freedom.Configuration {
 	result.Other["listen_addr"] = ":8000"
 	result.Other["service_name"] = "default"
 	freedom.Configure(&result, "app.toml")
+	result.Other["logger_level"] = "error"
 	return &result
 }
 

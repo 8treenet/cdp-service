@@ -1,9 +1,13 @@
 package controller
 
 import (
+	"encoding/json"
+	"fmt"
+	"math/rand"
 	"time"
 
 	"cdp-service/domain"
+	"cdp-service/domain/po"
 	"cdp-service/server/conf"
 	"cdp-service/utils"
 
@@ -13,13 +17,14 @@ import (
 func init() {
 	freedom.Prepare(func(i freedom.Initiator) {
 		i.BindBooting(func(bootManager freedom.BootManager) {
-			behaviourSaveJob()
-			behaviourEnteringHouseJob()
-			truncateJob()
-			analysisDayJob()
-			analysisRefreshJob()
-			personaDayJob()
-			personaRefreshJob()
+			// behaviourSaveJob()
+			// behaviourEnteringHouseJob()
+			// truncateJob()
+			// analysisDayJob()
+			// analysisRefreshJob()
+			// personaDayJob()
+			// personaRefreshJob()
+			Press()
 		})
 	})
 }
@@ -227,4 +232,31 @@ func hourTrigger(f func(), hour int, name string) {
 		f()
 		nextTime = getNextTime()
 	}
+}
+
+func Press() {
+	go func() {
+		time.Sleep(5 * time.Second)
+		jdata, _ := json.Marshal(map[string]interface{}{"haha": 20, "hahaname": "btree"})
+		freedom.ServiceLocator().Call(func(service *domain.BehaviourService) {
+			fmt.Println("kaishi", time.Now().Unix())
+			for i := 0; i < 3; i++ {
+				var list []*po.Behaviour
+				for j := 0; j < 1000; j++ {
+					list = append(list, &po.Behaviour{
+						UserKey:    fmt.Sprintf("key%d-%d", i, j),
+						UserIPAddr: "192.168.1.1",
+						FeatureID:  rand.Intn(200),
+						CreateTime: time.Now(),
+						Data:       jdata,
+						Processed:  rand.Intn(3),
+						SourceID:   0,
+						Created:    time.Now(),
+					})
+				}
+				service.BehaviourRepository.BatchSave(list)
+			}
+			fmt.Println("jieshu", time.Now().Unix())
+		})
+	}()
 }
