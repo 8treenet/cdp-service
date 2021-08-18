@@ -105,9 +105,11 @@ CREATE TABLE `cdp_behaviour` (
   `processed` tinyint(4) NOT NULL DEFAULT '0' COMMENT '非0已处理',
   `sourceId` smallint(6) NOT NULL COMMENT '来源',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `featureId` (`featureId`,`processed`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='行为记录表';
+  PRIMARY KEY (`id`,`featureId`),
+  KEY `processed` (`processed`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='行为记录表'
+/*!50100 PARTITION BY KEY (featureId)
+PARTITIONS 100 */;
 
 
 
