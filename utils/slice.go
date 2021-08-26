@@ -6,21 +6,15 @@ import (
 )
 
 //InSlice .
-func InSlice(array interface{}, item interface{}) bool {
-	values := reflect.ValueOf(array)
+func InSlice(slice interface{}, item interface{}) bool {
+	values := reflect.ValueOf(slice)
 	if values.Kind() != reflect.Slice {
 		return false
 	}
 
 	size := values.Len()
-	list := make([]interface{}, size)
-	slice := values.Slice(0, size)
 	for index := 0; index < size; index++ {
-		list[index] = slice.Index(index).Interface()
-	}
-
-	for index := 0; index < len(list); index++ {
-		if list[index] == item {
+		if values.Index(index).Interface() == item {
 			return true
 		}
 	}

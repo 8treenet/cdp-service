@@ -31,3 +31,14 @@ func TestUtils2(t *testing.T) {
 	r := reflect.ValueOf(vv)
 	t.Log(r.Type().Elem().Kind())
 }
+
+func TestInSlice(t *testing.T) {
+	if !InSlice([]string{"1", "2", "3", "4"}, "1") {
+		panic("")
+	}
+
+	if !InSlice([]int{1, 2, 3, 4, 5}, 3) {
+		panic("")
+	}
+	t.Log(InSlice([]int{1, 2, 3, 4, 5}, 3))
+}
