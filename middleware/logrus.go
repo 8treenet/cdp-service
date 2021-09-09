@@ -30,10 +30,11 @@ func NewLogrusMiddleware(logFolder string, console bool) func(value *freedom.Log
 
 	return func(value *freedom.LogRow) bool {
 		//打入管道
+		m, _ := DeepCopy(value.Fields).(map[string]interface{})
 		write <- &logrusRow{
 			Level:   toLogrusLevel(value.Level),
 			Message: value.Message,
-			Fields:  logrus.Fields(value.Fields),
+			Fields:  logrus.Fields(m),
 		}
 
 		if !console {
@@ -95,4 +96,23 @@ func toLogrusLevel(level golog.Level) logrus.Level {
 		return logrus.WarnLevel
 	}
 	return logrus.InfoLevel
+}
+
+func DeepCopy(value interface{}) interface{} {
+	if valueMap, ok := value.(map[string]interface{}); ok {
+		newMap := make(map[string]interface{})
+		for k, v := range valueMap {
+			newMap[k] = DeepCopy(v)
+		}
+
+		return newMap
+	} else if valueSlice, ok := value.([]interface{}); ok {
+		newSlice := make([]interface{}, len(valueSlice))
+		for k, v := range valueSlice {
+			newSlice[k] = DeepCopy(v)
+		}
+		return newSlice
+	}
+
+	return value
 }

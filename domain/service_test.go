@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"encoding/json"
 	"os"
 	"testing"
 	"time"
@@ -279,4 +280,11 @@ func TestPersonaExecuteRefreshJob(t *testing.T) {
 	var service *PersonaService
 	unitTest.FetchService(&service)
 	service.ExecuteRefreshJob()
+}
+
+func TestMap(t *testing.T) {
+	m := map[string]float32{"haha": 3.98}
+	jdata, _ := json.Marshal(m)
+	json.Unmarshal([]byte(jdata), &m)
+	t.Log(m)
 }
