@@ -14,6 +14,7 @@ require (
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.4 // indirect
 	github.com/mattn/go-sqlite3 v1.14.6 // indirect
+	github.com/microcosm-cc/bluemonday v1.0.16 // indirect
 	github.com/qiniu/go-sdk/v7 v7.9.8
 	github.com/sirupsen/logrus v1.8.1
 	golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985 // indirect
