@@ -5,8 +5,7 @@ ENV GOPROXY https://goproxy.cn
 ENV CGO_ENABLED=0
 RUN go mod download
 RUN go generate
-RUN go build  -tags netgo server/main.go
-
+RUN go build server/main.go
 
 
 FROM alpine:3.14.2
